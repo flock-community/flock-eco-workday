@@ -33,7 +33,13 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
             .filter((it) => it.contractHours > 0)
             .map((it) => ({
               ...it,
-              availableHours: Math.max(it.contractHours - it.hackHoursUsed, 0),
+              availableHours: Math.max(
+                it.contractHours -
+                  it.hackHoursUsed -
+                  (it.holidayOnHackDayHours ?? 0) -
+                  (it.sickOnHackDayHours ?? 0),
+                0,
+              ),
             })),
         ),
     );
@@ -70,8 +76,20 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
         <Bar
           stackId="used"
           dataKey="hackHoursUsed"
-          name="used"
+          name="attended"
+          fill={colors.worked}
+        />
+        <Bar
+          stackId="used"
+          dataKey="holidayOnHackDayHours"
+          name="holiday on hack days"
           fill={colors.leave}
+        />
+        <Bar
+          stackId="used"
+          dataKey="sickOnHackDayHours"
+          name="sick on hack days"
+          fill={colors.sick}
         />
 
         <Bar

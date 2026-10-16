@@ -205,6 +205,8 @@ private fun AggregationHackDay.produce() =
         name = name,
         contractHours = contractHours.produce(),
         hackHoursUsed = usedHours.produce(),
+        holidayOnHackDayHours = holidayOnHackDayHours.produce(),
+        sickOnHackDayHours = sickOnHackDayHours.produce(),
     )
 
 private fun AggregationLeaveDay.produce() =
@@ -236,6 +238,8 @@ private fun PersonHackdayDetails.produce() =
         name = name,
         hackHoursFromContract = hackHoursFromContract.produce(),
         hackHoursUsed = hackHoursUsed.produce(),
+        holidayOnHackDayHours = holidayOnHackDayHours.produce(),
+        sickOnHackDayHours = sickOnHackDayHours.produce(),
         totalHoursRemaining = totalHoursRemaining.produce(),
     )
 

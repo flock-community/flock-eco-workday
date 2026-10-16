@@ -26,6 +26,11 @@ const date = (iso: string) =>
     year: 'numeric',
   });
 
+const absenceLabel: Record<string, string> = {
+  HOLIDAY: 'holiday',
+  SICK: 'sick',
+};
+
 const categoryLabel: Record<string, string> = {
   HACK: 'Hack',
   TRAINING: 'Training',
@@ -60,46 +65,62 @@ export function BudgetEventsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {events.map((event) => (
-              <TableRow
-                key={`${event.eventCode}-${event.category}`}
-                hover={Boolean(onEditEvent)}
-                onClick={
-                  onEditEvent ? () => onEditEvent(event.eventCode) : undefined
-                }
-                sx={onEditEvent ? { cursor: 'pointer' } : undefined}
-              >
-                <TableCell>{event.description}</TableCell>
-                <TableCell>{date(event.from)}</TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={categoryLabel[event.category] ?? event.category}
-                    color={event.category === 'TRAINING' ? 'accent' : 'primary'}
-                    sx={{ fontWeight: 600 }}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  {event.hours.toLocaleString('nl-NL', {
-                    maximumFractionDigits: 1,
-                  })}
-                  h
-                </TableCell>
-                <TableCell align="right">
-                  {event.category === 'TRAINING' ? (
-                    euro(event.cost ?? 0)
-                  ) : (
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="text.secondary"
-                    >
-                      no cost
-                    </Typography>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+            {events.map((event) => {
+              const editable = Boolean(onEditEvent) && !event.absence;
+              return (
+                <TableRow
+                  key={`${event.eventCode}-${event.category}-${event.from}-${event.absence ?? ''}`}
+                  hover={editable}
+                  onClick={
+                    editable ? () => onEditEvent?.(event.eventCode) : undefined
+                  }
+                  sx={editable ? { cursor: 'pointer' } : undefined}
+                >
+                  <TableCell>
+                    {event.description}
+                    {event.absence && (
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        {` (missed: ${absenceLabel[event.absence] ?? event.absence})`}
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell>{date(event.from)}</TableCell>
+                  <TableCell>
+                    <Chip
+                      size="small"
+                      label={categoryLabel[event.category] ?? event.category}
+                      color={
+                        event.category === 'TRAINING' ? 'accent' : 'primary'
+                      }
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    {event.hours.toLocaleString('nl-NL', {
+                      maximumFractionDigits: 1,
+                    })}
+                    h
+                  </TableCell>
+                  <TableCell align="right">
+                    {event.category === 'TRAINING' ? (
+                      euro(event.cost ?? 0)
+                    ) : (
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        no cost
+                      </Typography>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </CardContent>

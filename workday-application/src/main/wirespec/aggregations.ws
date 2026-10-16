@@ -134,12 +134,16 @@ type PersonHackdayDetails {
   name: String?,
   hackHoursFromContract: Number?,
   hackHoursUsed: Number?,
+  holidayOnHackDayHours: Number?,
+  sickOnHackDayHours: Number?,
   totalHoursRemaining: Number?
 }
 type AggregationHackDay {
   name: String?,
   contractHours: Number?,
-  hackHoursUsed: Number?
+  hackHoursUsed: Number?,
+  holidayOnHackDayHours: Number?,
+  sickOnHackDayHours: Number?
 }
 type AggregationClientPersonItem {
   person: AggregationIdentifier?,
