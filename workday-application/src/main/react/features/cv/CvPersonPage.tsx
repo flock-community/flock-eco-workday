@@ -1,9 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import HistoryIcon from '@mui/icons-material/History';
 import LinkIcon from '@mui/icons-material/Link';
-import PrintIcon from '@mui/icons-material/Print';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {
   Alert,
   Box,
@@ -35,7 +36,13 @@ import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CURRENT, CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
-import { type CvView, cvLanguageLabel, cvLink, cvUrl } from './cvText';
+import {
+  type CvView,
+  cvDownloadUrl,
+  cvLanguageLabel,
+  cvLink,
+  cvUrl,
+} from './cvText';
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
@@ -411,13 +418,28 @@ function PersonCv({
               {copied ? 'Link copied' : 'Copy link'}
             </Button>
           </Tooltip>
-          <Button
-            variant="contained"
-            startIcon={<PrintIcon />}
-            onClick={() => window.print()}
-          >
-            Print or save as PDF
-          </Button>
+          {!comparing && (
+            <>
+              <Button
+                component="a"
+                href={cvDownloadUrl(current.code, 'docx', version)}
+                download
+                variant="outlined"
+                startIcon={<DescriptionIcon />}
+              >
+                Download Word
+              </Button>
+              <Button
+                component="a"
+                href={cvDownloadUrl(current.code, 'pdf', version)}
+                download
+                variant="contained"
+                startIcon={<PictureAsPdfIcon />}
+              >
+                Download PDF
+              </Button>
+            </>
+          )}
         </Stack>
       )}
 

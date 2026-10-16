@@ -256,9 +256,13 @@ test.describe('CV', () => {
     await expect(cv.getByRole('img', { name: 'Logo ING' })).toHaveCount(2);
     // An admin writes anybody's CV
     await expect(page.getByRole('link', { name: 'Edit' })).toBeVisible();
+    // The server makes the CV to download, as PDF or as Word
     await expect(
-      page.getByRole('button', { name: 'Print or save as PDF' }),
-    ).toBeEnabled();
+      page.getByRole('link', { name: 'Download PDF' }),
+    ).toHaveAttribute('href', /^\/api\/cvs\/[^/]+\/pdf$/);
+    await expect(
+      page.getByRole('link', { name: 'Download Word' }),
+    ).toHaveAttribute('href', /^\/api\/cvs\/[^/]+\/docx$/);
   });
 
   test('a link to a CV opens that CV, also after logging in', async ({

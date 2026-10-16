@@ -108,6 +108,19 @@ export function cvLink(code: string, view: CvView = {}): string {
   return query ? `${page}?${query}` : page;
 }
 
+/**
+ * The CV with [code] as a document to download, made by the server: PDF or Word. An
+ * earlier [version] of it downloads as it was then.
+ */
+export function cvDownloadUrl(
+  code: string,
+  format: 'pdf' | 'docx',
+  version?: string | null,
+): string {
+  const url = `/api/cvs/${encodeURIComponent(code)}/${format}`;
+  return version ? `${url}?version=${encodeURIComponent(version)}` : url;
+}
+
 /** A month on the wire is `yyyy-MM`; on a CV it reads `MM-yyyy`. */
 export const YEAR_MONTH = 'YYYY-MM';
 export const CV_MONTH = 'MM-YYYY';
