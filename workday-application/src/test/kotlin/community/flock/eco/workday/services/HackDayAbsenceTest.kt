@@ -119,4 +119,23 @@ class HackDayAbsenceTest(
                 .toDouble(),
         )
     }
+
+    @Test
+    fun `two hack day events on the same date cost a missed day only once`() {
+        val sick = createHelper.createPersonEntity("Double", "Booked")
+        createHelper.createContractInternal(person = sick, from = from, to = to, hackTimeBudget = 160)
+        createHelper.createSickDay(sick, weekStart, weekEnd)
+        repeat(2) {
+            createHelper.createEvent(
+                from = hackDay,
+                to = hackDay,
+                persons = emptyList(),
+                type = EventType.FLOCK_HACK_DAY,
+            )
+        }
+
+        val summary = budgetSummaryService.getSummary(sick.uuid, year)
+        assertEquals(8.0, summary.hackTimeBudget.used.toDouble())
+        assertEquals(1, summary.events.size)
+    }
 }

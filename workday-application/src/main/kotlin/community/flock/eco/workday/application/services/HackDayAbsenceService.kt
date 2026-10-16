@@ -76,25 +76,32 @@ internal fun hackDayAbsences(
             .filter { it.status != Status.REJECTED }
             .groupBy({ it.person.uuid }, { it.hoursPerDay() })
 
-    return hackDays
-        .filter { it.type == EventType.FLOCK_HACK_DAY }
-        .flatMap { event ->
-            val attendees = event.eventDays.map { it.person.uuid }.toSet()
-            event
-                .hoursPerDay()
-                .filterValues { it > BigDecimal.ZERO }
-                .flatMap { (date, hackHours) ->
-                    contracts
-                        .filter { it.hackTimeBudget > 0 && it.covers(date) }
-                        .map { it.person!!.uuid }
-                        .distinct()
-                        .filter { it !in attendees }
-                        .mapNotNull { personId ->
-                            val holiday = holidayHoursByPerson.hoursOn(personId, date).min(hackHours)
-                            val sick = sickHoursByPerson.hoursOn(personId, date).min(hackHours - holiday)
-                            HackDayAbsence(event, date, personId, holiday, sick)
-                                .takeIf { holiday > BigDecimal.ZERO || sick > BigDecimal.ZERO }
-                        }
+    // One absence per person per date, even when several hack day events share that date.
+    val hackDayDates =
+        hackDays
+            .filter { it.type == EventType.FLOCK_HACK_DAY }
+            .flatMap { event ->
+                event
+                    .hoursPerDay()
+                    .filterValues { it > BigDecimal.ZERO }
+                    .map { (date, hours) -> Triple(date, event, hours) }
+            }.groupBy { it.first }
+
+    return hackDayDates
+        .toSortedMap()
+        .flatMap { (date, onDate) ->
+            val (_, event, hackHours) = onDate.maxBy { it.third }
+            val attendees = onDate.flatMap { (_, e, _) -> e.eventDays.map { it.person.uuid } }.toSet()
+            contracts
+                .filter { it.hackTimeBudget > 0 && it.covers(date) }
+                .map { it.person!!.uuid }
+                .distinct()
+                .filter { it !in attendees }
+                .mapNotNull { personId ->
+                    val holiday = holidayHoursByPerson.hoursOn(personId, date).min(hackHours)
+                    val sick = sickHoursByPerson.hoursOn(personId, date).min(hackHours - holiday)
+                    HackDayAbsence(event, date, personId, holiday, sick)
+                        .takeIf { holiday > BigDecimal.ZERO || sick > BigDecimal.ZERO }
                 }
         }
 }
