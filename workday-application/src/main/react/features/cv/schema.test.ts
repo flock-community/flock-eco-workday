@@ -44,6 +44,7 @@ describe('CV_FORM_SCHEMA', () => {
       education: '',
       subjects: '',
       languages: '',
+      basedOn: '',
     });
   });
 
@@ -178,6 +179,11 @@ describe('toCvRequest', () => {
         },
       ],
     });
+  });
+
+  it('names the base a new CV is a copy of', () => {
+    expect(toCvRequest(values({ basedOn: 'cv-1' })).basedOn).toBe('cv-1');
+    expect(toCvRequest(values()).basedOn).toBeUndefined();
   });
 
   it('sends no end month for the current job', () => {

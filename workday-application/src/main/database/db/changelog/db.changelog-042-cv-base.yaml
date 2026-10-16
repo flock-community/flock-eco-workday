@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-042-cv-base-1
+      author: ceesjansen
+      comment: >-
+        One base CV per person and language, and the copies made of it. base is TRUE
+        for the base and NULL otherwise, so the unique constraint on person, language
+        and base allows one base next to any number of copies (NULLs never clash).
+        A copy refers to its base (based_on_id) and remembers when the base was saved
+        when the copy was made (based_on_updated_at), to show later what changed since.
+      changes:
+        - addColumn:
+            tableName: cv
+            columns:
+              - column:
+                  name: base
+                  type: BOOLEAN
+              - column:
+                  name: based_on_id
+                  type: BIGINT
+              - column:
+                  name: based_on_updated_at
+                  type: TIMESTAMP
+        - addForeignKeyConstraint:
+            baseColumnNames: based_on_id
+            baseTableName: cv
+            constraintName: FK_cv_based_on
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: cv
+            onDelete: SET NULL
+            validate: true
+        - addUniqueConstraint:
+            tableName: cv
+            columnNames: person_id, language, base
+            constraintName: cv_person_language_base_unique
+  - changeSet:
+      id: db.changelog-042-cv-base-2
+      author: ceesjansen
+      comment: >-
+        A person with a single CV in a language has that CV as the base. Where a person
+        has several, an admin picks the base.
+      changes:
+        - sql:
+            sql: >-
+              UPDATE cv SET base = TRUE
+              WHERE (SELECT COUNT(*) FROM cv other
+                     WHERE other.person_id = cv.person_id AND other.language = cv.language) = 1

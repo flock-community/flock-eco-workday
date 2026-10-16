@@ -42,10 +42,21 @@ enum class CvLanguage {
  *
  * A person can have several CVs, each a version with its own [name] (say "2025 NL" or
  * "Frontend EN"); every save keeps the content before it as a [CvRevision].
+ *
+ * Per language one CV of a person is the [base], kept up to date; the others are copies
+ * of it, made for a client or a role. A copy knows the base it was [basedOn] and when that
+ * base had been saved when the copy was made ([basedOnUpdatedAt]; unknown for a CV that
+ * became a copy because another CV was made the base). A person with several CVs in a
+ * language from before bases existed has none until an admin picks one.
  */
 @Entity
 @EntityListeners(EventEntityListeners::class)
-@Table(uniqueConstraints = [UniqueConstraint(name = "cv_person_name_unique", columnNames = ["person_id", "name"])])
+@Table(
+    uniqueConstraints = [
+        UniqueConstraint(name = "cv_person_name_unique", columnNames = ["person_id", "name"]),
+        UniqueConstraint(name = "cv_person_language_base_unique", columnNames = ["person_id", "language", "base"]),
+    ],
+)
 class Cv(
     id: Long = 0,
     code: String = UUID.randomUUID().toString(),
@@ -79,6 +90,15 @@ class Cv(
     @Column(length = CV_SECTION_LENGTH)
     val languages: String? = null,
     val updatedAt: Instant = Instant.now(),
+    @Convert(converter = BaseFlagConverter::class)
+    @Column(nullable = true)
+    val base: Boolean = false,
+    // A copy loses its base only when the base is deleted, which is refused while it has copies
+    @ManyToOne
+    @JoinColumn(name = "based_on_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    val basedOn: Cv? = null,
+    val basedOnUpdatedAt: Instant? = null,
 ) : AbstractCodeEntity(id, code) {
     override fun toString(): String = "Cv(id=$id, code=$code, person=${person.uuid}, name='$name', language=$language)"
 
@@ -130,6 +150,17 @@ class CvSkill(
     @Column(name = "skill_level")
     val level: Int? = null,
 )
+
+/**
+ * [Cv.base] is stored as TRUE or NULL, never FALSE: the unique constraint on person,
+ * language and base then allows a single base next to any number of copies.
+ */
+@Converter
+class BaseFlagConverter : AttributeConverter<Boolean, Boolean?> {
+    override fun convertToDatabaseColumn(attribute: Boolean?): Boolean? = if (attribute == true) true else null
+
+    override fun convertToEntityAttribute(dbData: Boolean?): Boolean = dbData == true
+}
 
 /** A month is stored as the first day of that month. */
 @Converter

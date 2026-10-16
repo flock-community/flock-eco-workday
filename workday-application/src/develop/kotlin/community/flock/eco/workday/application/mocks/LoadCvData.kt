@@ -26,6 +26,7 @@ class LoadCvData(
                 person = loadPersonData.findPersonByUserEmail("tommy@sesam.straat"),
                 name = "Algemeen 2025",
                 language = CvLanguage.NL,
+                base = true,
                 place = "Hilversum",
                 phone = "0612345678",
                 summary =
@@ -112,6 +113,7 @@ class LoadCvData(
                 person = loadPersonData.findPersonByUserEmail("bert@sesam.straat"),
                 name = "General",
                 language = CvLanguage.EN,
+                base = true,
                 place = "Hilversum",
                 summary =
                     "Bert Muppets is a pragmatic backend engineer who likes his systems the way he likes his" +
