@@ -6,7 +6,8 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": ["**", "!workday-application/src/main/resources/cv/**"]
   },
   "formatter": {
     "enabled": true,

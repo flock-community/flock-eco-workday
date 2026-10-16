@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!--
+  A CV in the Flock template, drawn as PDF by CvPdf. Laid out like the CV in the browser
+  (features/cv/CvDocument.tsx): the name and the Flock logo on top of every page, the
+  yellow band along its left edge and its number at the bottom right; the personal
+  details with the photo, the profile, an overview of the working experience, a section
+  per assignment, and the skills, education and languages as lists.
+
+  Variables: content (CvDocumentContent), pdf (CvPdf.Helpers: images, Markdown and the
+  like), band (the yellow band as a data URL) and lang. The PDF renderer takes XHTML, so
+  this must stay well-formed: close every element, <img /> included.
+-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}">
+<head>
+  <meta charset="utf-8" />
+  <title th:text="${content.title}">Curriculum Vitae</title>
+  <style th:inline="css">
+    /* Sizes are in points, as in the template; the page margins hold the header and the page number */
+    @page {
+      size: A4;
+      margin: 33mm 25mm 20mm 25mm;
+      /* The yellow band along the left edge of every page */
+      background-image: url([[${band}]]);
+      background-size: 3mm 297mm;
+      background-repeat: no-repeat;
+      background-position: 0 0;
+      @top-center { content: element(header); vertical-align: bottom; }
+      @bottom-right {
+        content: counter(page);
+        font: 10pt 'DejaVu Sans';
+        vertical-align: top;
+        padding-top: 6mm;
+      }
+    }
+    body { font-family: 'DejaVu Sans'; font-size: 9pt; line-height: 1.5; color: #000; margin: 0; }
+    p { margin: 0 0 1.5em 0; }
+    a { color: #1a56c4; }
+    h2 { font-size: 9pt; font-weight: bold; margin: 0; }
+
+    #header { position: running(header); width: 100%; padding-bottom: 14pt; }
+    #header table { width: 100%; border-collapse: collapse; border-bottom: 0.75pt solid #9e9e9e; }
+    #header td { padding: 0 0 6pt 0; vertical-align: bottom; }
+    #header .title { font-size: 17pt; line-height: 1.2; }
+    #header .disc { text-align: right; width: 50pt; }
+
+    .photo { float: right; margin: 8pt 0 8pt 12pt; }
+    table.details { border-collapse: collapse; margin-bottom: 13.5pt; }
+    table.details td { padding: 0; vertical-align: top; }
+    table.details td.label { width: 144pt; }
+    .summary { font-style: italic; text-align: justify; }
+
+    .experience { clear: both; padding-top: 13.5pt; margin-bottom: 27pt; page-break-inside: avoid; }
+    table.overview { width: 100%; border-collapse: collapse; -fs-table-paginate: paginate; }
+    table.overview th, table.overview td {
+      border: 0.75pt solid #000; padding: 5pt 4.5pt; text-align: left; vertical-align: top;
+    }
+    table.overview th { font-size: 8pt; font-weight: bold; }
+    table.overview tr { page-break-inside: avoid; }
+
+    .assignment { clear: both; margin-bottom: 13.5pt; }
+    /* The assignments always start on a page of their own */
+    .assignment.first { page-break-before: always; }
+    /* The grey rule of the header between assignments, after a blank line */
+    .assignment + .assignment { margin-top: 27pt; padding-top: 13.5pt; border-top: 0.75pt solid #9e9e9e; }
+    table.assignment-head { width: 100%; border-collapse: collapse; margin-bottom: 13.5pt; page-break-inside: avoid; }
+    table.assignment-head > tbody > tr > td, table.assignment-head > tr > td { padding: 0; vertical-align: top; }
+    table.facts { border-collapse: collapse; line-height: 1.35; }
+    table.facts th, table.facts td { padding: 0; vertical-align: top; text-align: left; }
+    table.facts th { font-weight: bold; min-width: 82pt; padding-right: 4pt; white-space: nowrap; }
+    table.facts td { font-style: italic; }
+    td.logo { text-align: right; width: 100pt; }
+
+    .markdown ul, .markdown ol { margin: 0 0 0.9em 0; padding-left: 1.6em; text-align: left; }
+    .markdown li > p { margin: 0; }
+    .markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+      font-size: 10pt; font-weight: bold; margin: 0 0 0.5em 0;
+    }
+    .markdown blockquote { margin: 0 0 0.9em 0; padding-left: 1em; }
+    .markdown code { font-family: monospace; font-size: 0.95em; }
+
+    .section { clear: both; margin-bottom: 18pt; page-break-inside: avoid; }
+    .section h2 { font-size: 13pt; font-weight: normal; color: #434343; margin: 0 0 8pt 0; }
+    .section ul { margin: 0; padding-left: 36pt; list-style: disc; }
+    .section li { padding-left: 4pt; }
+    /* Room for long names, which push their stars aside */
+    .skill { display: inline-block; min-width: 2in; padding-right: 18pt; }
+    .stars { letter-spacing: 0.12em; }
+  </style>
+</head>
+<body>
+
+<!-- The name and the Flock logo, repeated on top of every page -->
+<div id="header">
+  <table>
+    <tr>
+      <td class="title" th:text="${content.title}">Curriculum Vitae - Name</td>
+      <!-- No white space around the logo: it would add a line below it -->
+      <td class="disc"><img th:if="${content.disc != null}" th:src="${pdf.src(content.disc)}"
+          th:style="${pdf.size(content.disc)}" alt="Flock" /></td>
+    </tr>
+  </table>
+</div>
+
+<div class="photo" th:if="${content.photo != null}">
+  <img th:src="${pdf.src(content.photo)}" th:style="${pdf.size(content.photo)}" th:alt="${content.name}" />
+</div>
+
+<table class="details" th:unless="${content.details.isEmpty()}">
+  <tr th:each="detail : ${content.details}">
+    <td class="label" th:text="${detail.first + ':'}">Naam:</td>
+    <td th:text="${detail.second}">Name</td>
+  </tr>
+</table>
+
+<div class="summary markdown" th:utext="${pdf.markdown(content.cv.summary)}"></div>
+
+<div class="experience" th:unless="${content.cv.experiences.isEmpty()}">
+  <h2 th:text="${content.labels.workingExperience}">Werkervaring</h2>
+  <table class="overview">
+    <colgroup>
+      <col style="width: 24%" />
+      <col style="width: 32%" />
+      <col style="width: 10%" />
+      <col style="width: 34%" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th th:text="${content.labels.period}">Periode</th>
+        <th th:text="${content.labels.function}">Functie</th>
+        <th th:text="${content.labels.months}">Maanden</th>
+        <th th:text="${content.labels.clientColumn}">Opdrachtgever</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="experience : ${content.cv.experiences}">
+        <td th:text="${content.periodText(experience)}">08-2024 - nu</td>
+        <td th:text="${experience.role}">Role</td>
+        <td th:text="${content.monthsWorked(experience)}">12</td>
+        <td th:text="${pdf.client(experience)}">Client (via Flock)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div th:each="experience, loop : ${content.assignments}" class="assignment" th:classappend="${loop.first} ? 'first'">
+  <table class="assignment-head">
+    <tr>
+      <td>
+        <table class="facts">
+          <tr>
+            <th th:text="${content.labels.period + ':'}">Periode:</th>
+            <td th:text="${content.longPeriodText(experience)}">augustus 2024 - nu</td>
+          </tr>
+          <tr>
+            <th th:text="${content.labels.client + ':'}">Klant:</th>
+            <td th:text="${pdf.client(experience)}">Client (via Flock)</td>
+          </tr>
+          <tr>
+            <th th:text="${content.labels.role + ':'}">Rol:</th>
+            <td th:text="${experience.role}">Role</td>
+          </tr>
+          <tr th:unless="${experience.technologies.isEmpty()}">
+            <th th:text="${content.labels.technologies + ':'}">Technologieën:</th>
+            <td th:text="${#strings.listJoin(experience.technologies, ', ')}">Kotlin, React</td>
+          </tr>
+        </table>
+      </td>
+      <td class="logo" th:if="${content.logoOf(experience) != null}">
+        <img th:src="${pdf.src(content.logoOf(experience))}" th:style="${pdf.size(content.logoOf(experience))}"
+             th:alt="${'Logo ' + experience.client}" />
+      </td>
+    </tr>
+  </table>
+  <div class="markdown" th:utext="${pdf.markdown(experience.description)}"></div>
+</div>
+
+<div class="section" th:each="section : ${content.sectionsBeforeSkills}">
+  <h2 th:text="${section.heading}">Opleiding</h2>
+  <ul th:unless="${section.items.isEmpty()}">
+    <li th:each="item : ${section.items}" th:text="${item}">Master</li>
+  </ul>
+</div>
+
+<div class="section" th:each="group : ${content.skillGroups}">
+  <h2 th:text="${group.first}">Programming</h2>
+  <ul>
+    <li th:each="skill : ${group.second}"><span class="skill" th:text="${skill.name}">Kotlin</span><span
+        class="stars" th:if="${skill.level != null and skill.level > 0}" th:text="${pdf.stars(skill.level)}">*****</span></li>
+  </ul>
+</div>
+
+<div class="section" th:each="section : ${content.sectionsAfterSkills}">
+  <h2 th:text="${section.heading}">Talen</h2>
+  <ul th:unless="${section.items.isEmpty()}">
+    <li th:each="item : ${section.items}" th:text="${item}">Nederlands</li>
+  </ul>
+</div>
+
+</body>
+</html>
