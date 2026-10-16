@@ -257,12 +257,16 @@ test.describe('CV', () => {
     // An admin writes anybody's CV
     await expect(page.getByRole('link', { name: 'Edit' })).toBeVisible();
     // The server makes the CV to download, as PDF or as Word
-    await expect(
-      page.getByRole('link', { name: 'Download PDF' }),
-    ).toHaveAttribute('href', /^\/api\/cvs\/[^/]+\/pdf$/);
-    await expect(
-      page.getByRole('link', { name: 'Download Word' }),
-    ).toHaveAttribute('href', /^\/api\/cvs\/[^/]+\/docx$/);
+    await page.getByRole('button', { name: 'Download' }).click();
+    await expect(page.getByRole('menuitem', { name: 'PDF' })).toHaveAttribute(
+      'href',
+      /^\/api\/cvs\/[^/]+\/pdf$/,
+    );
+    await expect(page.getByRole('menuitem', { name: 'Word' })).toHaveAttribute(
+      'href',
+      /^\/api\/cvs\/[^/]+\/docx$/,
+    );
+    await page.keyboard.press('Escape');
   });
 
   test('a link to a CV opens that CV, also after logging in', async ({

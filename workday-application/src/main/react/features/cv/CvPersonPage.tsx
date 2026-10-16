@@ -1,7 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import DescriptionIcon from '@mui/icons-material/Description';
+import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HistoryIcon from '@mui/icons-material/History';
 import LinkIcon from '@mui/icons-material/Link';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -12,6 +14,7 @@ import {
   Card,
   CardContent,
   GlobalStyles,
+  ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
@@ -121,6 +124,7 @@ function PersonCv({
   const [revision, setRevision] = useState<Cv | null>(null);
   const [newMenu, setNewMenu] = useState<HTMLElement | null>(null);
   const [historyMenu, setHistoryMenu] = useState<HTMLElement | null>(null);
+  const [downloadMenu, setDownloadMenu] = useState<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -421,23 +425,44 @@ function PersonCv({
           {!comparing && (
             <>
               <Button
-                component="a"
-                href={cvDownloadUrl(current.code, 'docx', version)}
-                download
-                variant="outlined"
-                startIcon={<DescriptionIcon />}
-              >
-                Download Word
-              </Button>
-              <Button
-                component="a"
-                href={cvDownloadUrl(current.code, 'pdf', version)}
-                download
                 variant="contained"
-                startIcon={<PictureAsPdfIcon />}
+                startIcon={<DownloadIcon />}
+                endIcon={<ExpandMoreIcon />}
+                aria-haspopup="menu"
+                onClick={(event) => setDownloadMenu(event.currentTarget)}
               >
-                Download PDF
+                Download
               </Button>
+              <Menu
+                anchorEl={downloadMenu}
+                open={Boolean(downloadMenu)}
+                onClose={() => setDownloadMenu(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem
+                  component="a"
+                  href={cvDownloadUrl(current.code, 'pdf', version)}
+                  download
+                  onClick={() => setDownloadMenu(null)}
+                >
+                  <ListItemIcon>
+                    <PictureAsPdfIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="PDF" />
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href={cvDownloadUrl(current.code, 'docx', version)}
+                  download
+                  onClick={() => setDownloadMenu(null)}
+                >
+                  <ListItemIcon>
+                    <DescriptionIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Word" />
+                </MenuItem>
+              </Menu>
             </>
           )}
         </Stack>
