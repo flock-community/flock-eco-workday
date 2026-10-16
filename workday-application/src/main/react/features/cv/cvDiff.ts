@@ -347,3 +347,46 @@ export function diffCv(before: Cv, after: Cv): CvDiff {
       !languages.changed,
   };
 }
+
+/** Above this share of difference a copy is told it drifted far from its base. */
+export const DIVERGENCE_WARNING = 0.3;
+
+/** The words of a CV that count for its divergence: all of it but its name and language. */
+const cvWords = (cv: Cv): string =>
+  [
+    cv.place,
+    cv.phone,
+    cv.summary,
+    ...(cv.experiences ?? []).flatMap((it) => [
+      it.from,
+      it.to,
+      it.role,
+      it.client,
+      it.employer,
+      (it.technologies ?? []).join(', '),
+      it.description,
+    ]),
+    ...(cv.skills ?? []).map(
+      (it) => `${it.category ?? ''} ${it.name ?? ''} ${it.level ?? ''}`,
+    ),
+    cv.education,
+    cv.subjects,
+    cv.languages,
+  ]
+    .filter((it) => it != null && it !== '')
+    .join('\n');
+
+/**
+ * How far [copy] drifted from [base]: the share of their words (counted in letters)
+ * they do not have in common, from 0 (alike) to 1 (nothing in common).
+ */
+export function divergence(base: Cv, copy: Cv): number {
+  let same = 0;
+  let changed = 0;
+  for (const part of diffText(cvWords(base), cvWords(copy)).parts) {
+    const letters = part.text.replace(/\s+/g, '').length;
+    if (part.kind === 'same') same += 2 * letters;
+    else changed += letters;
+  }
+  return same + changed === 0 ? 0 : changed / (same + changed);
+}

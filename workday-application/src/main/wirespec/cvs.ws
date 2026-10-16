@@ -25,6 +25,15 @@ endpoint PostCvBase POST /api/cvs/{code: String}/base -> {
   200 -> Cv
   404 -> Error
 }
+endpoint GetCvSync GET /api/cvs/{code: String}/sync -> {
+  200 -> CvSync
+  404 -> Error
+}
+endpoint PostCvSync POST CvSyncForm /api/cvs/{code: String}/sync -> {
+  200 -> Cv
+  400 -> Error
+  404 -> Error
+}
 endpoint GetCvRevisions GET /api/cvs/{code: String}/revisions -> {
   200 -> CvRevision[]
   404 -> Error
@@ -48,6 +57,7 @@ enum CvLanguage {
 }
 
 type CvExperienceForm {
+  id: UUID?,
   from: YearMonth,
   to: YearMonth?,
   role: CvRequiredText,
@@ -58,6 +68,7 @@ type CvExperienceForm {
   logoId: UUID?
 }
 type CvSkillForm {
+  id: UUID?,
   category: String?,
   name: CvRequiredText,
   level: Integer32?
@@ -77,6 +88,7 @@ type CvForm {
   basedOn: String?
 }
 type CvExperience {
+  id: String?,
   from: String,
   to: String?,
   role: String,
@@ -87,6 +99,7 @@ type CvExperience {
   logoId: String?
 }
 type CvSkill {
+  id: String?,
   category: String?,
   name: String,
   level: Integer32?
@@ -113,4 +126,28 @@ type Cv {
 type CvRevision {
   id: String,
   savedAt: String
+}
+
+enum CvSyncKind {
+  TEXT, FACT, ADDED, REMOVED, HIDDEN, COPY_ONLY
+}
+enum CvSyncAction {
+  ACCEPT, SKIP, PROMOTE
+}
+type CvSyncItem {
+  address: String,
+  label: String,
+  kind: CvSyncKind,
+  base: String?,
+  copy: String?,
+  outdated: Boolean
+}
+type CvSync {
+  base: String,
+  offers: CvSyncItem[],
+  tailored: CvSyncItem[]
+}
+type CvSyncForm {
+  address: String,
+  action: CvSyncAction
 }

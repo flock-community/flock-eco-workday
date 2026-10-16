@@ -20,13 +20,17 @@ data class CvForm(
     val basedOn: String? = null,
 )
 
+/** An [id] keeps the item id of the skill; without one a skill like it keeps its id. */
 data class CvSkillForm(
+    val id: UUID? = null,
     val category: String? = null,
     val name: String,
     val level: Int? = null,
 )
 
+/** An [id] keeps the item id of the assignment; without one an assignment like it keeps its id. */
 data class CvExperienceForm(
+    val id: UUID? = null,
     val from: YearMonth,
     val to: YearMonth? = null,
     val role: String,

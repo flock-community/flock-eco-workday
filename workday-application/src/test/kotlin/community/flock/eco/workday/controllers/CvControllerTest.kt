@@ -5,6 +5,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.model.CvLanguage
+import community.flock.eco.workday.application.repository.CvRepository
 import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toDomain
@@ -33,6 +34,7 @@ class CvControllerTest(
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,
     @Autowired private val logoService: LogoService,
+    @Autowired private val cvRepository: CvRepository,
 ) : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/cvs"
 
@@ -100,6 +102,12 @@ class CvControllerTest(
         user: UserEntity,
         code: String,
     ): Map<String, Any?> = mvc.perform(get("$baseUrl/$code").asUser(user).accept(APPLICATION_JSON)).asyncDispatch().toMap()
+
+    @Suppress("UNCHECKED_CAST")
+    private fun experiencesOf(cv: Map<String, Any?>) = cv["experiences"] as List<Map<String, Any?>>
+
+    @Suppress("UNCHECKED_CAST")
+    private fun skillsOf(cv: Map<String, Any?>) = cv["skills"] as List<Map<String, Any?>>
 
     @Suppress("UNCHECKED_CAST")
     private fun ResultActions.toMap(): Map<String, Any?> =
@@ -306,21 +314,22 @@ class CvControllerTest(
     }
 
     @Test
-    fun `an admin makes another CV the base, the others become copies of it`() {
+    fun `whoever may write the CVs makes another one the base, the others become copies of it`() {
         val admin = createHelper.createUserEntity(adminAuthorities)
         val (worker, person) = aWorker()
+        val (someoneElse) = aWorker("Pino", "Woodpecker")
         val oldBase = createHelper.createCv(person, name = "Algemeen")
         val ing = createHelper.createCv(person, name = "ING")
         val newBase = createHelper.createCv(person, name = "Algemeen 2026")
         val english = createHelper.createCv(person, CvLanguage.EN, name = "General")
 
         mvc
-            .perform(post("$baseUrl/${newBase.code}/base").asUser(worker).accept(APPLICATION_JSON))
+            .perform(post("$baseUrl/${newBase.code}/base").asUser(someoneElse).accept(APPLICATION_JSON))
             .asyncDispatch()
-            .andExpect(status().isForbidden)
+            .andExpect(status().isNotFound)
 
         mvc
-            .perform(post("$baseUrl/${newBase.code}/base").asUser(admin).accept(APPLICATION_JSON))
+            .perform(post("$baseUrl/${newBase.code}/base").asUser(worker).accept(APPLICATION_JSON))
             .asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.base").value(true))
@@ -344,6 +353,146 @@ class CvControllerTest(
             .perform(post("$baseUrl/${UUID.randomUUID()}/base").asUser(admin).accept(APPLICATION_JSON))
             .asyncDispatch()
             .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `assignments and skills keep their id when saved, and a copy shares them with its base`() {
+        val (worker) = aWorker()
+        val base = postCv(worker, cvJson(name = "Algemeen"))
+        val ingId = experiencesOf(base).single()["id"]
+        val kotlinId = skillsOf(base).first()["id"]
+
+        // Saved again without ids, from a client that does not know them
+        mvc
+            .perform(put("$baseUrl/${base["code"]}").asUser(worker).json(cvJson(name = "Algemeen", summary = "Saved again.")))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.experiences[0].id").value(ingId))
+            .andExpect(jsonPath("$.skills[0].id").value(kotlinId))
+
+        val copy = postCv(worker, cvJson(name = "ING", basedOn = base["code"] as String))
+        assertThat(experiencesOf(copy).single()["id"]).isEqualTo(ingId)
+        assertThat(skillsOf(copy).first()["id"]).isEqualTo(kotlinId)
+    }
+
+    @Test
+    fun `saving the base brings its copies along, facts at once and texts on offer`() {
+        val (worker) = aWorker()
+        val base = postCv(worker, cvJson(name = "Algemeen"))
+        val code = base["code"] as String
+        val copy = postCv(worker, cvJson(name = "ING", basedOn = code))
+        val tailored = postCv(worker, cvJson(name = "Rabobank", basedOn = code, place = "Amsterdam"))
+        val ingId = experiencesOf(base).single()["id"] as String
+
+        val rabo = mapOf("from" to "2025-09", "to" to null, "role" to "Architect", "client" to "Rabobank", "technologies" to listOf("Kotlin"))
+        val changedIng = ingExperience + mapOf("id" to ingId, "role" to "Lead Engineer", "description" to "Led the team.")
+        mvc
+            .perform(
+                put("$baseUrl/$code")
+                    .asUser(worker)
+                    .json(cvJson(name = "Algemeen", place = "Utrecht", summary = "Engineer and coach.", experiences = listOf(rabo, changedIng))),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+
+        getCv(worker, copy["code"] as String).let { it ->
+            assertThat(it["place"]).isEqualTo("Utrecht")
+            assertThat(it["summary"]).isEqualTo("Engineer at heart.")
+            assertThat(experiencesOf(it).map { e -> e["client"] }).containsExactly("Rabobank", "ING")
+            assertThat(experiencesOf(it).last()["role"]).isEqualTo("Lead Engineer")
+            assertThat(experiencesOf(it).last()["description"]).isEqualTo(ingExperience["description"])
+        }
+        mvc
+            .perform(get("$baseUrl/${copy["code"]}/sync").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.base").value(code))
+            .andExpect(jsonPath("$.offers.length()").value(2))
+            .andExpect(jsonPath("$.offers[0].address").value("summary"))
+            .andExpect(jsonPath("$.offers[0].base").value("Engineer and coach."))
+            .andExpect(jsonPath("$.offers[1].address").value("experience/$ingId/description"))
+            .andExpect(jsonPath("$.tailored.length()").value(0))
+
+        // The copy that tailored its place keeps it, and is offered the base's
+        assertThat(getCv(worker, tailored["code"] as String)["place"]).isEqualTo("Amsterdam")
+        mvc
+            .perform(get("$baseUrl/${tailored["code"]}/sync").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.offers[0].address").value("place"))
+            .andExpect(jsonPath("$.offers[0].outdated").value(true))
+
+        // A copy has a history of what the base brought along
+        mvc
+            .perform(get("$baseUrl/${copy["code"]}/revisions").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.length()").value(1))
+    }
+
+    @Test
+    fun `a copy takes the base's text, keeps its own, or puts its own in the base`() {
+        val (worker) = aWorker()
+        val base = postCv(worker, cvJson(name = "Algemeen"))
+        val code = base["code"] as String
+        val copy = postCv(worker, cvJson(name = "ING", basedOn = code, summary = "Tailored for ING."))
+        val other = postCv(worker, cvJson(name = "Rabobank", basedOn = code))
+        val copyCode = copy["code"] as String
+        val sync = { address: String, action: String ->
+            mvc.perform(
+                post("$baseUrl/$copyCode/sync").asUser(worker).json(mapper.writeValueAsString(mapOf("address" to address, "action" to action))),
+            ).asyncDispatch()
+        }
+
+        mvc
+            .perform(get("$baseUrl/$copyCode/sync").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.offers.length()").value(0))
+            .andExpect(jsonPath("$.tailored[0].address").value("summary"))
+            .andExpect(jsonPath("$.tailored[0].copy").value("Tailored for ING."))
+
+        // Into the base: the base has it, and the other copy is offered it
+        sync("summary", "PROMOTE").andExpect(status().isOk).andExpect(jsonPath("$.summary").value("Tailored for ING."))
+        assertThat(getCv(worker, code)["summary"]).isEqualTo("Tailored for ING.")
+        mvc
+            .perform(get("$baseUrl/$copyCode/sync").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.offers.length()").value(0))
+            .andExpect(jsonPath("$.tailored.length()").value(0))
+        mvc
+            .perform(get("$baseUrl/${other["code"]}/sync").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.offers[0].address").value("summary"))
+
+        // Back to the base's version of a tailored field
+        mvc
+            .perform(put("$baseUrl/$copyCode").asUser(worker).json(cvJson(name = "ING", place = "Delft", summary = "Tailored for ING.")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+        sync("place", "ACCEPT").andExpect(status().isOk).andExpect(jsonPath("$.place").value("Hilversum"))
+
+        sync("name", "ACCEPT").andExpect(status().isBadRequest).andExpect(jsonPath("$.message").value("Unknown field name"))
+        mvc
+            .perform(get("$baseUrl/$code/sync").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `a CV made the base lends its ids to the others, so what they share follows it`() {
+        val admin = createHelper.createUserEntity(adminAuthorities)
+        val (_, person) = aWorker()
+        createHelper.createCv(person, name = "Algemeen")
+        val newBase = createHelper.createCv(person, name = "Algemeen 2026")
+
+        mvc
+            .perform(post("$baseUrl/${newBase.code}/base").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+
+        val old = cvRepository.findByPersonUuidAndNameIgnoreCase(person.uuid, "Algemeen")!!
+        assertThat(old.experiences.single().itemId).isEqualTo(newBase.experiences.single().itemId)
+        mvc
+            .perform(get("$baseUrl/${old.code}/sync").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.offers.length()").value(0))
+            .andExpect(jsonPath("$.tailored.length()").value(0))
     }
 
     @Test

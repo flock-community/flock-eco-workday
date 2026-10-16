@@ -5,9 +5,11 @@ import community.flock.eco.workday.api.endpoint.GetCvAll
 import community.flock.eco.workday.api.endpoint.GetCvByCode
 import community.flock.eco.workday.api.endpoint.GetCvRevision
 import community.flock.eco.workday.api.endpoint.GetCvRevisions
+import community.flock.eco.workday.api.endpoint.GetCvSync
 import community.flock.eco.workday.api.endpoint.PostCv
 import community.flock.eco.workday.api.endpoint.PostCvBase
 import community.flock.eco.workday.api.endpoint.PostCvRevisionRestore
+import community.flock.eco.workday.api.endpoint.PostCvSync
 import community.flock.eco.workday.api.endpoint.PutCv
 import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.application.authorities.CvAuthority
@@ -21,6 +23,8 @@ import community.flock.eco.workday.application.repository.CvRevisionSummary
 import community.flock.eco.workday.application.services.CvConflictException
 import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
+import community.flock.eco.workday.application.services.CvSync
+import community.flock.eco.workday.application.services.CvSyncAction
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.photoDataUrl
@@ -43,14 +47,18 @@ import community.flock.eco.workday.api.model.CvForm as CvFormApi
 import community.flock.eco.workday.api.model.CvLanguage as CvLanguageApi
 import community.flock.eco.workday.api.model.CvRevision as CvRevisionApi
 import community.flock.eco.workday.api.model.CvSkill as CvSkillApi
+import community.flock.eco.workday.api.model.CvSync as CvSyncApi
+import community.flock.eco.workday.api.model.CvSyncAction as CvSyncActionApi
+import community.flock.eco.workday.api.model.CvSyncItem as CvSyncItemApi
+import community.flock.eco.workday.api.model.CvSyncKind as CvSyncKindApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.Person as PersonInternal
 
 /**
  * CVs. [CvAuthority.READ] lets you read your own CVs and [CvAuthority.WRITE] write
  * them; [CvAuthority.ADMIN] reads and writes the CVs of everybody. A CV you may not
- * use is reported as not found, so its existence does not leak. Which CV of a person
- * is the base in a language is up to an admin.
+ * use is reported as not found, so its existence does not leak. Whoever may write a
+ * CV may make it the base in its language.
  */
 @RestController
 class CvController(
@@ -64,7 +72,9 @@ class CvController(
     GetCvRevisions.Handler,
     GetCvRevision.Handler,
     PostCvRevisionRestore.Handler,
-    PostCvBase.Handler {
+    PostCvBase.Handler,
+    GetCvSync.Handler,
+    PostCvSync.Handler {
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
@@ -126,10 +136,11 @@ class CvController(
             DeleteCv.Response409(Error(e.message))
         }
 
-    @PreAuthorize("hasAuthority('CvAuthority.ADMIN')")
+    /** Whoever may write the CV may make it the base. */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun postCvBase(request: PostCvBase.Request): PostCvBase.Response<*> =
-        cvService
-            .makeBase(request.path.code)
+        findWritable(request.path.code)
+            ?.let { cvService.makeBase(it.code) }
             ?.let { PostCvBase.Response200(it.externalize()) }
             ?: PostCvBase.Response404(Error("CV not found"))
 
@@ -162,6 +173,26 @@ class CvController(
                 ?: PostCvRevisionRestore.Response404(Error("Version not found"))
         } catch (e: CvConflictException) {
             PostCvRevisionRestore.Response409(Error(e.message))
+        }
+
+    /** How a copy stands against its base; a CV that is no copy has none (404). */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    override suspend fun getCvSync(request: GetCvSync.Request): GetCvSync.Response<*> =
+        findReadable(request.path.code)
+            ?.let { cv -> cvService.syncStatus(cv)?.let { it.externalize(cv.basedOn?.code.orEmpty()) } }
+            ?.let { GetCvSync.Response200(it) }
+            ?: GetCvSync.Response404(Error("Not a copy of a base CV"))
+
+    /** Takes the base's version of a field of a copy, keeps the copy's, or puts it in the base. */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
+    override suspend fun postCvSync(request: PostCvSync.Request): PostCvSync.Response<*> =
+        try {
+            findWritable(request.path.code)
+                ?.let { cvService.sync(it.code, request.body.address, request.body.action.internalize()) }
+                ?.let { PostCvSync.Response200(it.externalize()) }
+                ?: PostCvSync.Response404(Error("CV not found"))
+        } catch (e: CvValidationException) {
+            PostCvSync.Response400(Error(e.message))
         }
 
     /** The CV with [code], when the current user may read it: any for an admin, else their own with READ. */
@@ -208,7 +239,7 @@ class CvController(
             phone = phone,
             summary = summary,
             experiences = experiences.map { it.externalize() },
-            skills = skills.map { CvSkillApi(category = it.category, name = it.name, level = it.level) },
+            skills = skills.map { CvSkillApi(id = it.itemId.toString(), category = it.category, name = it.name, level = it.level) },
             education = education,
             subjects = subjects,
             languages = languages,
@@ -221,6 +252,7 @@ class CvController(
 
     private fun CvExperience.externalize() =
         CvExperienceApi(
+            id = itemId.toString(),
             from = from.toString(),
             to = to?.toString(),
             role = role,
@@ -230,6 +262,21 @@ class CvController(
             description = description,
             logoId = logoId?.toString(),
         )
+
+    private fun CvSync.Status.externalize(base: String) =
+        CvSyncApi(base = base, offers = offers.map { it.externalize() }, tailored = tailored.map { it.externalize() })
+
+    private fun CvSync.Item.externalize() =
+        CvSyncItemApi(
+            address = address,
+            label = label,
+            kind = CvSyncKindApi.valueOf(kind.name),
+            base = base,
+            copy = copy,
+            outdated = outdated,
+        )
+
+    private fun CvSyncActionApi.internalize() = CvSyncAction.valueOf(name)
 
     private fun CvLanguage.externalize() =
         when (this) {
@@ -291,6 +338,7 @@ class CvController(
             skills =
                 skills.orEmpty().mapIndexed { index, it ->
                     CvSkillForm(
+                        id = it.id?.validated("skills[$index].id")?.value?.let(UUID::fromString),
                         category = it.category,
                         name = it.name.validated("skills[$index].name").value,
                         level = it.level,
@@ -305,6 +353,7 @@ class CvController(
 
     private fun CvExperienceFormApi.internalize(field: String) =
         CvExperienceForm(
+            id = id?.validated("$field.id")?.value?.let(UUID::fromString),
             from = YearMonth.parse(from.validated("$field.from").value),
             to = to?.validated("$field.to")?.value?.let(YearMonth::parse),
             role = role.validated("$field.role").value.trim(),

@@ -163,6 +163,12 @@ export function CvEditor() {
           {error}
         </Alert>
       )}
+      {(cv?.basedOn || copy?.base) && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          This is a copy of a base CV. What you change here is tailored for this
+          copy; what you leave as it is keeps following the base.
+        </Alert>
+      )}
       <Formik
         enableReinitialize
         initialValues={initialValues}

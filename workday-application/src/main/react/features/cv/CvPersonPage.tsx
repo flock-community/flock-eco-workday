@@ -36,6 +36,8 @@ import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CURRENT, CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
+import { CvSyncPanel } from './CvSyncPanel';
+import { DIVERGENCE_WARNING, divergence } from './cvDiff';
 import {
   baseOf,
   type CvView,
@@ -87,7 +89,8 @@ const printStyles = (
  * earlier version and a comparison have a link of their own as well (see [cvLink]).
  *
  * Per language one CV is the base and the others are copies of it; a new copy is made
- * of the base. Where there is no base yet, an admin picks one (Workday suggests one).
+ * of the base. Where there is no base yet, whoever may write the CVs picks one
+ * (Workday suggests one).
  */
 export function CvPersonPage() {
   const history = useHistory();
@@ -320,12 +323,31 @@ function PersonCv({
       {current.base ? (
         <Typography variant="body2" color="text.secondary">
           The base CV in {language}: keep this one up to date, copies are made
-          of it.{' '}
-          {copies.length === 0
-            ? 'No copies yet.'
-            : copies.length === 1
-              ? '1 copy.'
-              : `${copies.length} copies.`}
+          of it and follow it.{' '}
+          {copies.length === 0 ? (
+            'No copies yet.'
+          ) : (
+            <>
+              Copies:{' '}
+              {copies.map((copy, index) => {
+                const drift = divergence(current, copy);
+                return (
+                  <Box
+                    component="span"
+                    key={copy.code}
+                    sx={{
+                      color:
+                        drift > DIVERGENCE_WARNING ? 'warning.main' : undefined,
+                    }}
+                  >
+                    {index > 0 && ', '}
+                    {copy.name} ({Math.round(drift * 100)}% different)
+                  </Box>
+                );
+              })}
+              .
+            </>
+          )}
         </Typography>
       ) : base?.code ? (
         <Stack direction="row" spacing={1} alignItems="center">
@@ -339,7 +361,7 @@ function PersonCv({
               : ''}
             .
           </Typography>
-          {isAdmin && (
+          {canWrite && (
             <Button
               size="small"
               onClick={() => makeBase(current)}
@@ -353,7 +375,7 @@ function PersonCv({
         <Alert
           severity="warning"
           action={
-            isAdmin &&
+            canWrite &&
             suggested && (
               <Stack direction="row" spacing={1}>
                 <Button
@@ -379,9 +401,8 @@ function PersonCv({
           }
         >
           There is no base CV in {language} yet.{' '}
-          {isAdmin && suggested
-            ? `Workday suggests ${suggested.name}, the one saved last.`
-            : 'An admin picks which CV is the base.'}
+          {suggested &&
+            `Workday suggests ${suggested.name}, the one saved last.`}
         </Alert>
       )}
     </Box>
@@ -529,6 +550,14 @@ function PersonCv({
       )}
 
       {baseLine}
+      {current && base && !current.base && !version && !comparing && (
+        <CvSyncPanel
+          copy={current}
+          base={base}
+          canWrite={canWrite}
+          onChanged={() => setReload((it) => it + 1)}
+        />
+      )}
 
       {revision && shown === revision && (
         <Alert

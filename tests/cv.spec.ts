@@ -211,7 +211,9 @@ test.describe('CV', () => {
     // Both versions are there; switch between them
     await selectVersion(page, 'Algemeen');
     await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch · Base/);
-    await expect(page.getByTestId('cv-base')).toContainText('1 copy');
+    await expect(page.getByTestId('cv-base')).toContainText(
+      'Copies: Backend (0% different)',
+    );
 
     // And delete them again: the copy first, a base with copies stays
     await selectVersion(page, 'Backend');
@@ -221,6 +223,67 @@ test.describe('CV', () => {
     await expect(page.getByTestId('cv-empty')).toContainText(
       'You have no CV yet',
     );
+  });
+
+  test('a copy follows its base: facts at once, texts on offer', async ({
+    page,
+  }) => {
+    await Given_I_am_logged_in_as_user(page, WORKER_USERNAME);
+    const leftovers: { code: string; base?: boolean }[] = await (
+      await page.request.get('/api/cvs')
+    ).json();
+    leftovers.sort((a, b) => Number(!!a.base) - Number(!!b.base));
+    for (const cv of leftovers)
+      await page.request.delete(`/api/cvs/${cv.code}`);
+
+    const form = (name: string, place: string, summary: string) => ({
+      name,
+      language: 'NL',
+      place,
+      summary,
+      experiences: [
+        { from: '2024-08', role: 'Developer', client: 'ING', technologies: [] },
+      ],
+      skills: [],
+    });
+    const base = await (
+      await page.request.post('/api/cvs', {
+        data: form('Algemeen', 'Hilversum', 'Engineer at heart.'),
+      })
+    ).json();
+    const copy = await (
+      await page.request.post('/api/cvs', {
+        data: {
+          ...form('ING', 'Hilversum', 'Engineer at heart.'),
+          basedOn: base.code,
+        },
+      })
+    ).json();
+    await page.request.put(`/api/cvs/${base.code}`, {
+      data: form('Algemeen', 'Utrecht', 'Engineer and coach.'),
+    });
+
+    await page.goto(`/cvs/${copy.code}`);
+    const cv = page.getByRole('article');
+    // The place followed the base at once; the new profile is on offer
+    await expect(cv.getByText('Utrecht')).toBeVisible();
+    await expect(cv.getByText('Engineer at heart.')).toBeVisible();
+    await expect(page.getByTestId('cv-base-changed')).toContainText(
+      '1 change of the base to look at',
+    );
+    await expect(page.getByTestId('cv-offer')).toContainText('Profile');
+    await page.getByRole('button', { name: "Take the base's" }).click();
+    await expect(cv.getByText('Engineer and coach.')).toBeVisible();
+    await expect(page.getByTestId('cv-base-changed')).toHaveCount(0);
+    await expect(page.getByTestId('cv-sync')).toContainText(
+      'Everything here follows the base.',
+    );
+    await expect(page.getByTestId('cv-divergence')).toContainText(
+      '0% of this copy differs from the base',
+    );
+
+    await page.request.delete(`/api/cvs/${copy.code}`);
+    await page.request.delete(`/api/cvs/${base.code}`);
   });
 
   test('an admin starts on their own CV and picks whose CV to read', async ({

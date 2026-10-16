@@ -1,8 +1,15 @@
 import { checkResponse, ResourceClient, validateResponse } from '@workday-core';
 import InternalizingClient from '../utils/InternalizingClient';
-import type { Cv, CvForm, CvRevision } from '../wirespec/model';
+import type {
+  Cv,
+  CvForm,
+  CvRevision,
+  CvSync,
+  CvSyncAction,
+  CvSyncItem,
+} from '../wirespec/model';
 
-export type { Cv, CvRevision };
+export type { Cv, CvRevision, CvSync, CvSyncAction, CvSyncItem };
 
 // Request body is the generated wirespec contract; keep the alias for call sites.
 export type CvRequest = CvForm;
@@ -40,10 +47,34 @@ const makeBase = (code: string): Promise<Cv> =>
     .then(checkResponse)
     .then((res) => res.body);
 
+/** How a copy stands against its base: what the base changed, and what the copy tailored. */
+const sync = (code: string): Promise<CvSync> =>
+  fetch(`${path}/${code}/sync`)
+    .then((it) => validateResponse<CvSync>(it))
+    .then(checkResponse)
+    .then((res) => res.body);
+
+/** Takes the base's version of a field of a copy, keeps the copy's, or puts it in the base. */
+const syncField = (
+  code: string,
+  address: string,
+  action: CvSyncAction,
+): Promise<Cv> =>
+  fetch(`${path}/${code}/sync`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address, action }),
+  })
+    .then((it) => validateResponse<Cv>(it))
+    .then(checkResponse)
+    .then((res) => res.body);
+
 export const CvClient = {
   ...internalizingClient,
   revisions,
   revision,
   restore,
   makeBase,
+  sync,
+  syncField,
 };

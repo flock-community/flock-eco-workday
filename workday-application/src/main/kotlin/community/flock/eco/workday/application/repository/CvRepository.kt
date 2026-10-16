@@ -2,7 +2,6 @@ package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvLanguage
-import community.flock.eco.workday.application.model.Person
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -40,22 +39,14 @@ interface CvRepository : JpaRepository<Cv, Long> {
 
     fun existsByBasedOn(base: Cv): Boolean
 
-    /** Makes every other CV of [person] in [language] a copy of [base]. */
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(
-        """
-        update Cv c set c.base = false, c.basedOn = :base, c.basedOnUpdatedAt = null
-        where c.person = :person and c.language = :language and c.id <> :id
-        """,
-    )
-    fun makeCopiesOf(
-        base: Cv,
-        person: Person,
+    fun findAllByBasedOn(base: Cv): List<Cv>
+
+    fun findAllByPersonUuidAndLanguage(
+        personUuid: UUID,
         language: CvLanguage,
-        id: Long,
-    )
+    ): List<Cv>
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("update Cv c set c.base = true, c.basedOn = null, c.basedOnUpdatedAt = null where c.id = :id")
+    @Query("update Cv c set c.base = true, c.basedOn = null, c.basedOnUpdatedAt = null, c.baseSnapshot = null where c.id = :id")
     fun makeBase(id: Long)
 }

@@ -47,7 +47,7 @@ enum class CvLanguage {
  * of it, made for a client or a role. A copy knows the base it was [basedOn] and when that
  * base had been saved when the copy was made ([basedOnUpdatedAt]; unknown for a CV that
  * became a copy because another CV was made the base). A person with several CVs in a
- * language from before bases existed has none until an admin picks one.
+ * language from before bases existed has none until one is picked.
  */
 @Entity
 @EntityListeners(EventEntityListeners::class)
@@ -99,6 +99,13 @@ class Cv(
     @OnDelete(action = OnDeleteAction.SET_NULL)
     val basedOn: Cv? = null,
     val basedOnUpdatedAt: Instant? = null,
+    /**
+     * For a copy: the base as this copy last agreed with it, field by field (a JSON
+     * [CvSnapshot]). A field that still equals it follows the base; one that differs is
+     * tailored. TEXT in the database (changelog 042).
+     */
+    @Column(length = 1_000_000)
+    val baseSnapshot: String? = null,
 ) : AbstractCodeEntity(id, code) {
     override fun toString(): String = "Cv(id=$id, code=$code, person=${person.uuid}, name='$name', language=$language)"
 
@@ -116,7 +123,8 @@ class Cv(
 /**
  * One assignment or job on a CV: from [from] up to and including [to] (no [to] means
  * it is the current one), working as [role] for [client], optionally via an
- * [employer] such as Flock.
+ * [employer] such as Flock. Its [itemId] stays the same when the CV is saved, and a
+ * copy shares it with the assignment of the base it came from.
  */
 @Embeddable
 class CvExperience(
@@ -137,11 +145,14 @@ class CvExperience(
     val description: String? = null,
     /** The [Logo] to show with the assignment; a deleted logo leaves none. */
     val logoId: UUID? = null,
+    @Column(nullable = false)
+    val itemId: UUID = UUID.randomUUID(),
 )
 
 /**
  * A skill in the skills matrix of a CV, grouped by [category] (Programming, Tools, ...)
- * and rated from 1 to 5 stars; no [level] means it is listed without a rating.
+ * and rated from 1 to 5 stars; no [level] means it is listed without a rating. Its
+ * [itemId] works like that of [CvExperience].
  */
 @Embeddable
 class CvSkill(
@@ -149,6 +160,8 @@ class CvSkill(
     val name: String,
     @Column(name = "skill_level")
     val level: Int? = null,
+    @Column(nullable = false)
+    val itemId: UUID = UUID.randomUUID(),
 )
 
 /**

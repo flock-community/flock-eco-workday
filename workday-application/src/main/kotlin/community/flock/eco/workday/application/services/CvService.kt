@@ -47,6 +47,13 @@ class CvAlreadyExistsException(
     name: String,
 ) : CvConflictException("${person.getFullName()} already has a CV named '$name'")
 
+/** What a copy does with a field at sync: see [CvService.sync]. */
+enum class CvSyncAction {
+    ACCEPT,
+    SKIP,
+    PROMOTE,
+}
+
 class CvBaseHasCopiesException(
     cv: Cv,
     action: String,
@@ -80,22 +87,56 @@ class CvService(
         return form.internalize(person = person, link = link).save()
     }
 
-    /** Saves [form] over the CV with [code]; what the CV held before becomes a revision. */
+    /**
+     * Saves [form] over the CV with [code]; what the CV held before becomes a revision.
+     * Saving a base brings its copies along (see [CvSync]).
+     */
     @Transactional
     fun update(
         code: String,
         form: CvForm,
     ): Cv? =
         findByCode(code)?.let { existing ->
-            val updated = form.internalize(existing, link = existing.linkFor(form.language))
-            val before = existing.snapshot()
-            // Saving without changes adds no revision
-            if (before != updated.snapshot()) {
-                cvRevisionRepository.save(
-                    CvRevision(cv = existing, savedAt = existing.updatedAt, content = mapper.writeValueAsString(before)),
-                )
+            existing.saveOver(form.internalize(existing, link = existing.linkFor(form.language)))
+        }
+
+    /**
+     * How the copy [cv] stands against its base: the changes of the base to look at, and
+     * the fields it tailored. Null when [cv] is no copy.
+     */
+    fun syncStatus(cv: Cv): CvSync.Status? =
+        cv.basedOn?.let { base ->
+            val now = base.snapshot()
+            CvSync.status(cv.snapshot(), cv.agreedSnapshot() ?: now, now)
+        }
+
+    /**
+     * Acts on the field at [address] of the copy with [code]: [CvSyncAction.ACCEPT] takes
+     * the base's version (also: back to the base for a tailored field),
+     * [CvSyncAction.SKIP] keeps the copy's version and [CvSyncAction.PROMOTE] puts the
+     * copy's version in the base, which then brings its copies along.
+     */
+    @Transactional
+    fun sync(
+        code: String,
+        address: String,
+        action: CvSyncAction,
+    ): Cv? =
+        findByCode(code)?.let { copy ->
+            val base = copy.basedOn ?: throw CvInvalidInputException("'${copy.name}' is not a copy of a base CV")
+            val c = copy.snapshot()
+            val n = base.snapshot()
+            val r = copy.agreedSnapshot() ?: n
+            try {
+                when (action) {
+                    CvSyncAction.ACCEPT -> CvSync.accept(c, r, n, address).let { copy.store(it.copy, it.agreed) }
+                    CvSyncAction.SKIP -> CvSync.skip(c, r, n, address).let { copy.store(it.copy, it.agreed) }
+                    CvSyncAction.PROMOTE -> base.store(CvSync.promote(c, n, address), null)
+                }
+            } catch (e: IllegalArgumentException) {
+                throw CvInvalidInputException(e.message ?: "Unknown field $address")
             }
-            updated.save()
+            findByCode(code)
         }
 
     /** When the earlier versions of the CV with [code] were saved, latest first. */
@@ -131,14 +172,27 @@ class CvService(
 
     /**
      * Makes the CV with [code] the base in its language: the base before it and the
-     * copies of that become copies of this one. Only an admin decides which CV is the base.
+     * copies of that become copies of this one.
      */
     @Transactional
     fun makeBase(code: String): Cv? =
         findByCode(code)?.let { cv ->
             if (!cv.base) {
-                // Others first: two bases in a language would break the unique constraint
-                cvRepository.makeCopiesOf(cv, cv.person, cv.language, cv.id)
+                val base = cv.snapshot()
+                val agreed = mapper.writeValueAsString(base)
+                // Others first: two bases in a language would break the unique constraint.
+                // Their assignments and skills take the ids of the same ones in the base, and
+                // what they share with the base from now on follows it.
+                cvRepository
+                    .findAllByPersonUuidAndLanguage(cv.person.uuid, cv.language)
+                    .filter { it.id != cv.id }
+                    .forEach { other ->
+                        val link = CvLink(basedOn = cv, baseSnapshot = agreed)
+                        val aligned = other.snapshot().alignedTo(base)
+                        cvRepository.saveAndFlush(
+                            aligned.toForm(other.person.uuid).internalize(other, check = false, person = other.person, link = link),
+                        )
+                    }
                 cvRepository.makeBase(cv.id)
             }
             findByCode(code)
@@ -166,8 +220,12 @@ class CvService(
                 ?: throw CvInvalidInputException("basedOn is not a CV of ${person.getFullName()}")
         if (!base.base) throw CvInvalidInputException("basedOn is not a base CV; a copy is always made of the base")
         if (base.language != language) throw CvInvalidInputException("A copy of a base CV is in its language (${base.language})")
-        return CvLink(basedOn = base, basedOnUpdatedAt = base.updatedAt)
+        return base.linkOfCopy(basedOnUpdatedAt = base.updatedAt)
     }
+
+    /** A copy of this base, agreeing with the base as it is now. */
+    private fun Cv.linkOfCopy(basedOnUpdatedAt: Instant? = null) =
+        CvLink(basedOn = this, basedOnUpdatedAt = basedOnUpdatedAt, baseSnapshot = mapper.writeValueAsString(snapshot()))
 
     /**
      * Where a CV in [language] belongs without a base to copy: a copy of the base in that
@@ -178,7 +236,7 @@ class CvService(
         person: Person,
         language: CvLanguage,
     ): CvLink =
-        cvRepository.findByPersonUuidAndLanguageAndBase(person.uuid, language, true)?.let { CvLink(basedOn = it) }
+        cvRepository.findByPersonUuidAndLanguageAndBase(person.uuid, language, true)?.linkOfCopy()
             ?: if (cvRepository.existsByPersonUuidAndLanguage(person.uuid, language)) CvLink.NONE else CvLink(base = true)
 
     /**
@@ -195,13 +253,44 @@ class CvService(
         }
     }
 
-    private fun Cv.link() = CvLink(base = base, basedOn = basedOn, basedOnUpdatedAt = basedOnUpdatedAt)
+    private fun Cv.link() = CvLink(base = base, basedOn = basedOn, basedOnUpdatedAt = basedOnUpdatedAt, baseSnapshot = baseSnapshot)
 
-    /** Whether a CV is the base, or else which base it is a copy of and since when. */
+    private fun Cv.agreedSnapshot(): CvSnapshot? = baseSnapshot?.let { mapper.readValue(it, CvSnapshot::class.java) }
+
+    /** Saves [updated] over this CV, keeping what it held as a revision; a base brings its copies along. */
+    private fun Cv.saveOver(updated: Cv): Cv {
+        val before = snapshot()
+        // Saving without changes adds no revision
+        if (before != updated.snapshot()) {
+            cvRevisionRepository.save(CvRevision(cv = this, savedAt = updatedAt, content = mapper.writeValueAsString(before)))
+        }
+        return updated.save().also { if (it.base) it.bringCopiesAlong() }
+    }
+
+    /** Saves [content] over this CV; for a copy [agreed] is what it agrees with the base from now on. */
+    private fun Cv.store(
+        content: CvSnapshot,
+        agreed: CvSnapshot?,
+    ): Cv {
+        val link = link().copy(baseSnapshot = agreed?.let(mapper::writeValueAsString) ?: baseSnapshot)
+        return saveOver(content.toForm(person.uuid).internalize(this, check = false, person = person, link = link))
+    }
+
+    /** The copies of this base take over the facts it changed (see [CvSync.reconcile]). */
+    private fun Cv.bringCopiesAlong() {
+        val now = snapshot()
+        cvRepository.findAllByBasedOn(this).forEach { copy ->
+            val result = CvSync.reconcile(copy.snapshot(), copy.agreedSnapshot() ?: now, now)
+            copy.store(result.copy, result.agreed)
+        }
+    }
+
+    /** Whether a CV is the base, or else which base it is a copy of, since when and agreeing on what. */
     private data class CvLink(
         val base: Boolean = false,
         val basedOn: Cv? = null,
         val basedOnUpdatedAt: Instant? = null,
+        val baseSnapshot: String? = null,
     ) {
         companion object {
             val NONE = CvLink()
@@ -228,6 +317,17 @@ class CvService(
                 ?.let { throw CvAlreadyExistsException(person, name) }
         }
 
+        val known = listOfNotNull(existing, link.basedOn)
+        val experienceIds =
+            assignIds(experiences, known.flatMap { it.experiences }, { it.id }, { it.itemId }) { form, item ->
+                item.from == form.from && item.client.equals(form.client.trim(), ignoreCase = true)
+            }
+        val skillIds =
+            assignIds(skills, known.flatMap { it.skills }, { it.id }, { it.itemId }) { form, item ->
+                item.name.equals(form.name.trim(), ignoreCase = true) &&
+                    (item.category ?: "").equals(form.category?.trim() ?: "", ignoreCase = true)
+            }
+
         return Cv(
             id = existing?.id ?: 0,
             code = existing?.code ?: UUID.randomUUID().toString(),
@@ -246,9 +346,9 @@ class CvService(
             summary = summary.cleaned("summary", Cv.CV_TEXT_LENGTH),
             experiences =
                 experiences
-                    .mapIndexed { index, it -> it.internalize("experiences[$index]", check) }
+                    .mapIndexed { index, it -> it.internalize("experiences[$index]", check, experienceIds[index]) }
                     .sortedWith(NEWEST_FIRST),
-            skills = skills.mapIndexed { index, it -> it.internalize("skills[$index]") },
+            skills = skills.mapIndexed { index, it -> it.internalize("skills[$index]", skillIds[index]) },
             education = education.cleaned("education", Cv.CV_SECTION_LENGTH),
             subjects = subjects.cleaned("subjects", Cv.CV_SECTION_LENGTH),
             languages = languages.cleaned("languages", Cv.CV_SECTION_LENGTH),
@@ -256,6 +356,64 @@ class CvService(
             base = link.base,
             basedOn = link.basedOn,
             basedOnUpdatedAt = link.basedOnUpdatedAt,
+            baseSnapshot = link.baseSnapshot.takeIf { link.basedOn != null },
+        )
+    }
+
+    /**
+     * The item id of each of [forms]: the id it brings when no other form claims it
+     * first, else the id of a [known] item like it (of the CV itself, or the base of a
+     * copy) not taken yet, else a new one.
+     */
+    private fun <F, I> assignIds(
+        forms: List<F>,
+        known: List<I>,
+        formId: (F) -> UUID?,
+        knownId: (I) -> UUID,
+        alike: (F, I) -> Boolean,
+    ): List<UUID> {
+        val used = mutableSetOf<UUID>()
+        val claimed = forms.map { form -> formId(form)?.takeIf { used.add(it) } }
+        return forms.mapIndexed { index, form ->
+            claimed[index]
+                ?: known
+                    .firstOrNull { item -> knownId(item) !in used && alike(form, item) }
+                    ?.let(knownId)
+                    ?.also { used += it }
+                ?: UUID.randomUUID().also { used += it }
+        }
+    }
+
+    /** Gives the assignments and skills of this CV the ids of the same ones in [base], where they have no such id yet. */
+    private fun CvSnapshot.alignedTo(base: CvSnapshot): CvSnapshot {
+        val experienceIds = base.experiences.mapNotNull { it.id }.toSet()
+        val skillIds = base.skills.mapNotNull { it.id }.toSet()
+        val used = (experiences.mapNotNull { it.id } + skills.mapNotNull { it.id }).filter { it in experienceIds || it in skillIds }.toMutableSet()
+        return copy(
+            experiences =
+                experiences.map { e ->
+                    if (e.id in experienceIds) {
+                        e
+                    } else {
+                        base.experiences
+                            .firstOrNull { it.id !in used && it.from == e.from && it.client.equals(e.client, ignoreCase = true) }
+                            ?.let { match -> e.copy(id = match.id).also { used += match.id!! } }
+                            ?: e
+                    }
+                },
+            skills =
+                skills.map { sk ->
+                    if (sk.id in skillIds) {
+                        sk
+                    } else {
+                        base.skills
+                            .firstOrNull {
+                                it.id !in used && it.name.equals(sk.name, ignoreCase = true) &&
+                                    (it.category ?: "").equals(sk.category ?: "", ignoreCase = true)
+                            }?.let { match -> sk.copy(id = match.id).also { used += match.id!! } }
+                            ?: sk
+                    }
+                },
         )
     }
 
@@ -263,6 +421,7 @@ class CvService(
     private fun CvExperienceForm.internalize(
         field: String,
         check: Boolean,
+        itemId: UUID,
     ): CvExperience {
         if (to != null && to.isBefore(from)) {
             throw CvInvalidInputException("$field.to may not be before $field.from")
@@ -277,6 +436,7 @@ class CvService(
             throw CvInvalidInputException("$field.technologies may be at most $MAX_TECHNOLOGIES")
         }
         return CvExperience(
+            itemId = itemId,
             from = from,
             to = to,
             role = role.trim(),
@@ -295,11 +455,15 @@ class CvService(
         )
     }
 
-    private fun CvSkillForm.internalize(field: String): CvSkill {
+    private fun CvSkillForm.internalize(
+        field: String,
+        itemId: UUID,
+    ): CvSkill {
         if (level != null && level !in MIN_LEVEL..MAX_LEVEL) {
             throw CvInvalidInputException("$field.level must be between $MIN_LEVEL and $MAX_LEVEL")
         }
         return CvSkill(
+            itemId = itemId,
             category = category.cleaned("$field.category", MAX_LINE_LENGTH),
             name = name.trim(),
             level = level,
@@ -334,6 +498,7 @@ class CvService(
             experiences =
                 experiences.map {
                     CvSnapshot.Experience(
+                        id = it.itemId.toString(),
                         from = it.from.toString(),
                         to = it.to?.toString(),
                         role = it.role,
@@ -344,7 +509,7 @@ class CvService(
                         logoId = it.logoId?.toString(),
                     )
                 },
-            skills = skills.map { CvSnapshot.Skill(category = it.category, name = it.name, level = it.level) },
+            skills = skills.map { CvSnapshot.Skill(id = it.itemId.toString(), category = it.category, name = it.name, level = it.level) },
             education = education,
             subjects = subjects,
             languages = languages,
@@ -363,6 +528,7 @@ class CvService(
             experiences =
                 experiences.map {
                     CvExperienceForm(
+                        id = it.id?.toUuidOrNull(),
                         from = YearMonth.parse(it.from),
                         to = it.to?.let(YearMonth::parse),
                         role = it.role,
@@ -374,7 +540,7 @@ class CvService(
                         logoId = it.logoId?.let(UUID::fromString)?.takeIf(logoService::exists),
                     )
                 },
-            skills = skills.map { CvSkillForm(category = it.category, name = it.name, level = it.level) },
+            skills = skills.map { CvSkillForm(id = it.id?.toUuidOrNull(), category = it.category, name = it.name, level = it.level) },
             education = education,
             subjects = subjects,
             languages = languages,
@@ -400,7 +566,10 @@ class CvService(
             base = base,
             basedOn = basedOn,
             basedOnUpdatedAt = basedOnUpdatedAt,
+            baseSnapshot = baseSnapshot,
         )
+
+    private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(this) }.getOrNull()
 
     companion object {
         private val mapper = jacksonObjectMapper()

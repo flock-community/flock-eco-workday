@@ -27,7 +27,10 @@ class CvRevision(
     val content: String,
 )
 
-/** The content of a CV as a revision stores it; months are `yyyy-MM`. */
+/**
+ * The content of a CV as a revision stores it; months are `yyyy-MM`. The [Experience.id]
+ * and [Skill.id] are the item ids; revisions from before item ids have none.
+ */
 data class CvSnapshot(
     val name: String,
     val language: CvLanguage,
@@ -41,6 +44,7 @@ data class CvSnapshot(
     val languages: String? = null,
 ) {
     data class Experience(
+        val id: String? = null,
         val from: String,
         val to: String? = null,
         val role: String,
@@ -52,6 +56,7 @@ data class CvSnapshot(
     )
 
     data class Skill(
+        val id: String? = null,
         val category: String? = null,
         val name: String,
         val level: Int? = null,
