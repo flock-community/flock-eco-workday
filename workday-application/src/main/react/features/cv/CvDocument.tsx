@@ -1,4 +1,4 @@
-import { Box, Link } from '@mui/material';
+import { Box } from '@mui/material';
 import dayjs from 'dayjs';
 import { Fragment, type ReactNode } from 'react';
 import type { Cv } from '../../clients/CvClient';
@@ -12,7 +12,6 @@ import {
   CV_LABELS,
   clientText,
   groupSkills,
-  linkify,
   longPeriodText,
   monthsWorked,
   paragraphs,
@@ -70,42 +69,6 @@ ${[
 type CvDocumentProps = {
   cv: Cv;
 };
-
-/** Paragraphs of text with clickable links; a single line break stays a line break. */
-function Text({ value }: { value: string | null | undefined }) {
-  return (
-    <>
-      {paragraphs(value).map((paragraph, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: paragraphs have no identity of their own
-        <p key={index}>
-          {paragraph.split('\n').map((line, lineIndex) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: lines have no identity of their own
-            <Fragment key={lineIndex}>
-              {lineIndex > 0 && <br />}
-              {linkify(line).map((part, partIndex) =>
-                part.href ? (
-                  <Link
-                    // biome-ignore lint/suspicious/noArrayIndexKey: parts have no identity of their own
-                    key={partIndex}
-                    href={part.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{ color: '#1155cc' }}
-                  >
-                    {part.text}
-                  </Link>
-                ) : (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: parts have no identity of their own
-                  <Fragment key={partIndex}>{part.text}</Fragment>
-                ),
-              )}
-            </Fragment>
-          ))}
-        </p>
-      ))}
-    </>
-  );
-}
 
 /**
  * A CV in the Flock template: personal details with the photo, profile, an overview
@@ -270,7 +233,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   component="section"
                   sx={{ fontStyle: 'italic', textAlign: 'justify' }}
                 >
-                  <Text value={cv.summary} />
+                  <CvMarkdown value={cv.summary} />
                 </Box>
               )}
 

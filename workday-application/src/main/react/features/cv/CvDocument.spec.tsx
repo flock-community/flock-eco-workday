@@ -202,6 +202,23 @@ describe('CvDocument', () => {
     expect(document.querySelector('script')).toBeNull();
   });
 
+  it('renders the profile as Markdown, so its one-liner can be bold', () => {
+    render(
+      <CvDocument
+        cv={cv({
+          summary:
+            '**Een engineer die complexe systemen helder maakt.**\nTommy bouwt graag dingen.',
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByText('Een engineer die complexe systemen helder maakt.')
+        .tagName,
+    ).toBe('STRONG');
+    expect(screen.getByText(/Tommy bouwt graag dingen/)).toBeInTheDocument();
+  });
+
   it('shows the skills per category with their stars, and the other sections', () => {
     render(<CvDocument cv={cv()} />);
 
