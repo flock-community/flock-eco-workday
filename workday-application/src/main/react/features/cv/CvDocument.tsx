@@ -231,7 +231,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
               {cv.summary && (
                 <Box
                   component="section"
-                  sx={{ fontStyle: 'italic', textAlign: 'justify' }}
+                  sx={{ fontStyle: 'italic', textAlign: 'left' }}
                 >
                   <CvMarkdown value={cv.summary} />
                 </Box>
