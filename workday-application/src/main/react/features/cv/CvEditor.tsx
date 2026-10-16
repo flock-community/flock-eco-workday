@@ -218,7 +218,7 @@ export function CvEditor() {
 
               <Section
                 title="Profile"
-                subtitle="Who you are as an engineer. Separate paragraphs with an empty line."
+                subtitle="Who you are as an engineer. Separate paragraphs with an empty line. Markdown: **bold**, *italic*, [link](https://…)"
               >
                 <Field
                   component={TextField}
