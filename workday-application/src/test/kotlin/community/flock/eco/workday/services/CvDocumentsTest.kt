@@ -177,7 +177,7 @@ class CvDocumentsTest {
             "word/numbering.xml",
         )
         assertInOrder(wordText(parts.getValue("word/header1.xml")) + "\n" + wordText(parts.getValue("word/document.xml")))
-        assertThat(parts.getValue("word/document.xml")).contains("<w:pageBreakBefore/>")
+        assertThat(parts.getValue("word/document.xml")).contains("<w:pageBreakBefore")
         assertThat(parts.getValue("word/_rels/document.xml.rels")).contains("https://ing-bank.github.io/baker/")
         assertThat(parts.getValue("word/footer1.xml")).contains("PAGE")
         // The photo, the logo, the disc and the yellow band
