@@ -1,5 +1,5 @@
-endpoint GetEventAll GET /api/events ? {page: Integer32?, size: Integer32?, sort: String?, year: Integer32?} -> {
-  200 -> Event[] # { `x-total`: Integer32 }
+endpoint GetEventAll GET /api/events ? {...SortedPaging, year: Integer32?} -> {
+  200 -> Event[] # { ...TotalCount }
 }
 endpoint GetEventByCode GET /api/events/{code: String} -> {
   200 -> Event
@@ -33,11 +33,9 @@ endpoint DeleteEventRating DELETE /api/events/{eventCode: String}/ratings/{perso
 }
 
 type Event {
-  id: Integer?,
-  code: String?,
+  ...Identified,
   description: String?,
-  from: String?,
-  to: String?,
+  ...Period,
   hours: Number?,
   costs: Number?,
   `type`: EventType?,
@@ -45,12 +43,16 @@ type Event {
   persons: Person[]?,
   eventDays: EventDay[]?
 }
-type EventDay {
+// The hours, costs and days one person spends on an event
+part EventParticipation {
   personId: String?,
   hours: Number?,
   cost: Number?,
   days: Number[]?,
   budgetCategory: BudgetCategory?
+}
+type EventDay {
+  ...EventParticipation
 }
 enum BudgetCategory {
   HACK, TRAINING
@@ -60,21 +62,14 @@ enum EventType {
 }
 type EventForm {
   description: String?,
-  from: String?,
-  to: String?,
-  hours: Number?,
-  days: Number[]?,
+  ...BookedHours,
   costs: Number?,
   personIds: String[]?,
   participants: EventDayForm[]?,
   `type`: EventFormType?
 }
 type EventDayForm {
-  personId: String?,
-  hours: Number?,
-  cost: Number?,
-  days: Number[]?,
-  budgetCategory: BudgetCategory?
+  ...EventParticipation
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

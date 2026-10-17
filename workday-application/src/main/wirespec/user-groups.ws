@@ -1,5 +1,5 @@
-endpoint GetUserGroupAll GET /api/user-groups ? {search: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> UserGroup[] # { `x-total`: Integer32 }
+endpoint GetUserGroupAll GET /api/user-groups ? {search: String?, ...SortedPaging} -> {
+  200 -> UserGroup[] # { ...TotalCount }
 }
 endpoint GetUserGroupByCode GET /api/user-groups/{code: String} -> {
   200 -> UserGroup
@@ -14,12 +14,15 @@ endpoint DeleteUserGroup DELETE /api/user-groups/{code: String} -> {
   200 -> Unit
 }
 
-type UserGroup {
-  id: String,
+// The name of a user group and the codes of its users
+part UserGroupMembers {
   name: String?,
   users: String[]?
 }
+type UserGroup {
+  id: String,
+  ...UserGroupMembers
+}
 type UserGroupForm {
-  name: String?,
-  users: String[]?
+  ...UserGroupMembers
 }

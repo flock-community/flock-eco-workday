@@ -1,5 +1,5 @@
-endpoint GetPersonAll GET /api/persons ? {page: Integer32?, size: Integer32?, sort: String?, active: Boolean?, search: String?} -> {
-  200 -> Person[] # { `x-total`: Integer32 }
+endpoint GetPersonAll GET /api/persons ? {...SortedPaging, active: Boolean?, search: String?} -> {
+  200 -> Person[] # { ...TotalCount }
 }
 endpoint GetPersonByUuid GET /api/persons/{uuid: String} -> {
   200 -> Person
@@ -20,7 +20,8 @@ endpoint DeletePerson DELETE /api/persons/{uuid: String} -> {
   204 -> Unit
 }
 
-type PersonForm {
+// Name, contact and employment details of a person
+part PersonDetails {
   firstname: String?,
   lastname: String?,
   email: String?,
@@ -28,34 +29,31 @@ type PersonForm {
   number: String?,
   birthdate: String?,
   joinDate: String?,
-  active: Boolean?,
-  userCode: String?,
+  active: Boolean?
+}
+
+// Notification settings, clothing sizes, drive folder and address of a person
+part PersonProfile {
   reminders: Boolean?,
   receiveEmail: Boolean?,
   shoeSize: String?,
   shirtSize: String?,
   googleDriveId: String?,
-  address: Address?,
+  address: Address?
+}
+
+type PersonForm {
+  ...PersonDetails,
+  userCode: String?,
+  ...PersonProfile,
   photo: String?
 }
 type Person {
   id: Integer?,
   uuid: String?,
-  firstname: String?,
-  lastname: String?,
-  email: String?,
-  position: String?,
-  number: String?,
-  birthdate: String?,
-  joinDate: String?,
-  active: Boolean?,
+  ...PersonDetails,
   lastActiveAt: String?,
-  reminders: Boolean?,
-  receiveEmail: Boolean?,
-  shoeSize: String?,
-  shirtSize: String?,
-  googleDriveId: String?,
-  address: Address?,
+  ...PersonProfile,
   user: User?,
   fullName: String?,
   photo: String?

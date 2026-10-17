@@ -1,5 +1,5 @@
-endpoint GetUserAll GET /api/users ? {search: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> User[] # { `x-total`: Integer32 }
+endpoint GetUserAll GET /api/users ? {search: String?, ...SortedPaging} -> {
+  200 -> User[] # { ...TotalCount }
 }
 endpoint GetUserMe GET /api/users/me -> {
   200 -> User

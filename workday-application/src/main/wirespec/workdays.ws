@@ -1,5 +1,5 @@
-endpoint GetWorkDayAll GET /api/workdays ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> WorkDay[] # { `x-total`: Integer32 }
+endpoint GetWorkDayAll GET /api/workdays ? {personId: String?, ...SortedPaging} -> {
+  200 -> WorkDay[] # { ...TotalCount }
 }
 endpoint GetWorkDayByCode GET /api/workdays/{code: String} -> {
   200 -> WorkDay
@@ -15,10 +15,7 @@ endpoint DeleteWorkDay DELETE /api/workdays/{code: String} -> {
 }
 
 type WorkDayForm {
-  from: String?,
-  to: String?,
-  hours: Number?,
-  days: Number[]?,
+  ...BookedHours,
   status: WorkDayFormStatus?,
   assignmentCode: String?,
   sheets: WorkDaySheetForm[]?
@@ -26,17 +23,17 @@ type WorkDayForm {
 enum WorkDayFormStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
-type WorkDaySheetForm {
+// A timesheet file uploaded with a work day
+part WorkDaySheetFile {
   name: String?,
   file: String?
 }
+type WorkDaySheetForm {
+  ...WorkDaySheetFile
+}
 type WorkDay {
-  id: Integer?,
-  code: String?,
-  from: String?,
-  to: String?,
-  hours: Number?,
-  days: Number[]?,
+  ...Identified,
+  ...BookedHours,
   assignment: Assignment?,
   status: WorkDayStatus?,
   sheets: WorkDaySheet[]?,
@@ -46,6 +43,5 @@ enum WorkDayStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
 type WorkDaySheet {
-  name: String?,
-  file: String?
+  ...WorkDaySheetFile
 }

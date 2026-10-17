@@ -80,7 +80,7 @@ class UserApiController(
                 .findAllByNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(search, search, pageable)
         return GetUserAll.Response200(
             body = page.map { it.externalize() }.toList(),
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -120,18 +120,18 @@ class UserApiController(
     override suspend fun deleteUser(request: DeleteUser.Request): DeleteUser.Response<*> {
         if (authenticationName() == request.path.code) throw UserCannotRemoveOwnAccount()
         userService.delete(request.path.code)
-        return DeleteUser.Response200(Unit)
+        return DeleteUser.Response200
     }
 
     @PreAuthorize("hasAuthority('UserAuthority.WRITE')")
     override suspend fun putUserResetPasswordByCode(request: PutUserResetPasswordByCode.Request): PutUserResetPasswordByCode.Response<*> {
         userAccountService.generateResetCodeForUserCode(request.path.code)
-        return PutUserResetPasswordByCode.Response200(Unit)
+        return PutUserResetPasswordByCode.Response200
     }
 
     override suspend fun putUserResetPassword(request: PutUserResetPassword.Request): PutUserResetPassword.Response<*> {
         userAccountService.generateResetCodeForUserEmail(request.body.email)
-        return PutUserResetPassword.Response200(Unit)
+        return PutUserResetPassword.Response200
     }
 
     override suspend fun postUserRegister(request: PostUserRegister.Request): PostUserRegister.Response<*> {
