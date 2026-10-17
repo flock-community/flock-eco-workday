@@ -87,7 +87,7 @@ class EventController(
             }
         return GetEventAll.Response200(
             body = body.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -131,7 +131,7 @@ class EventController(
             .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { eventService.deleteByCode(this.code) }
-        return DeleteEvent.Response204(Unit)
+        return DeleteEvent.Response204
     }
 
     override suspend fun subscribeToEvent(request: SubscribeToEvent.Request): SubscribeToEvent.Response<*> {
@@ -185,7 +185,7 @@ class EventController(
             request.path.eventCode,
             UUID.fromString(request.path.personId),
         )
-        return DeleteEventRating.Response204(Unit)
+        return DeleteEventRating.Response204
     }
 
     private fun currentPerson(): Person =

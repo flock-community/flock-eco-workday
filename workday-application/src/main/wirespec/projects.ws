@@ -1,4 +1,4 @@
-endpoint GetProjectAll GET /api/projects ? {page: Integer32?, size: Integer32?, sort: String?} -> {
+endpoint GetProjectAll GET /api/projects ? {...SortedPaging} -> {
   200 -> Project[]
 }
 endpoint GetProjectByCode GET /api/projects/{code: String} -> {
@@ -18,7 +18,6 @@ type ProjectForm {
   name: String?
 }
 type Project {
-  id: Integer?,
-  code: String?,
+  ...Identified,
   name: String?
 }

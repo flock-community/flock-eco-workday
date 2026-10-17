@@ -1,5 +1,5 @@
-endpoint GetAssignmentAll GET /api/assignments ? {personId: String?, projectCode: String?, to: String?, page: Integer32?, size: Integer32?, sort: String[]?} -> {
-  200 -> Assignment[] # { `x-total`: Integer32 }
+endpoint GetAssignmentAll GET /api/assignments ? {personId: String?, projectCode: String?, to: String?, ...Paging, sort: String[]?} -> {
+  200 -> Assignment[] # { ...TotalCount }
 }
 endpoint GetAssignmentByCode GET /api/assignments/{code: String} -> {
   200 -> Assignment
@@ -21,15 +21,12 @@ type AssignmentForm {
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
   role: String?,
-  from: String?,
-  to: String?
+  ...Period
 }
 type Assignment {
-  id: Integer?,
-  code: String?,
+  ...Identified,
   role: String?,
-  from: String?,
-  to: String?,
+  ...Period,
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
   totalHours: Integer32?,

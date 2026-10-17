@@ -1,4 +1,4 @@
-endpoint TotalsPerPersonByYear_1 GET /api/aggregations/total-per-person ? {year: Integer32, month: Integer32?} -> {
+endpoint TotalsPerPersonByYear GET /api/aggregations/total-per-person ? {year: Integer32, month: Integer32?} -> {
   200 -> AggregationPerson[]
 }
 endpoint TotalsPerPersonMeByYearMonth GET /api/aggregations/total-per-person-me -> {
@@ -35,7 +35,7 @@ endpoint HourAssignmentClientOverviewEmployee GET /api/aggregations/client-assig
   200 -> AggregationClientPersonAssignmentOverview[]
 }
 
-type TotalsPerPersonMeByYearMonth200ResponseBody {
+part AggregationPersonTotals {
   id: String?,
   name: String?,
   contractTypes: String[]?,
@@ -51,27 +51,16 @@ type TotalsPerPersonMeByYearMonth200ResponseBody {
   unpaidParentalLeaveUsed: Number?,
   revenue: AggregationPersonClientRevenueOverview?,
   cost: Number?
+}
+type TotalsPerPersonMeByYearMonth200ResponseBody {
+  ...AggregationPersonTotals
 }
 type AggregationIdentifier {
   id: String?,
   name: String?
 }
 type AggregationPerson {
-  id: String?,
-  name: String?,
-  contractTypes: String[]?,
-  sickDays: Number?,
-  workDays: Number?,
-  assignment: Integer32?,
-  event: Integer32?,
-  total: Integer32?,
-  leaveDayUsed: Number?,
-  leaveDayBalance: Number?,
-  paidLeaveHours: Number?,
-  paidParentalLeaveUsed: Number?,
-  unpaidParentalLeaveUsed: Number?,
-  revenue: AggregationPersonClientRevenueOverview?,
-  cost: Number?
+  ...AggregationPersonTotals
 }
 type AggregationPersonClientRevenueItem {
   client: AggregationIdentifier?,
@@ -103,21 +92,22 @@ type AggregationClient {
   name: String?,
   revenueGross: Number?
 }
-type NonProductiveHours {
-  sickHours: Number?,
+// Hours taken off per kind of leave
+part LeaveHours {
   holidayHours: Number?,
   paidParentalLeaveHours: Number?,
   unpaidParentalLeaveHours: Number?,
   paidLeaveHours: Number?
 }
+type NonProductiveHours {
+  sickHours: Number?,
+  ...LeaveHours
+}
 type AggregationLeaveDay {
   name: String?,
   contractHours: Number?,
   plusHours: Number?,
-  holidayHours: Number?,
-  paidParentalLeaveHours: Number?,
-  unpaidParentalLeaveHours: Number?,
-  paidLeaveHours: Number?
+  ...LeaveHours
 }
 type PersonHolidayDetails {
   name: String?,

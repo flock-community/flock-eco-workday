@@ -1,5 +1,5 @@
-endpoint GetLeaveDayAll GET /api/leave-days ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> LeaveDay[] # { `x-total`: Integer32 }
+endpoint GetLeaveDayAll GET /api/leave-days ? {personId: String?, ...SortedPaging} -> {
+  200 -> LeaveDay[] # { ...TotalCount }
 }
 endpoint GetLeaveDayByCode GET /api/leave-days/{code: String} -> {
   200 -> LeaveDay
@@ -16,10 +16,7 @@ endpoint DeleteLeaveDay DELETE /api/leave-days/{code: String} -> {
 
 type LeaveDayForm {
   description: String?,
-  from: String?,
-  to: String?,
-  hours: Number?,
-  days: Number[]?,
+  ...BookedHours,
   status: LeaveDayFormStatus?,
   `type`: LeaveDayFormType?,
   personId: String?
@@ -32,12 +29,8 @@ enum LeaveDayFormType {
 }
 type LeaveDay {
   personId: String?,
-  id: Integer?,
-  code: String?,
-  from: String?,
-  to: String?,
-  hours: Number?,
-  days: Number[]?,
+  ...Identified,
+  ...BookedHours,
   description: String?,
   `type`: LeaveDayType?,
   status: LeaveDayStatus?

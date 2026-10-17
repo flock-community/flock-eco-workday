@@ -37,7 +37,7 @@ class UserGroupApiController(
         val page = userGroupRepository.findAllByNameIgnoreCaseContaining(search, pageable)
         return GetUserGroupAll.Response200(
             body = page.map { it.externalize() }.toList(),
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -66,7 +66,7 @@ class UserGroupApiController(
     @PreAuthorize("hasAuthority('UserAuthority.WRITE')")
     override suspend fun deleteUserGroup(request: DeleteUserGroup.Request): DeleteUserGroup.Response<*> {
         userGroupService.delete(request.path.code)
-        return DeleteUserGroup.Response200(Unit)
+        return DeleteUserGroup.Response200
     }
 
     private fun UserGroupInternal.externalize(): UserGroupApi =

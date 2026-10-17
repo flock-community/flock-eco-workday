@@ -1,5 +1,5 @@
-endpoint GetCvAll GET /api/cvs ? {page: Integer32?, size: Integer32?, sort: String?, personId: String?} -> {
-  200 -> Cv[] # { `x-total`: Integer32 }
+endpoint GetCvAll GET /api/cvs ? {...SortedPaging, personId: String?} -> {
+  200 -> Cv[] # { ...TotalCount }
 }
 endpoint GetCvByCode GET /api/cvs/{code: String} -> {
   200 -> Cv
@@ -86,8 +86,7 @@ type CvSkill {
   level: Integer32?
 }
 type Cv {
-  id: Integer?,
-  code: String?,
+  ...Identified,
   name: String?,
   language: CvLanguage?,
   place: String?,

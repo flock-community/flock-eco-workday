@@ -277,7 +277,13 @@
                             <input>${project.basedir}/src/main/wirespec</input>
                             <output>${project.build.directory}/generated-sources</output>
                             <packageName>community.flock.eco.workday.api</packageName>
-                            <emitterClass>community.flock.wirespec.integration.spring.kotlin.emit.SpringKotlinEmitter</emitterClass>
+                            <languages>
+                                <language>Kotlin</language>
+                            </languages>
+                            <extensionClasses>
+                                <extensionClass>community.flock.wirespec.integration.spring.extension.SpringMappingAnnotationsExtension</extensionClass>
+                                <extensionClass>community.flock.wirespec.integration.spring.extension.SpringNativeHintsExtension</extensionClass>
+                            </extensionClasses>
                             <shared>false</shared>
                         </configuration>
                     </execution>

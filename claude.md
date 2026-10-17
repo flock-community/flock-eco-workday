@@ -29,6 +29,7 @@ workday-application/    # ALL business logic goes here
 - Contract definitions: `workday-application/src/main/wirespec/*.ws`
 - After modifying `.ws` files, run: `npm run generate` (TypeScript) and rebuild (Kotlin auto-generates)
 - Wirespec ensures type safety between frontend and backend
+- Field groups that recur across types, query parameters and headers are declared once as a `part` and spread with `...Name` (generic ones such as `Identified`, `Period`, `SortedPaging` and `TotalCount` live in `shared.ws`). Parts are syntactic sugar: keep spreads where the fields belong so the generated field order stays the same
 
 ### Frontend Import Aliases
 - `@workday-core` → `workday-core/src/main/react/*`

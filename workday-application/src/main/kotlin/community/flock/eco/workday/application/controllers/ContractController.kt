@@ -105,7 +105,7 @@ class ContractController(
 
         return GetContractAll.Response200(
             body = contracts.map { it.externalize() },
-            xtotal = total.toInt(),
+            xTotal = total.toInt(),
         )
     }
 
@@ -122,7 +122,7 @@ class ContractController(
     override suspend fun deleteContract(request: DeleteContract.Request): DeleteContract.Response<*> {
         requireAuthority(ContractAuthority.ADMIN)
         contractService.deleteByCode(request.path.code)
-        return DeleteContract.Response204(Unit)
+        return DeleteContract.Response204
     }
 
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")

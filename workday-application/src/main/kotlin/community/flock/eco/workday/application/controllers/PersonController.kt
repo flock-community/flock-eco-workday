@@ -73,7 +73,7 @@ class PersonController(
             }
         return GetPersonAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -140,7 +140,7 @@ class PersonController(
     override suspend fun deletePerson(request: DeletePerson.Request): DeletePerson.Response<*> {
         requireAuthority(PersonAuthority.ADMIN)
         service.deleteByUuid(UUID.fromString(request.path.uuid))
-        return DeletePerson.Response204(Unit)
+        return DeletePerson.Response204
     }
 
     private fun currentUser(): User? =
