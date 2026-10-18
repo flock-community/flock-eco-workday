@@ -1,5 +1,5 @@
-endpoint GetUserAccountAll GET /api/user-accounts ? {search: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> UserAccount[] # { `x-total`: Integer32 }
+endpoint GetUserAccountAll GET /api/user-accounts ? {search: String?, ...SortedPaging} -> {
+  200 -> UserAccount[] # { ...TotalCount }
 }
 endpoint PutUserAccountResetPassword PUT PasswordResetForm /api/user-accounts/reset-password -> {
   200 -> Unit

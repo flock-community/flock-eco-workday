@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import community.flock.wirespec.integration.jackson.kotlin.WirespecSerialization
+import community.flock.wirespec.integration.jackson.v2.kotlin.WirespecSerialization
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

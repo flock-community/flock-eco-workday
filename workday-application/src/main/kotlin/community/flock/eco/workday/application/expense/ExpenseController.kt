@@ -87,7 +87,7 @@ class ExpenseController(
                 is CostExpense -> it.produce()
             }
         }.let {
-            ExpenseAll.Response200(it.content, it.totalElements.toInt())
+            ExpenseAll.Response200(xTotal = it.totalElements.toInt(), body = it.content)
         }
     }
 
@@ -113,7 +113,7 @@ class ExpenseController(
             .findById(id)
             ?.applyAuthentication(authentication())
             ?.run { expenseService.deleteById(id) }
-            ?.let { ExpenseDeleteById.Response204(Unit) }
+            ?.let { ExpenseDeleteById.Response204 }
             ?: ExpenseDeleteById.Response404(Error("Expense not found"))
     }
 

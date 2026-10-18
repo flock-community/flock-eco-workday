@@ -59,7 +59,7 @@ class LeaveDayController(
             }
         return GetLeaveDayAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -108,7 +108,7 @@ class LeaveDayController(
             .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { service.deleteByCode(this.code) }
-        return DeleteLeaveDay.Response204(Unit)
+        return DeleteLeaveDay.Response204
     }
 
     private fun LeaveDayFormApi.internalize(): LeaveDayForm =

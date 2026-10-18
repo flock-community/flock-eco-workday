@@ -1,5 +1,5 @@
-endpoint GetLaptopAll GET /api/laptops ? {page: Integer32?, size: Integer32?, sort: String?, personId: String?} -> {
-  200 -> Laptop[] # { `x-total`: Integer32 }
+endpoint GetLaptopAll GET /api/laptops ? {...SortedPaging, personId: String?} -> {
+  200 -> Laptop[] # { ...TotalCount }
 }
 endpoint GetLaptopMe GET /api/laptops/me -> {
   200 -> Laptop[]

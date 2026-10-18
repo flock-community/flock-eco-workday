@@ -89,7 +89,7 @@ class CvController(
             }
         return GetCvAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -126,7 +126,7 @@ class CvController(
         findWritable(request.path.code)
             ?.let {
                 cvService.deleteByCode(it.code)
-                DeleteCv.Response204(Unit)
+                DeleteCv.Response204
             }
             ?: DeleteCv.Response404(Error("CV not found"))
 

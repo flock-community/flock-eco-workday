@@ -76,7 +76,7 @@ class WorkdayController(
             }
         return GetWorkDayAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -123,7 +123,7 @@ class WorkdayController(
             .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { service.deleteByCode(this.code) }
-        return DeleteWorkDay.Response204(Unit)
+        return DeleteWorkDay.Response204
     }
 
     // The /sheets endpoints stay on plain Spring annotations: Wirespec
