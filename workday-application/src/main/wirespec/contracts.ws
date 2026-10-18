@@ -33,7 +33,12 @@ endpoint PutContractService PUT ContractServiceForm /api/contracts-service/{code
 }
 
 type Contract {
-  ...ContractBase,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  person: Person?,
+  `type`: ContractType?,
   monthlySalary: Number?,
   hoursPerWeek: Integer32?,
   holidayHours: Integer32?,
@@ -43,55 +48,56 @@ type Contract {
   monthlyCosts: Number?,
   description: String?,
   billable: Boolean?,
-  ...TrainingBudget
+  trainingTimeBudget: Integer32?,
+  trainingMoneyBudget: Number?
 }
 enum ContractType {
   INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
-}
-
-// Fields every kind of contract has
-part ContractBase {
-  ...Identified,
-  ...Period,
-  person: Person?,
-  `type`: ContractType?
-}
-
-// Training budget of an internal contract, in hours and in money
-part TrainingBudget {
-  trainingTimeBudget: Integer32?,
-  trainingMoneyBudget: Number?
 }
 
 type ContractInternalForm {
   personId: String?,
   monthlySalary: Number?,
   hoursPerWeek: Integer32?,
-  ...Period,
+  from: String?,
+  to: String?,
   holidayHours: Integer32?,
   hackTimeBudget: Integer32?,
   billable: Boolean?,
-  ...TrainingBudget
+  trainingTimeBudget: Integer32?,
+  trainingMoneyBudget: Number?
 }
 type ContractInternal {
-  ...ContractBase,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  person: Person?,
+  `type`: ContractType?,
   monthlySalary: Number?,
   hoursPerWeek: Integer32?,
   holidayHours: Integer32?,
   hackTimeBudget: Integer32?,
   billable: Boolean?,
-  ...TrainingBudget
+  trainingTimeBudget: Integer32?,
+  trainingMoneyBudget: Number?
 }
 
 type ContractExternalForm {
   personId: String?,
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
-  ...Period,
+  from: String?,
+  to: String?,
   billable: Boolean?
 }
 type ContractExternal {
-  ...ContractBase,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  person: Person?,
+  `type`: ContractType?,
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
   billable: Boolean?
@@ -100,20 +106,32 @@ type ContractExternal {
 type ContractManagementForm {
   personId: String?,
   monthlyFee: Number?,
-  ...Period
+  from: String?,
+  to: String?
 }
 type ContractManagement {
-  ...ContractBase,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  person: Person?,
+  `type`: ContractType?,
   monthlyFee: Number?
 }
 
 type ContractServiceForm {
   monthlyCosts: Number?,
   description: String?,
-  ...Period
+  from: String?,
+  to: String?
 }
 type ContractService {
-  ...ContractBase,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  person: Person?,
+  `type`: ContractType?,
   monthlyCosts: Number?,
   description: String?
 }

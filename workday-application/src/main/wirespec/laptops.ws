@@ -35,7 +35,8 @@ type LaptopForm {
   personId: UUID?
 }
 type Laptop {
-  ...Identified,
+  id: Integer?,
+  code: String?,
   name: String?,
   serialNumber: String?,
   contractSigned: Boolean?,

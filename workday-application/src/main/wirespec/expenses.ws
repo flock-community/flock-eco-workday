@@ -33,40 +33,28 @@ endpoint ExpenseGetFiles GET /api/expenses/files/{file: String}/{name: String} -
   200 -> Bytes # { `Content-Type`: String, justTesting: String}
 }
 
-// Fields every kind of expense has
-part ExpenseBase {
+type TravelExpenseInput {
   personId: UUID,
   description: String?,
   date: String?,
-  status: ExpenseStatus
-}
-
-// Distance travelled and the allowance paid for it
-part TravelDistance {
+  status: ExpenseStatus,
   distance: Number?,
   allowance: Number?
-}
-
-// A file attached to a cost expense
-part ExpenseFile {
-  name: String,
-  file: UUID
-}
-
-type TravelExpenseInput {
-  ...ExpenseBase,
-  ...TravelDistance
 }
 type CostExpenseDetails {
   amount: Number,
   files: CostExpenseFile[]
 }
 type CostExpenseFile {
-  ...ExpenseFile
+  name: String,
+  file: UUID
 }
 type Expense {
   id: String?,
-  ...ExpenseBase,
+  personId: UUID,
+  description: String?,
+  date: String?,
+  status: ExpenseStatus,
   expenseType: ExpenseType?,
   costDetails: CostExpenseDetails?,
   travelDetails: TravelExpenseDetails?
@@ -75,10 +63,12 @@ enum ExpenseType {
   TRAVEL, COST
 }
 type TravelExpenseDetails {
-  ...TravelDistance
+  distance: Number?,
+  allowance: Number?
 }
 type CostExpenseFileInput {
-  ...ExpenseFile
+  name: String,
+  file: UUID
 }
 type CostExpenseInput {
   personId: UUID,

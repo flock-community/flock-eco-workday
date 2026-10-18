@@ -15,7 +15,10 @@ endpoint DeleteWorkDay DELETE /api/workdays/{code: String} -> {
 }
 
 type WorkDayForm {
-  ...BookedHours,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   status: WorkDayFormStatus?,
   assignmentCode: String?,
   sheets: WorkDaySheetForm[]?
@@ -23,17 +26,17 @@ type WorkDayForm {
 enum WorkDayFormStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
-// A timesheet file uploaded with a work day
-part WorkDaySheetFile {
+type WorkDaySheetForm {
   name: String?,
   file: String?
 }
-type WorkDaySheetForm {
-  ...WorkDaySheetFile
-}
 type WorkDay {
-  ...Identified,
-  ...BookedHours,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   assignment: Assignment?,
   status: WorkDayStatus?,
   sheets: WorkDaySheet[]?,
@@ -43,5 +46,6 @@ enum WorkDayStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
 type WorkDaySheet {
-  ...WorkDaySheetFile
+  name: String?,
+  file: String?
 }

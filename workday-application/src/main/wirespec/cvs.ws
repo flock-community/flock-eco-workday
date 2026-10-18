@@ -86,7 +86,8 @@ type CvSkill {
   level: Integer32?
 }
 type Cv {
-  ...Identified,
+  id: Integer?,
+  code: String?,
   name: String?,
   language: CvLanguage?,
   place: String?,

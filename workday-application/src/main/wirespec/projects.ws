@@ -18,6 +18,7 @@ type ProjectForm {
   name: String?
 }
 type Project {
-  ...Identified,
+  id: Integer?,
+  code: String?,
   name: String?
 }

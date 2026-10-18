@@ -21,12 +21,15 @@ type AssignmentForm {
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
   role: String?,
-  ...Period
+  from: String?,
+  to: String?
 }
 type Assignment {
-  ...Identified,
+  id: Integer?,
+  code: String?,
   role: String?,
-  ...Period,
+  from: String?,
+  to: String?,
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
   totalHours: Integer32?,

@@ -33,9 +33,11 @@ endpoint DeleteEventRating DELETE /api/events/{eventCode: String}/ratings/{perso
 }
 
 type Event {
-  ...Identified,
+  id: Integer?,
+  code: String?,
   description: String?,
-  ...Period,
+  from: String?,
+  to: String?,
   hours: Number?,
   costs: Number?,
   `type`: EventType?,
@@ -43,16 +45,12 @@ type Event {
   persons: Person[]?,
   eventDays: EventDay[]?
 }
-// The hours, costs and days one person spends on an event
-part EventParticipation {
+type EventDay {
   personId: String?,
   hours: Number?,
   cost: Number?,
   days: Number[]?,
   budgetCategory: BudgetCategory?
-}
-type EventDay {
-  ...EventParticipation
 }
 enum BudgetCategory {
   HACK, TRAINING
@@ -62,14 +60,21 @@ enum EventType {
 }
 type EventForm {
   description: String?,
-  ...BookedHours,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   costs: Number?,
   personIds: String[]?,
   participants: EventDayForm[]?,
   `type`: EventFormType?
 }
 type EventDayForm {
-  ...EventParticipation
+  personId: String?,
+  hours: Number?,
+  cost: Number?,
+  days: Number[]?,
+  budgetCategory: BudgetCategory?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

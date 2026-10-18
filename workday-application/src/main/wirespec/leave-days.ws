@@ -16,7 +16,10 @@ endpoint DeleteLeaveDay DELETE /api/leave-days/{code: String} -> {
 
 type LeaveDayForm {
   description: String?,
-  ...BookedHours,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   status: LeaveDayFormStatus?,
   `type`: LeaveDayFormType?,
   personId: String?
@@ -29,8 +32,12 @@ enum LeaveDayFormType {
 }
 type LeaveDay {
   personId: String?,
-  ...Identified,
-  ...BookedHours,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   description: String?,
   `type`: LeaveDayType?,
   status: LeaveDayStatus?

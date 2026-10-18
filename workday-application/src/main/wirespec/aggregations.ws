@@ -35,7 +35,7 @@ endpoint HourAssignmentClientOverviewEmployee GET /api/aggregations/client-assig
   200 -> AggregationClientPersonAssignmentOverview[]
 }
 
-part AggregationPersonTotals {
+type TotalsPerPersonMeByYearMonth200ResponseBody {
   id: String?,
   name: String?,
   contractTypes: String[]?,
@@ -52,15 +52,26 @@ part AggregationPersonTotals {
   revenue: AggregationPersonClientRevenueOverview?,
   cost: Number?
 }
-type TotalsPerPersonMeByYearMonth200ResponseBody {
-  ...AggregationPersonTotals
-}
 type AggregationIdentifier {
   id: String?,
   name: String?
 }
 type AggregationPerson {
-  ...AggregationPersonTotals
+  id: String?,
+  name: String?,
+  contractTypes: String[]?,
+  sickDays: Number?,
+  workDays: Number?,
+  assignment: Integer32?,
+  event: Integer32?,
+  total: Integer32?,
+  leaveDayUsed: Number?,
+  leaveDayBalance: Number?,
+  paidLeaveHours: Number?,
+  paidParentalLeaveUsed: Number?,
+  unpaidParentalLeaveUsed: Number?,
+  revenue: AggregationPersonClientRevenueOverview?,
+  cost: Number?
 }
 type AggregationPersonClientRevenueItem {
   client: AggregationIdentifier?,
@@ -92,22 +103,21 @@ type AggregationClient {
   name: String?,
   revenueGross: Number?
 }
-// Hours taken off per kind of leave
-part LeaveHours {
+type NonProductiveHours {
+  sickHours: Number?,
   holidayHours: Number?,
   paidParentalLeaveHours: Number?,
   unpaidParentalLeaveHours: Number?,
   paidLeaveHours: Number?
 }
-type NonProductiveHours {
-  sickHours: Number?,
-  ...LeaveHours
-}
 type AggregationLeaveDay {
   name: String?,
   contractHours: Number?,
   plusHours: Number?,
-  ...LeaveHours
+  holidayHours: Number?,
+  paidParentalLeaveHours: Number?,
+  unpaidParentalLeaveHours: Number?,
+  paidLeaveHours: Number?
 }
 type PersonHolidayDetails {
   name: String?,

@@ -20,8 +20,7 @@ endpoint DeletePerson DELETE /api/persons/{uuid: String} -> {
   204 -> Unit
 }
 
-// Name, contact and employment details of a person
-part PersonDetails {
+type PersonForm {
   firstname: String?,
   lastname: String?,
   email: String?,
@@ -29,31 +28,34 @@ part PersonDetails {
   number: String?,
   birthdate: String?,
   joinDate: String?,
-  active: Boolean?
-}
-
-// Notification settings, clothing sizes, drive folder and address of a person
-part PersonProfile {
+  active: Boolean?,
+  userCode: String?,
   reminders: Boolean?,
   receiveEmail: Boolean?,
   shoeSize: String?,
   shirtSize: String?,
   googleDriveId: String?,
-  address: Address?
-}
-
-type PersonForm {
-  ...PersonDetails,
-  userCode: String?,
-  ...PersonProfile,
+  address: Address?,
   photo: String?
 }
 type Person {
   id: Integer?,
   uuid: String?,
-  ...PersonDetails,
+  firstname: String?,
+  lastname: String?,
+  email: String?,
+  position: String?,
+  number: String?,
+  birthdate: String?,
+  joinDate: String?,
+  active: Boolean?,
   lastActiveAt: String?,
-  ...PersonProfile,
+  reminders: Boolean?,
+  receiveEmail: Boolean?,
+  shoeSize: String?,
+  shirtSize: String?,
+  googleDriveId: String?,
+  address: Address?,
   user: User?,
   fullName: String?,
   photo: String?

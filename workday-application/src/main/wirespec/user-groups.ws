@@ -14,15 +14,12 @@ endpoint DeleteUserGroup DELETE /api/user-groups/{code: String} -> {
   200 -> Unit
 }
 
-// The name of a user group and the codes of its users
-part UserGroupMembers {
+type UserGroup {
+  id: String,
   name: String?,
   users: String[]?
 }
-type UserGroup {
-  id: String,
-  ...UserGroupMembers
-}
 type UserGroupForm {
-  ...UserGroupMembers
+  name: String?,
+  users: String[]?
 }

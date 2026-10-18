@@ -15,7 +15,10 @@ endpoint DeleteSickDay DELETE /api/sickdays/{code: String} -> {
 }
 
 type SickDayForm {
-  ...BookedHours,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   status: SickDayFormStatus?,
   description: String?,
   personId: String?
@@ -25,8 +28,12 @@ enum SickDayFormStatus {
 }
 type SickDay {
   personId: String?,
-  ...Identified,
-  ...BookedHours,
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  hours: Number?,
+  days: Number[]?,
   description: String?,
   status: SickDayStatus?,
   `type`: String

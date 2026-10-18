@@ -18,6 +18,7 @@ type ClientForm {
   name: String?
 }
 type Client {
-  ...Identified,
+  id: Integer?,
+  code: String?,
   name: String?
 }
