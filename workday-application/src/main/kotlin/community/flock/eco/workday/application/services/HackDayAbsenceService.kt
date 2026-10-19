@@ -116,15 +116,21 @@ internal fun hackDayAbsences(
         .toSortedMap()
         .flatMap { (date, onDate) ->
             val (_, event, hackHours) = onDate.maxBy { it.third }
-            val attendees = onDate.flatMap { (_, e, _) -> e.eventDays.map { it.person.uuid } }.toSet()
+            // Someone who went home sick halfway attended part of the day; only the rest counts as missed.
+            val attendedHours =
+                onDate
+                    .flatMap { (_, e, eventHours) ->
+                        e.eventDays.map { it.person.uuid to it.hours.toBigDecimal() * eventHours / e.hours.toBigDecimal() }
+                    }.groupBy({ it.first }, { it.second })
+                    .mapValues { (_, hours) -> hours.fold(BigDecimal.ZERO, BigDecimal::add) }
             contracts
                 .filter { it.hackTimeBudget > 0 && it.covers(date) }
                 .map { it.person!!.uuid }
                 .distinct()
-                .filter { it !in attendees }
                 .mapNotNull { personId ->
-                    val holiday = holidayHoursByPerson.hoursOn(personId, date).min(hackHours)
-                    val sick = sickHoursByPerson.hoursOn(personId, date).min(hackHours - holiday)
+                    val missable = (hackHours - (attendedHours[personId] ?: BigDecimal.ZERO)).max(BigDecimal.ZERO)
+                    val holiday = holidayHoursByPerson.hoursOn(personId, date).min(missable)
+                    val sick = sickHoursByPerson.hoursOn(personId, date).min(missable - holiday)
                     HackDayAbsence(event, date, personId, holiday, sick)
                         .takeIf { holiday > BigDecimal.ZERO || sick > BigDecimal.ZERO }
                 }

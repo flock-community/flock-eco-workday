@@ -20,6 +20,7 @@ class SickDayService(
     private val personService: PersonService,
     private val entityManager: EntityManager,
     private val emailService: SickDayMailService,
+    private val eventService: EventService,
 ) {
     fun findAll(pageable: Pageable) =
         repository
@@ -88,6 +89,7 @@ class SickDayService(
             .validate()
             .consume()
             .save()
+            .also { capHackHours(it) }
             .also { emailService.sendNotification(it) }
 
     fun update(
@@ -102,7 +104,8 @@ class SickDayService(
                     .validate()
                     .consume(this)
                     .save()
-            }.also {
+            }.also { capHackHours(it) }
+            .also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }
@@ -132,4 +135,15 @@ class SickDayService(
     }
 
     private fun SickDay.save() = repository.save(this)
+
+    // A hack day missed through sickness still costs budget, so the sign-up must not count those hours as attended.
+    private fun capHackHours(sickDay: SickDay) {
+        if (sickDay.status == Status.REJECTED) return
+        eventService.capHackHoursForSickness(
+            personId = sickDay.person.uuid,
+            from = sickDay.from,
+            to = sickDay.to,
+            sickDays = findAllActiveByPerson(sickDay.from, sickDay.to, sickDay.person.uuid),
+        )
+    }
 }

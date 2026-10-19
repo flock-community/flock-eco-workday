@@ -1,10 +1,13 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.services.AggregationService
 import community.flock.eco.workday.application.services.BudgetSummaryService
 import community.flock.eco.workday.application.services.HackDayAbsenceReason
+import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.helpers.CreateHelper
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
@@ -17,6 +20,8 @@ class HackDayAbsenceTest(
     @Autowired val createHelper: CreateHelper,
     @Autowired val budgetSummaryService: BudgetSummaryService,
     @Autowired val aggregationService: AggregationService,
+    @Autowired val sickDayService: SickDayService,
+    @Autowired val eventDayRepository: EventDayRepository,
 ) : WorkdayIntegrationTest() {
     private val year = 2022
     private val from = LocalDate.of(year, 1, 1)
@@ -138,4 +143,50 @@ class HackDayAbsenceTest(
         assertEquals(8.0, summary.hackTimeBudget.used.toDouble())
         assertEquals(1, summary.events.size)
     }
+
+    @Test
+    fun `reporting sick after signing up drops the sign-up, and going home halfway keeps the hours attended`() {
+        val fullDay = createHelper.createPersonEntity("Full", "Day")
+        val halfDay = createHelper.createPersonEntity("Half", "Day")
+        listOf(fullDay, halfDay).forEach {
+            createHelper.createContractInternal(person = it, from = from, to = to, hackTimeBudget = 160)
+        }
+        val event =
+            createHelper.createEvent(
+                from = hackDay,
+                to = hackDay,
+                hours = 8.0,
+                days = listOf(8.0),
+                persons = listOf(fullDay.uuid, halfDay.uuid),
+                costs = 0.0,
+                type = EventType.FLOCK_HACK_DAY,
+            )
+
+        sickDayService.create(sickForm(fullDay.uuid, 8.0))
+        sickDayService.create(sickForm(halfDay.uuid, 4.0))
+
+        val signUps = eventDayRepository.findAllByEventCode(event.code).associateBy { it.person.uuid }
+        assertEquals(null, signUps[fullDay.uuid])
+        assertEquals(4.0, signUps.getValue(halfDay.uuid).hours)
+
+        budgetSummaryService.getSummary(fullDay.uuid, year).let {
+            assertEquals(8.0, it.hackTimeBudget.used.toDouble())
+            assertEquals(HackDayAbsenceReason.SICK, it.events.single().absence)
+        }
+        budgetSummaryService.getSummary(halfDay.uuid, year).let {
+            assertEquals(8.0, it.hackTimeBudget.used.toDouble())
+            assertEquals(listOf(null, HackDayAbsenceReason.SICK), it.events.map { e -> e.absence })
+            assertEquals(listOf(4.0, 4.0), it.events.map { e -> e.hours })
+        }
+
+        // Editing the sick day again must not cut the hours a second time.
+        val halfDaySick = sickDayService.findAllActiveByPerson(hackDay, hackDay, halfDay.uuid).single()
+        sickDayService.update(halfDaySick.code, sickForm(halfDay.uuid, 4.0), isUpdatedByOwner = true)
+        assertEquals(4.0, eventDayRepository.findAllByEventCode(event.code).single().hours)
+    }
+
+    private fun sickForm(
+        personId: java.util.UUID,
+        hours: Double,
+    ) = SickDayForm(from = hackDay, to = hackDay, days = mutableListOf(hours), hours = hours, personId = personId)
 }

@@ -6,11 +6,14 @@ import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
+import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRatingRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -102,6 +105,40 @@ class EventService(
                 event.rebalanceCosts()
             }?.refreshed()
             ?: error("Cannot unsubscribe from Event: $eventCode")
+
+    /**
+     * Sickness on a hack day someone signed up for cuts their hack hours to the hours they weren't sick;
+     * a day missed entirely drops the sign-up. Safe to call again for the same sick days.
+     */
+    fun capHackHoursForSickness(
+        personId: UUID,
+        from: LocalDate,
+        to: LocalDate,
+        sickDays: Iterable<SickDay>,
+    ) {
+        val sickHours = sickDays.filter { it.status != Status.REJECTED && it.person.uuid == personId }.map { it.hoursPerDay() }
+        val sickOn = { date: LocalDate -> sickHours.fold(BigDecimal.ZERO) { acc, it -> acc + (it[date] ?: BigDecimal.ZERO) } }
+        eventDayRepository
+            .findAllActiveByPerson(from, to, personId)
+            .filter { it.event.type == EventType.FLOCK_HACK_DAY }
+            .forEach { eventDay ->
+                val notSick = eventDay.event.hoursPerDay().mapValues { (date, hours) -> (hours - sickOn(date)).max(BigDecimal.ZERO) }
+                val allowed = notSick.values.fold(BigDecimal.ZERO, BigDecimal::add).toDouble()
+                if (eventDay.hours <= allowed) return@forEach
+                if (allowed <= 0.0) {
+                    eventDayRepository.delete(eventDay)
+                    eventDay.event.eventDays.remove(eventDay)
+                    eventDay.event.rebalanceCosts()
+                } else {
+                    eventDay.hours = allowed
+                    eventDay.days
+                        ?.takeIf { it.size == notSick.size }
+                        ?.let { days ->
+                            notSick.values.forEachIndexed { index, hours -> days[index] = minOf(days[index], hours.toDouble()) }
+                        }
+                }
+            }
+    }
 
     @Transactional
     fun deleteByCode(code: String) {
