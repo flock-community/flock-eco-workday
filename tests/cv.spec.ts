@@ -275,16 +275,14 @@ test.describe('CV', () => {
     await page.getByRole('button', { name: "Take the base's" }).click();
     await expect(cv.getByText('Engineer and coach.')).toBeVisible();
     await expect(page.getByTestId('cv-base-changed')).toHaveCount(0);
-    // How far the copy drifted shows when asked for in the settings
+    // How far the copy drifted shows in short; what it tailored when opened
+    await expect(page.getByTestId('cv-divergence')).toHaveText(
+      '0% different · 0 tailored',
+    );
     await expect(page.getByTestId('cv-sync')).toHaveCount(0);
-    await page.getByRole('button', { name: 'Settings' }).click();
-    await page.getByLabel(/Show how much differs/).check();
-    await page.keyboard.press('Escape');
+    await page.getByTestId('cv-divergence').click();
     await expect(page.getByTestId('cv-sync')).toContainText(
       'Everything here follows the base.',
-    );
-    await expect(page.getByTestId('cv-divergence')).toContainText(
-      '0% of this copy differs from the base',
     );
 
     await page.request.delete(`/api/cvs/${copy.code}`);

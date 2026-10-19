@@ -1,3 +1,4 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Alert,
   AlertTitle,
@@ -5,7 +6,7 @@ import {
   Button,
   Card,
   CardContent,
-  Collapse,
+  Chip,
   Divider,
   Stack,
   Tooltip,
@@ -120,36 +121,19 @@ function Value({ label, value }: { label: string; value?: string | null }) {
   );
 }
 
-/**
- * How a copy stands against its base: how far it drifted, the changes of the base to
- * take or skip, and the fields it tailored, each of which can go back to the base or
- * into the base. Every other field follows the base by itself.
- */
-export function CvSyncPanel({
-  copy,
-  base,
-  canWrite,
-  details,
-  onChanged,
-}: {
-  copy: Cv;
-  base: Cv;
-  canWrite: boolean;
-  /** Whether to show how far the copy drifted and what it tailored; changes of the base always show. */
-  details: boolean;
-  /** After an action: the CVs changed, so load them again. */
-  onChanged: () => void;
-}) {
+/** How [copy] stands against its [base], loaded again whenever either is saved. */
+export function useCvSync(copy?: Cv | null, base?: Cv | null) {
   const [sync, setSync] = useState<CvSync | null>(null);
-  const [showTailored, setShowTailored] = useState(false);
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const code = copy && base && !copy.base ? copy.code : undefined;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: load again when either is saved
   useEffect(() => {
-    if (!copy.code) return;
+    setSync(null);
+    setError(null);
+    if (!code) return;
     let live = true;
-    CvClient.sync(copy.code)
+    CvClient.sync(code)
       .then((it) => live && setSync(it))
       .catch(
         (err) =>
@@ -158,7 +142,81 @@ export function CvSyncPanel({
     return () => {
       live = false;
     };
-  }, [copy.code, copy.updatedAt, base.updatedAt]);
+  }, [code, copy?.updatedAt, base?.updatedAt]);
+
+  return { sync, error, setError };
+}
+
+/**
+ * In a few words how far a copy drifted from its base and how much it tailored;
+ * clicked, it opens or closes the details below.
+ */
+export function CvSyncChip({
+  copy,
+  base,
+  sync,
+  open,
+  onToggle,
+}: {
+  copy: Cv;
+  base: Cv;
+  sync: CvSync | null;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const drift = divergence(base, copy);
+  const tailored = sync?.tailored.length;
+  return (
+    <Tooltip title={open ? 'Hide the details' : 'Show what this copy tailored'}>
+      <Chip
+        size="small"
+        variant="outlined"
+        color={drift > DIVERGENCE_WARNING ? 'warning' : 'default'}
+        data-testid="cv-divergence"
+        label={`${percent(drift)} different${tailored == null ? '' : ` · ${tailored} tailored`}`}
+        onClick={onToggle}
+        aria-expanded={open}
+        icon={
+          <ExpandMoreIcon
+            fontSize="small"
+            sx={{
+              transform: open ? 'rotate(180deg)' : undefined,
+              transition: 'transform 160ms ease',
+            }}
+          />
+        }
+      />
+    </Tooltip>
+  );
+}
+
+/**
+ * The changes of the base for a copy to take or skip and, when [details] are open, how
+ * far it drifted and the fields it tailored, each of which can go back to the base or
+ * into the base. Every other field follows the base by itself.
+ */
+export function CvSyncPanel({
+  copy,
+  base,
+  sync,
+  error,
+  setError,
+  canWrite,
+  details,
+  onChanged,
+}: {
+  copy: Cv;
+  base: Cv;
+  sync: CvSync | null;
+  error: string | null;
+  setError: (error: string | null) => void;
+  canWrite: boolean;
+  /** Whether to show how far the copy drifted and what it tailored; changes of the base always show. */
+  details: boolean;
+  /** After an action: the CVs changed, so load them again. */
+  onChanged: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
 
   const act = (item: CvSyncItem, action: CvSyncAction) => {
     if (!copy.code) return;
@@ -177,21 +235,21 @@ export function CvSyncPanel({
   if (!details && !error && !sync?.offers.length) return null;
 
   return (
-    <Card className="cv-actions" sx={{ mb: 3 }} data-testid="cv-sync">
+    <Card
+      className="cv-actions"
+      variant="outlined"
+      sx={{ mb: 3 }}
+      data-testid="cv-sync"
+    >
       <CardContent>
         <Stack spacing={2}>
           {error && <Alert severity="error">{error}</Alert>}
-          {details && (
-            <Typography
-              variant="body2"
-              color={far ? 'warning.main' : 'text.secondary'}
-              data-testid="cv-divergence"
-            >
-              {percent(drift)} of this copy differs from the base
-              {far
-                ? `: more than ${percent(DIVERGENCE_WARNING)}, check whether it still says the same as the base.`
-                : '.'}
-            </Typography>
+          {details && far && (
+            <Alert severity="warning">
+              {percent(drift)} of this copy differs from the base, more than{' '}
+              {percent(DIVERGENCE_WARNING)}: check whether it still says the
+              same as the base.
+            </Alert>
           )}
 
           {sync && sync.offers.length > 0 && (
@@ -245,60 +303,48 @@ export function CvSyncPanel({
 
           {sync && details && (
             <>
-              <Divider />
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  {sync.tailored.length === 0
-                    ? 'Everything here follows the base.'
-                    : `${sync.tailored.length} ${sync.tailored.length === 1 ? 'field' : 'fields'} tailored in this copy; everything else follows the base.`}
-                </Typography>
-                {sync.tailored.length > 0 && (
-                  <Button
-                    size="small"
-                    onClick={() => setShowTailored(!showTailored)}
-                  >
-                    {showTailored ? 'Hide' : 'Show'}
-                  </Button>
-                )}
-              </Stack>
-              <Collapse in={showTailored} unmountOnExit>
-                <Stack spacing={2}>
-                  {sync.tailored.map((item) => (
-                    <Box key={item.address} data-testid="cv-tailored">
-                      <Typography variant="subtitle2">
-                        {item.label}
-                        {item.kind === 'HIDDEN' && ' (left out of this copy)'}
-                        {item.kind === 'COPY_ONLY' && ' (only in this copy)'}
-                      </Typography>
-                      {(item.kind === 'TEXT' || item.kind === 'FACT') && (
-                        <>
-                          <Value label="This copy" value={item.copy} />
-                          <Value label="Base" value={item.base} />
-                        </>
-                      )}
-                      {canWrite && (
-                        <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+              {sync.offers.length > 0 && <Divider />}
+              <Typography variant="body2" color="text.secondary">
+                {sync.tailored.length === 0
+                  ? 'Everything here follows the base.'
+                  : 'Tailored in this copy; everything else follows the base:'}
+              </Typography>
+              <Stack spacing={2}>
+                {sync.tailored.map((item) => (
+                  <Box key={item.address} data-testid="cv-tailored">
+                    <Typography variant="subtitle2">
+                      {item.label}
+                      {item.kind === 'HIDDEN' && ' (left out of this copy)'}
+                      {item.kind === 'COPY_ONLY' && ' (only in this copy)'}
+                    </Typography>
+                    {(item.kind === 'TEXT' || item.kind === 'FACT') && (
+                      <>
+                        <Value label="This copy" value={item.copy} />
+                        <Value label="Base" value={item.base} />
+                      </>
+                    )}
+                    {canWrite && (
+                      <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                        <SyncButton
+                          action={
+                            BACK_TO_BASE[item.kind] ?? BACK_TO_BASE_DEFAULT
+                          }
+                          primary
+                          disabled={busy}
+                          onClick={() => act(item, 'ACCEPT')}
+                        />
+                        {item.kind !== 'HIDDEN' && (
                           <SyncButton
-                            action={
-                              BACK_TO_BASE[item.kind] ?? BACK_TO_BASE_DEFAULT
-                            }
-                            primary
+                            action={USE_IN_BASE}
                             disabled={busy}
-                            onClick={() => act(item, 'ACCEPT')}
+                            onClick={() => act(item, 'PROMOTE')}
                           />
-                          {item.kind !== 'HIDDEN' && (
-                            <SyncButton
-                              action={USE_IN_BASE}
-                              disabled={busy}
-                              onClick={() => act(item, 'PROMOTE')}
-                            />
-                          )}
-                        </Stack>
-                      )}
-                    </Box>
-                  ))}
-                </Stack>
-              </Collapse>
+                        )}
+                      </Stack>
+                    )}
+                  </Box>
+                ))}
+              </Stack>
             </>
           )}
         </Stack>
