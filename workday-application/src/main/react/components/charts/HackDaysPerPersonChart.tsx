@@ -119,6 +119,7 @@ const toRow = (it: AggregationHackDay): Row => {
 export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
   const colors = useChartColors();
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
 
   useEffect(() => {
     AggregationClient.hackDayReportByYear(
@@ -218,12 +219,28 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
         >
           {rows.map((row) => {
             let offset = 0;
+            const isHovered = hovered === row.name;
+            // Dim every other person so the hovered row stands out.
+            const rowProps = {
+              onMouseEnter: () => setHovered(row.name),
+              onMouseLeave: () => setHovered(null),
+            };
+            const rowSx = {
+              opacity: hovered === null || isHovered ? 1 : 0.35,
+              transition: 'opacity 120ms ease',
+            };
+            const inset = isHovered ? 1 : 4;
             return (
               <Box key={row.name} sx={{ display: 'contents' }}>
                 <Typography
                   noWrap
                   title={row.name}
-                  sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                  {...rowProps}
+                  sx={{
+                    ...rowSx,
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    fontWeight: isHovered ? 700 : 400,
+                  }}
                 >
                   {row.name}
                 </Typography>
@@ -233,13 +250,20 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
                   title={<Breakdown row={row} segments={segments} />}
                 >
                   <Box
-                    sx={{ position: 'relative', height: 26, cursor: 'default' }}
+                    {...rowProps}
+                    sx={{
+                      ...rowSx,
+                      position: 'relative',
+                      height: 26,
+                      cursor: 'default',
+                    }}
                   >
                     <Box
                       sx={{
                         position: 'absolute',
-                        top: 4,
-                        bottom: 4,
+                        top: inset,
+                        bottom: inset,
+                        transition: 'top 120ms ease, bottom 120ms ease',
                         left: 0,
                         width: pct(row.budget),
                         bgcolor: colors.available,
@@ -253,8 +277,9 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
                           key={s.key}
                           sx={{
                             position: 'absolute',
-                            top: 4,
-                            bottom: 4,
+                            top: inset,
+                            bottom: inset,
+                            transition: 'top 120ms ease, bottom 120ms ease',
                             left: pct(left),
                             width: pct(row[s.key]),
                             bgcolor: s.color,
@@ -276,7 +301,10 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
                   </Box>
                 </Tooltip>
                 <Typography
+                  {...rowProps}
                   sx={{
+                    ...rowSx,
+                    fontWeight: isHovered ? 700 : 400,
                     fontFamily: 'monospace',
                     fontSize: { xs: '0.875rem', sm: '1rem' },
                     textAlign: 'right',
