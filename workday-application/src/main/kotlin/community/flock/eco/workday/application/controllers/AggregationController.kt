@@ -10,7 +10,7 @@ import community.flock.eco.workday.api.endpoint.LeaveDayReportMeByYear
 import community.flock.eco.workday.api.endpoint.PersonNonProductiveHoursPerDay
 import community.flock.eco.workday.api.endpoint.RevenuePerClientByYear
 import community.flock.eco.workday.api.endpoint.TotalsPerMonthByYear
-import community.flock.eco.workday.api.endpoint.TotalsPerPersonByYear_1
+import community.flock.eco.workday.api.endpoint.TotalsPerPersonByYear
 import community.flock.eco.workday.application.model.AggregationClient
 import community.flock.eco.workday.application.model.AggregationClientPersonAssignmentItem
 import community.flock.eco.workday.application.model.AggregationClientPersonAssignmentOverview
@@ -54,7 +54,7 @@ import community.flock.eco.workday.api.model.PersonHolidayDetails as PersonHolid
 
 interface AggregationHandler :
     RevenuePerClientByYear.Handler,
-    TotalsPerPersonByYear_1.Handler,
+    TotalsPerPersonByYear.Handler,
     TotalsPerMonthByYear.Handler,
     LeaveDayReportByYear.Handler,
     LeaveDayReportMeByYear.Handler,
@@ -95,7 +95,7 @@ class AggregationController(
     }
 
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    override suspend fun totalsPerPersonByYear_1(request: TotalsPerPersonByYear_1.Request): TotalsPerPersonByYear_1.Response<*> {
+    override suspend fun totalsPerPersonByYear(request: TotalsPerPersonByYear.Request): TotalsPerPersonByYear.Response<*> {
         val year = request.queries.year
         val month = request.queries.month
         val (from, to) =
@@ -103,7 +103,7 @@ class AggregationController(
                 null -> LocalDate.of(year, 1, 1) to LocalDate.of(year, 12, 31)
                 else -> YearMonth.of(year, month).let { it.atDay(1) to it.atEndOfMonth() }
             }
-        return TotalsPerPersonByYear_1.Response200(
+        return TotalsPerPersonByYear.Response200(
             aggregationService.totalPerPerson(from, to).map(AggregationPerson::produce),
         )
     }

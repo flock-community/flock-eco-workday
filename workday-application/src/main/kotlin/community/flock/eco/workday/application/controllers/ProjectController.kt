@@ -62,7 +62,7 @@ class ProjectController(
     @PreAuthorize("hasAuthority('ProjectAuthority.WRITE')")
     override suspend fun deleteProject(request: DeleteProject.Request): DeleteProject.Response<*> {
         projectService.deleteByCode(request.path.code)
-        return DeleteProject.Response200(Unit)
+        return DeleteProject.Response200
     }
 
     private fun ProjectInternal.externalize() =

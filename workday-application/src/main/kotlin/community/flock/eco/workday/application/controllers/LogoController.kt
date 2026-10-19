@@ -63,7 +63,7 @@ class LogoController(
         request.path.id
             .toUuidOrNull()
             ?.takeIf { logoService.delete(it) }
-            ?.let { DeleteLogo.Response204(Unit) }
+            ?.let { DeleteLogo.Response204 }
             ?: DeleteLogo.Response404(Error("Logo not found"))
 
     /**

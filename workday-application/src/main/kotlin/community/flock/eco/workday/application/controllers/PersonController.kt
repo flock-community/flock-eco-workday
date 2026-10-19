@@ -11,11 +11,12 @@ import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.PersonPhoto
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.application.services.dataUrl
 import community.flock.eco.workday.application.services.decodeImage
 import community.flock.eco.workday.application.services.isUser
-import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
@@ -71,9 +72,10 @@ class PersonController(
                 q.active != null -> service.findAllByActive(pageable, q.active)
                 else -> service.findAll(pageable)
             }
+        val photos = service.findPhotos(page.content)
         return GetPersonAll.Response200(
-            body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            body = page.content.map { it.externalize(photos[it.id]) },
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -94,8 +96,9 @@ class PersonController(
         requireAuthority(PersonAuthority.READ)
         val start = LocalDate.parse(request.queries.start)
         val end = LocalDate.parse(request.queries.end)
-        val events = service.findAllPersonEvents(start, end).map { it.externalize() }
-        return GetPersonSpecialDates.Response200(events)
+        val events = service.findAllPersonEvents(start, end)
+        val photos = service.findPhotos(events.map { it.person })
+        return GetPersonSpecialDates.Response200(events.map { it.externalize(photos[it.person.id]) })
     }
 
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
@@ -140,7 +143,7 @@ class PersonController(
     override suspend fun deletePerson(request: DeletePerson.Request): DeletePerson.Response<*> {
         requireAuthority(PersonAuthority.ADMIN)
         service.deleteByUuid(UUID.fromString(request.path.uuid))
-        return DeletePerson.Response204(Unit)
+        return DeletePerson.Response204
     }
 
     private fun currentUser(): User? =
@@ -185,7 +188,9 @@ class PersonController(
                 }
             }
 
-    private fun Person.externalize(): PersonApi {
+    private fun Person.externalize(): PersonApi = externalize(service.findPhoto(this))
+
+    private fun Person.externalize(photo: PersonPhoto?): PersonApi {
         // person/user columns lack NOT NULL; JPA can hydrate null into these non-null properties.
         val uuid: UUID? = uuid
         val firstname: String? = firstname
@@ -210,7 +215,7 @@ class PersonController(
             address = address?.externalize(),
             user = user?.externalize(),
             fullName = listOfNotNull(firstname, lastname).joinToString(" ").ifBlank { null },
-            photo = photoDataUrl(),
+            photo = photo?.dataUrl(),
         )
     }
 
@@ -235,9 +240,9 @@ class PersonController(
         )
     }
 
-    private fun PersonEvent.externalize(): PersonEventApi =
+    private fun PersonEvent.externalize(photo: PersonPhoto?): PersonEventApi =
         PersonEventApi(
-            person = person.externalize(),
+            person = person.externalize(photo),
             eventType =
                 when (eventType) {
                     PersonEvent.EventType.BIRTHDAY -> PersonEventEventTypeApi.BIRTHDAY

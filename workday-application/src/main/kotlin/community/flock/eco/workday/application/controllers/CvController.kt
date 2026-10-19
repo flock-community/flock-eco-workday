@@ -23,7 +23,7 @@ import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.application.services.photoDataUrl
+import community.flock.eco.workday.application.services.dataUrl
 import community.flock.eco.workday.application.utils.parseSort
 import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
@@ -89,7 +89,7 @@ class CvController(
             }
         return GetCvAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -126,7 +126,7 @@ class CvController(
         findWritable(request.path.code)
             ?.let {
                 cvService.deleteByCode(it.code)
-                DeleteCv.Response204(Unit)
+                DeleteCv.Response204
             }
             ?: DeleteCv.Response404(Error("CV not found"))
 
@@ -309,7 +309,7 @@ class CvController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
-            photo = photoDataUrl(),
+            photo = personService.findPhoto(this)?.dataUrl(),
         )
 
     /**

@@ -1,6 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.repository.PersonPhotoRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.user.repositories.UserRepository
@@ -23,6 +24,9 @@ class PersonServiceTest {
 
     @MockK
     lateinit var userRepository: UserRepository
+
+    @MockK
+    lateinit var photoRepository: PersonPhotoRepository
 
     @InjectMockKs
     lateinit var personService: PersonService

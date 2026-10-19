@@ -512,6 +512,25 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .andExpect(jsonPath("\$.photo").doesNotExist())
     }
 
+    @Test
+    fun `a person with a photo can be deleted`() {
+        val user = createUser()
+
+        val uuid =
+            mvc
+                .perform(post(baseUrl).with(user).json(personJson(photo = aPngDataUrl)))
+                .asyncDispatch()
+                .andExpect(status().isOk)
+                .andReturn()
+                .response.contentAsString
+                .let { mapper.readTree(it)["uuid"].asText() }
+
+        mvc
+            .perform(delete("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isNoContent)
+    }
+
     /** A login user holding only [authorities], with a person linked to it. */
     private fun createLinkedUser(vararg authorities: String): Pair<RequestPostProcessor, UUID> {
         val account =
