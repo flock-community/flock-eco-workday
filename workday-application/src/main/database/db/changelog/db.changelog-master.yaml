@@ -124,6 +124,3 @@ databaseChangeLog:
   - include:
       file: db.changelog-042-person-photo-table.yaml
       relativeToChangelogFile: true
-  - include:
-      file: db.changelog-044-event-day-signed-up-hours.yaml
-      relativeToChangelogFile: true

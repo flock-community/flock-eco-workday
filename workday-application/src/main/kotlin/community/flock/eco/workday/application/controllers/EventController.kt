@@ -274,7 +274,7 @@ class EventController(
             type = type.toApi(),
             days = days,
             persons = persons.map { it.externalize() },
-            eventDays = attendingEventDays.map { it.externalize() },
+            eventDays = eventDays.map { it.externalize() },
         )
 
     private fun EventDay.externalize(): EventDayApi =
@@ -312,7 +312,7 @@ class EventController(
             code = code,
             description = description,
             persons = persons.map { it.toProjectionApi() },
-            hours = attendingEventDays.firstOrNull { it.person.uuid == me?.uuid }?.hours ?: hours,
+            hours = eventDays.firstOrNull { it.person.uuid == me?.uuid }?.hours ?: hours,
         )
 
     private fun Person.toProjectionApi(): PersonProjectionApi =

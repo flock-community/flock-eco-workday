@@ -25,7 +25,7 @@ data class HackDayAbsence(
     val sickHours: BigDecimal,
 )
 
-/** A holiday or sick day of this person in this period was created, changed or deleted. */
+/** A holiday or sick day of this person in this period was created or changed. */
 data class AbsenceChanged(
     val personId: UUID,
     val from: LocalDate,
@@ -87,9 +87,9 @@ class HackDayAbsenceService(
             .toMap()
     }
 
-    // The sign-up must not count hours the person was away as attended, and gets them back once the absence goes.
+    // The sign-up must not count hours the person was away as attended.
     @EventListener
-    fun fitHackSignUps(change: AbsenceChanged) {
+    fun cutHackSignUps(change: AbsenceChanged) {
         val holidayHours =
             leaveDayService
                 .findAllActiveByPerson(change.from, change.to, change.personId)
@@ -101,7 +101,7 @@ class HackDayAbsenceService(
                 .filter { it.status != Status.REJECTED }
                 .map { it.hoursPerDay() }
         val absences = holidayHours + sickHours
-        eventService.fitHackSignUpsToAbsence(change.personId, change.from, change.to) { date ->
+        eventService.cutHackSignUpsForAbsence(change.personId, change.from, change.to) { date ->
             absences.fold(BigDecimal.ZERO) { acc, hours -> acc + (hours[date] ?: BigDecimal.ZERO) }
         }
     }

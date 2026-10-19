@@ -99,18 +99,14 @@ class LeaveDayService(
         isUpdatedByOwner: Boolean,
     ): LeaveDay {
         val currentLeaveDay = leaveDayRepository.findByCode(code).toNullable()
-        // Saving merges into this same instance, so remember where the absence was before.
-        val previous = currentLeaveDay?.let { AbsenceChanged(it) }
         return currentLeaveDay
             .run {
                 form
                     .validate()
                     .consume(this)
                     .save()
-            }.also {
-                previous?.let { publisher.publishEvent(it) }
-                publisher.publishEvent(AbsenceChanged(it))
-            }.also {
+            }.also { publisher.publishEvent(AbsenceChanged(it)) }
+            .also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }
@@ -118,11 +114,9 @@ class LeaveDayService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) {
-        val leaveDay = findByCode(code)
-        leaveDayRepository.deleteByCode(code)
-        leaveDay?.let { publisher.publishEvent(AbsenceChanged(it)) }
-    }
+    fun deleteByCode(code: String) =
+        leaveDayRepository
+            .deleteByCode(code)
 
     private fun LeaveDay.save() = leaveDayRepository.save(this)
 

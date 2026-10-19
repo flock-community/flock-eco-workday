@@ -99,18 +99,14 @@ class SickDayService(
         isUpdatedByOwner: Boolean,
     ): SickDay {
         val currentSickDay = repository.findByCode(code).toNullable()
-        // Saving merges into this same instance, so remember where the absence was before.
-        val previous = currentSickDay?.let { AbsenceChanged(it) }
         return currentSickDay
             .run {
                 form
                     .validate()
                     .consume(this)
                     .save()
-            }.also {
-                previous?.let { publisher.publishEvent(it) }
-                publisher.publishEvent(AbsenceChanged(it))
-            }.also {
+            }.also { publisher.publishEvent(AbsenceChanged(it)) }
+            .also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }
@@ -118,11 +114,7 @@ class SickDayService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) {
-        val sickDay = findByCode(code)
-        repository.deleteByCode(code)
-        sickDay?.let { publisher.publishEvent(AbsenceChanged(it)) }
-    }
+    fun deleteByCode(code: String) = repository.deleteByCode(code)
 
     private fun SickDayForm.consume(it: SickDay? = null): SickDay {
         val person =
