@@ -6,6 +6,7 @@ import { EventList } from './EventList';
 
 type UpcomingEventsCardProps = {
   items: FlockEvent[];
+  lockedEventCodes?: string[];
   onEventToggle: (
     event: FlockEvent,
     isSubscribed: boolean,
@@ -24,7 +25,11 @@ const pageOfNextUpcomingEvent = (items: FlockEvent[]) => {
   return idx === -1 ? lastPage(items.length) : Math.floor(idx / rowsPerPage);
 };
 
-export function HackDayList({ items, onEventToggle }: UpcomingEventsCardProps) {
+export function HackDayList({
+  items,
+  lockedEventCodes,
+  onEventToggle,
+}: UpcomingEventsCardProps) {
   const [page, setPage] = useState(0);
   const landedOnUpcoming = useRef(false);
 
@@ -42,6 +47,7 @@ export function HackDayList({ items, onEventToggle }: UpcomingEventsCardProps) {
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage,
         )}
+        lockedEventCodes={lockedEventCodes}
         onEventToggle={onEventToggle}
       />
       {items.length > rowsPerPage && (

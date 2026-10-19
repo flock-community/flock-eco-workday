@@ -162,6 +162,13 @@ const getEventsByYear = (year: number): Promise<FlockEvent[]> => {
     .then((res) => res?.body.map(internalize));
 };
 
+// Codes of the hack days the current person was sick on; their attendance is locked.
+const getSickHackDayCodes = (year: number): Promise<string[]> =>
+  fetch(`${path}/sick-hack-days?year=${year}`, { method: 'GET' })
+    .then((it) => validateResponse<string[]>(it))
+    .then((it) => checkResponse(it))
+    .then((res) => res?.body ?? []);
+
 const getHackDays = (year: number): Promise<FlockEvent[]> =>
   getEventsByYear(year).then((events) =>
     events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
@@ -202,6 +209,7 @@ export const EventClient = {
   deleteRatings,
   getEventsByYear,
   getHackDays,
+  getSickHackDayCodes,
   subscribeToEvent,
   unsubscribeFromEvent,
 };

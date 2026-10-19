@@ -59,6 +59,31 @@ class HackDayAbsenceService(
             sickDays = sickDayService.findAllActiveByPerson(from, to, personId),
         )
     }
+
+    /** Codes of the hack days the person was sick on; their attendance is locked. */
+    fun findSickHackDayCodes(
+        year: Int,
+        personId: UUID,
+    ): List<String> {
+        val sickDays = sickDayService.findAllActiveByPerson(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31), personId)
+        return eventService
+            .findAllEventsOf(year)
+            .filter { it.isSickOn(sickDays) }
+            .map { it.code }
+    }
+
+    fun isSickOnHackDay(
+        event: Event,
+        personId: UUID,
+    ): Boolean = event.isSickOn(sickDayService.findAllActiveByPerson(event.from, event.to, personId))
+}
+
+private fun Event.isSickOn(sickDays: Iterable<SickDay>): Boolean {
+    if (type != EventType.FLOCK_HACK_DAY) return false
+    val sickHours = sickDays.filter { it.status != Status.REJECTED }.map { it.hoursPerDay() }
+    return hoursPerDay().any { (date, hours) ->
+        hours > BigDecimal.ZERO && sickHours.any { (it[date] ?: BigDecimal.ZERO) > BigDecimal.ZERO }
+    }
 }
 
 internal fun hackDayAbsences(

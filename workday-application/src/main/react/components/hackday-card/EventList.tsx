@@ -5,6 +5,7 @@ import { EventListItem } from './EventListItem';
 
 type FlockEventListProps = {
   events: FlockEvent[];
+  lockedEventCodes?: string[];
   onEventToggle: (
     event: FlockEvent,
     isSubscribed: boolean,
@@ -12,7 +13,11 @@ type FlockEventListProps = {
   ) => void;
 };
 
-export function EventList({ events, onEventToggle }: FlockEventListProps) {
+export function EventList({
+  events,
+  lockedEventCodes = [],
+  onEventToggle,
+}: FlockEventListProps) {
   if (events && events.length === 0) {
     return (
       <Typography display={'block'}>There are no events planned.</Typography>
@@ -25,6 +30,7 @@ export function EventList({ events, onEventToggle }: FlockEventListProps) {
         <EventListItem
           key={event.code}
           event={event}
+          sick={lockedEventCodes.includes(event.code)}
           onEventToggle={onEventToggle}
         />
       ))}

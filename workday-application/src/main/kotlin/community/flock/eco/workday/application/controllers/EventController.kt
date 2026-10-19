@@ -6,11 +6,13 @@ import community.flock.eco.workday.api.endpoint.GetEventAll
 import community.flock.eco.workday.api.endpoint.GetEventByCode
 import community.flock.eco.workday.api.endpoint.GetEventRatings
 import community.flock.eco.workday.api.endpoint.GetEventsByYear
+import community.flock.eco.workday.api.endpoint.GetSickHackDaysMe
 import community.flock.eco.workday.api.endpoint.PostEvent
 import community.flock.eco.workday.api.endpoint.PostEventRating
 import community.flock.eco.workday.api.endpoint.PutEvent
 import community.flock.eco.workday.api.endpoint.SubscribeToEvent
 import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
+import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
@@ -23,6 +25,7 @@ import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
+import community.flock.eco.workday.application.services.HackDayAbsenceService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.isUser
 import org.springframework.data.domain.PageRequest
@@ -56,6 +59,7 @@ class EventController(
     private val eventService: EventService,
     private val eventRatingService: EventRatingService,
     private val personService: PersonService,
+    private val hackDayAbsenceService: HackDayAbsenceService,
 ) : GetEventAll.Handler,
     GetEventByCode.Handler,
     PostEvent.Handler,
@@ -66,7 +70,8 @@ class EventController(
     UnsubscribeFromEvent.Handler,
     GetEventRatings.Handler,
     PostEventRating.Handler,
-    DeleteEventRating.Handler {
+    DeleteEventRating.Handler,
+    GetSickHackDaysMe.Handler {
     private fun authentication(): Authentication =
         SecurityContextHolder.getContext().authentication
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
@@ -140,6 +145,7 @@ class EventController(
         // generated interface; check the SUBSCRIBE authority explicitly.
         authentication().requireAuthority(EventAuthority.SUBSCRIBE)
         val person = currentPerson()
+        if (isSickOnHackDay(request.path.eventCode, person)) return SubscribeToEvent.Response409(sickOnHackDay)
         val event = eventService.subscribeToEvent(request.path.eventCode, person, request.body.hours)
         return SubscribeToEvent.Response200(event.externalize())
     }
@@ -151,6 +157,7 @@ class EventController(
             .findByCode(request.path.eventCode)
             ?.applyAuthentication(auth)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
+        if (isSickOnHackDay(request.path.eventCode, person)) return UnsubscribeFromEvent.Response409(sickOnHackDay)
         val event = eventService.unsubscribeFromEvent(request.path.eventCode, person)
         return UnsubscribeFromEvent.Response200(event.externalize())
     }
@@ -187,6 +194,25 @@ class EventController(
         )
         return DeleteEventRating.Response204(Unit)
     }
+
+    override suspend fun getSickHackDaysMe(request: GetSickHackDaysMe.Request): GetSickHackDaysMe.Response<*> {
+        authentication().requireAuthority(EventAuthority.SUBSCRIBE)
+        return GetSickHackDaysMe.Response200(
+            hackDayAbsenceService.findSickHackDayCodes(request.queries.year, currentPerson().uuid),
+        )
+    }
+
+    // A hack day missed through sickness counts against the budget, so its attendance is locked.
+    private fun isSickOnHackDay(
+        eventCode: String,
+        person: Person,
+    ): Boolean =
+        eventService
+            .findByCode(eventCode)
+            ?.let { hackDayAbsenceService.isSickOnHackDay(it, person.uuid) }
+            ?: false
+
+    private val sickOnHackDay = Error("You were sick on this hack day, so it can't be changed")
 
     private fun currentPerson(): Person =
         personService.findByUserCode(authentication().name)

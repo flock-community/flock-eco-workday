@@ -34,6 +34,8 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 
 type FlockEventListItemProps = {
   event: FlockEvent;
+  // Missed through sickness: counts against the hack budget and can't be changed.
+  sick?: boolean;
   onEventToggle: (
     flockEvent: FlockEvent,
     isSubscribed: boolean,
@@ -43,16 +45,22 @@ type FlockEventListItemProps = {
 
 export function EventListItem({
   event,
+  sick = false,
   onEventToggle,
 }: FlockEventListItemProps) {
   const [person] = usePerson();
 
   const dateString = useMemo(
     () =>
-      event.from.isSame(event.to, 'day')
-        ? `date: ${event.from.format(DMY_DATE)}`
-        : `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`,
-    [event],
+      [
+        event.from.isSame(event.to, 'day')
+          ? `date: ${event.from.format(DMY_DATE)}`
+          : `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`,
+        sick ? 'missed due to sickness' : null,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    [event, sick],
   );
 
   const attendingPerServer = person?.uuid
@@ -119,6 +127,7 @@ export function EventListItem({
             onBlur={() => {
               editingRef.current = false;
             }}
+            disabled={sick}
             onChange={(e) => handleHoursChange(Number(e.target.value))}
             sx={[{ width: 96 }, NO_SPINNER_SX]}
             slotProps={{
@@ -132,6 +141,7 @@ export function EventListItem({
         <Switch
           checked={btnState}
           onChange={handleToggle}
+          disabled={sick}
           name="presentToggle"
           color="primary"
         />

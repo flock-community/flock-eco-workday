@@ -10,11 +10,12 @@ type HackDayEventsCardProps = {
 
 export function HackDayEventsCard({ onToggle }: HackDayEventsCardProps) {
   const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
+  const [sickEventCodes, setSickEventCodes] = useState<string[]>([]);
 
   const fetchEvents = useCallback(() => {
-    EventClient.getHackDays(new Date().getFullYear()).then((res) =>
-      setFlockEvents(res),
-    );
+    const year = new Date().getFullYear();
+    EventClient.getHackDays(year).then((res) => setFlockEvents(res));
+    EventClient.getSickHackDayCodes(year).then((res) => setSickEventCodes(res));
   }, []);
 
   useEffect(() => {
@@ -39,7 +40,11 @@ export function HackDayEventsCard({ onToggle }: HackDayEventsCardProps) {
     <Card variant="outlined" sx={{ borderRadius: '14px' }}>
       <CardHeader title="Hack days of this year" />
       <CardContent>
-        <HackDayList items={flockEvents} onEventToggle={eventToggled} />
+        <HackDayList
+          items={flockEvents}
+          lockedEventCodes={sickEventCodes}
+          onEventToggle={eventToggled}
+        />
       </CardContent>
     </Card>
   );

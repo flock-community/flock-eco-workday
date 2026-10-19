@@ -16,11 +16,16 @@ endpoint DeleteEvent DELETE /api/events/{code: String} -> {
 endpoint GetEventsByYear GET /api/events/year ? {year: Integer32} -> {
   200 -> EventProjection[]
 }
+endpoint GetSickHackDaysMe GET /api/events/sick-hack-days ? {year: Integer32} -> {
+  200 -> String[]
+}
 endpoint SubscribeToEvent PUT EventSubscription /api/events/{eventCode: String}/subscribe -> {
   200 -> Event
+  409 -> Error
 }
 endpoint UnsubscribeFromEvent PUT /api/events/{eventCode: String}/unsubscribe -> {
   200 -> Event
+  409 -> Error
 }
 endpoint GetEventRatings GET /api/events/{code: String}/ratings -> {
   200 -> EventRating[]
