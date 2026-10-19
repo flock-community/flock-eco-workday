@@ -129,11 +129,14 @@ export function CvSyncPanel({
   copy,
   base,
   canWrite,
+  details,
   onChanged,
 }: {
   copy: Cv;
   base: Cv;
   canWrite: boolean;
+  /** Whether to show how far the copy drifted and what it tailored; changes of the base always show. */
+  details: boolean;
   /** After an action: the CVs changed, so load them again. */
   onChanged: () => void;
 }) {
@@ -170,21 +173,26 @@ export function CvSyncPanel({
   const drift = divergence(base, copy);
   const far = drift > DIVERGENCE_WARNING;
 
+  // Without the details, the panel is only there when the base changed
+  if (!details && !error && !sync?.offers.length) return null;
+
   return (
     <Card className="cv-actions" sx={{ mb: 3 }} data-testid="cv-sync">
       <CardContent>
         <Stack spacing={2}>
           {error && <Alert severity="error">{error}</Alert>}
-          <Typography
-            variant="body2"
-            color={far ? 'warning.main' : 'text.secondary'}
-            data-testid="cv-divergence"
-          >
-            {percent(drift)} of this copy differs from the base
-            {far
-              ? `: more than ${percent(DIVERGENCE_WARNING)}, check whether it still says the same as the base.`
-              : '.'}
-          </Typography>
+          {details && (
+            <Typography
+              variant="body2"
+              color={far ? 'warning.main' : 'text.secondary'}
+              data-testid="cv-divergence"
+            >
+              {percent(drift)} of this copy differs from the base
+              {far
+                ? `: more than ${percent(DIVERGENCE_WARNING)}, check whether it still says the same as the base.`
+                : '.'}
+            </Typography>
+          )}
 
           {sync && sync.offers.length > 0 && (
             <Alert severity="info" data-testid="cv-base-changed">
@@ -235,7 +243,7 @@ export function CvSyncPanel({
             );
           })}
 
-          {sync && (
+          {sync && details && (
             <>
               <Divider />
               <Stack direction="row" alignItems="center" spacing={1}>

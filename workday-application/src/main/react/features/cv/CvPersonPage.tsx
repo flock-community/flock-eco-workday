@@ -7,19 +7,24 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HistoryIcon from '@mui/icons-material/History';
 import LinkIcon from '@mui/icons-material/Link';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Alert,
   Box,
   Button,
   Card,
   CardContent,
+  FormControlLabel,
   GlobalStyles,
+  IconButton,
   Link,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  Popover,
   Stack,
+  Switch,
   TextField,
   Tooltip,
   Typography,
@@ -54,6 +59,16 @@ import {
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
+/** Remembers whether a copy shows how far it drifted from its base and what it tailored. */
+const SYNC_DETAILS_KEY = 'cv-sync-details';
+
+function readSyncDetails(): boolean {
+  try {
+    return localStorage.getItem(SYNC_DETAILS_KEY) === 'shown';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * When printing, only the CV is left: the app bar, the sidebar, the person selector
@@ -138,6 +153,8 @@ function PersonCv({
   const [busy, setBusy] = useState(false);
   // Counts up to load the CVs again, after the base changed
   const [reload, setReload] = useState(0);
+  const [syncDetails, setSyncDetails] = useState(readSyncDetails);
+  const [settingsMenu, setSettingsMenu] = useState<HTMLElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   // The CV codes looked up to find whose CV a link is to, so that happens once
   const lookedUp = useRef(new Set<string>());
@@ -376,6 +393,43 @@ function PersonCv({
               Make this the base
             </Button>
           )}
+          <Tooltip title="Settings">
+            <IconButton
+              size="small"
+              aria-label="Settings"
+              onClick={(event) => setSettingsMenu(event.currentTarget)}
+            >
+              <SettingsIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Popover
+            open={Boolean(settingsMenu)}
+            anchorEl={settingsMenu}
+            onClose={() => setSettingsMenu(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          >
+            <FormControlLabel
+              sx={{ m: 0, p: 2 }}
+              control={
+                <Switch
+                  checked={syncDetails}
+                  onChange={(event) => {
+                    const shown = event.target.checked;
+                    setSyncDetails(shown);
+                    try {
+                      localStorage.setItem(
+                        SYNC_DETAILS_KEY,
+                        shown ? 'shown' : 'hidden',
+                      );
+                    } catch {
+                      // Then the choice is only remembered on this page
+                    }
+                  }}
+                />
+              }
+              label="Show how much differs from the base and the tailored fields"
+            />
+          </Popover>
         </Stack>
       ) : (
         <Alert
@@ -597,6 +651,7 @@ function PersonCv({
           copy={current}
           base={base}
           canWrite={canWrite}
+          details={syncDetails}
           onChanged={() => setReload((it) => it + 1)}
         />
       )}

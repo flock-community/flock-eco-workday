@@ -275,6 +275,11 @@ test.describe('CV', () => {
     await page.getByRole('button', { name: "Take the base's" }).click();
     await expect(cv.getByText('Engineer and coach.')).toBeVisible();
     await expect(page.getByTestId('cv-base-changed')).toHaveCount(0);
+    // How far the copy drifted shows when asked for in the settings
+    await expect(page.getByTestId('cv-sync')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByLabel(/Show how much differs/).check();
+    await page.keyboard.press('Escape');
     await expect(page.getByTestId('cv-sync')).toContainText(
       'Everything here follows the base.',
     );
