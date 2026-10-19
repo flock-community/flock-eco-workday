@@ -33,7 +33,9 @@ class Event(
     val eventDays: MutableList<EventDay> = mutableListOf(),
 ) : AbstractCodeEntity(id, code),
     Daily {
-    val persons: List<Person> get() = eventDays.map { it.person }.distinct()
+    val attendingEventDays: List<EventDay> get() = eventDays.filterNot { it.missedEntirely }
+
+    val persons: List<Person> get() = attendingEventDays.map { it.person }.distinct()
 
     val budgetCategory: BudgetCategory?
         get() =

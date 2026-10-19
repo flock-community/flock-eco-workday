@@ -1,6 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.model.Event
@@ -177,8 +178,11 @@ class HackDayAbsenceTest(
         sickDayService.create(sickForm(halfDay.uuid, 4.0))
 
         val signUps = eventDayRepository.findAllByEventCode(event.code).associateBy { it.person.uuid }
-        assertEquals(null, signUps[fullDay.uuid])
+        // The missed sign-up stays at 0 hours and remembers the 8 hours to put back.
+        assertEquals(0.0, signUps.getValue(fullDay.uuid).hours)
+        assertEquals(8.0, signUps.getValue(fullDay.uuid).signedUpHours)
         assertEquals(4.0, signUps.getValue(halfDay.uuid).hours)
+        assertEquals(8.0, signUps.getValue(halfDay.uuid).signedUpHours)
 
         budgetSummaryService.getSummary(fullDay.uuid, year).let {
             assertEquals(8.0, it.hackTimeBudget.used.toDouble())
@@ -193,7 +197,7 @@ class HackDayAbsenceTest(
         // Editing the sick day again must not cut the hours a second time.
         val halfDaySick = sickDayService.findAllActiveByPerson(hackDay, hackDay, halfDay.uuid).single()
         sickDayService.update(halfDaySick.code, sickForm(halfDay.uuid, 4.0), isUpdatedByOwner = true)
-        assertEquals(4.0, eventDayRepository.findAllByEventCode(event.code).single().hours)
+        assertEquals(mapOf(halfDay.uuid to 4.0), signUpHours(event))
     }
 
     @Test
@@ -272,6 +276,32 @@ class HackDayAbsenceTest(
         assertEquals(mapOf(person.uuid to 4.0), signUpHours(event))
     }
 
+    @Test
+    fun `an admin editing the hack day keeps a missed sign-up so it can still come back`() {
+        val missed = createHelper.createPersonEntity("Missed", "Day")
+        val other = createHelper.createPersonEntity("Other", "Attendee")
+        val event = signedUpHackDay(missed, other)
+        val holiday = leaveDayService.create(holidayForm(missed.uuid, 8.0))
+
+        // The dialog only lists the people attending.
+        eventService.update(
+            event.code,
+            EventForm(
+                description = "Renamed",
+                from = hackDay,
+                to = hackDay,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                personIds = listOf(other.uuid),
+                costs = 0.0,
+                type = EventType.FLOCK_HACK_DAY,
+            ),
+        )
+        leaveDayService.deleteByCode(holiday.code)
+
+        assertEquals(mapOf(missed.uuid to 8.0, other.uuid to 8.0), signUpHours(event))
+    }
+
     private fun signedUpHackDay(vararg persons: Person): Event {
         persons.forEach { createHelper.createContractInternal(person = it, from = from, to = to, hackTimeBudget = 160) }
         return createHelper.createEvent(
@@ -285,7 +315,12 @@ class HackDayAbsenceTest(
         )
     }
 
-    private fun signUpHours(event: Event) = eventDayRepository.findAllByEventCode(event.code).associate { it.person.uuid to it.hours }
+    // Sign-ups that count as attended; one missed entirely is kept only to put it back later.
+    private fun signUpHours(event: Event) =
+        eventDayRepository
+            .findAllByEventCode(event.code)
+            .filterNot { it.missedEntirely }
+            .associate { it.person.uuid to it.hours }
 
     private fun sickForm(
         personId: UUID,

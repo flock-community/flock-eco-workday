@@ -15,13 +15,13 @@ class EventDayService(
     fun findAllActive(
         from: LocalDate,
         to: LocalDate,
-    ): Iterable<EventDay> = eventDayRepository.findAllActive(from, to)
+    ): Iterable<EventDay> = eventDayRepository.findAllActive(from, to).filterNot { it.missedEntirely }
 
     fun findAllActiveByPerson(
         from: LocalDate,
         to: LocalDate,
         personCode: UUID,
-    ): Iterable<EventDay> = eventDayRepository.findAllActiveByPerson(from, to, personCode)
+    ): Iterable<EventDay> = eventDayRepository.findAllActiveByPerson(from, to, personCode).filterNot { it.missedEntirely }
 
     fun deleteByEventCode(eventCode: String) = eventDayRepository.deleteByEventCode(eventCode)
 }
