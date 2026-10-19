@@ -5,9 +5,12 @@ Usage: python3 -I cvapi.py <command> [args]
   whoami                      the user and person behind the token
   persons                     uuid and name of every person
   logos                       the shared logo collection
-  list [PERSON_UUID]          CVs (all for an admin, or of one person)
+  list [PERSON_UUID]          CVs (all for an admin, or of one person); the base of a language is marked
   get CODE                    a CV as the API returns it
-  get-form CODE               a CV as an editable CvForm (with personId, logoIds and photo kept)
+  get-form CODE               a CV as an editable CvForm (with personId, logoIds, item ids and photo kept)
+  copy-form BASE_CODE NAME    a new copy of the base CV BASE_CODE as a CvForm named NAME (with basedOn), for create
+  sync CODE                   how a copy stands against its base: changes of the base on offer, tailored fields
+  sync CODE ADDRESS ACTION    act on one field of a copy: ACCEPT (the base's), SKIP (keep the copy's), PROMOTE (into the base)
   create FORM.json            POST /api/cvs; a `photo` in the form is applied to the person after
   put CODE FORM.json          PUT /api/cvs/CODE (a full replacement, see SKILL.md); same for `photo`
   set-photo PERSON_UUID [IMG] the person's photo directly: replaces it with IMG, or removes it when
@@ -122,10 +125,11 @@ def to_form(cv):
         "phone": cv.get("phone"),
         "summary": cv.get("summary"),
         "experiences": [
-            {k: e.get(k) for k in ("from", "to", "role", "client", "employer", "technologies", "description", "logoId")}
+            {k: e.get(k) for k in ("id", "from", "to", "role", "client", "employer", "technologies", "description", "logoId")}
             for e in cv.get("experiences") or []
         ],
-        "skills": [{k: s.get(k) for k in ("category", "name", "level")} for s in cv.get("skills") or []],
+        # The ids tie an item to the same one in the base or a copy; keep them
+        "skills": [{k: s.get(k) for k in ("id", "category", "name", "level")} for s in cv.get("skills") or []],
         "education": cv.get("education"),
         "subjects": cv.get("subjects"),
         "languages": cv.get("languages"),
@@ -188,11 +192,25 @@ def main():
     elif cmd == "list":
         query = f"?size=1000&personId={args[0]}" if args else "?size=1000"
         for cv in call("GET", "/api/cvs" + query):
-            print(cv["code"], cv["language"], cv["name"], "|", cv["person"]["firstname"], cv["person"]["lastname"])
+            kind = "base" if cv.get("base") else ("copy" if cv.get("basedOn") else "-")
+            print(cv["code"], cv["language"], kind, cv["name"], "|", cv["person"]["firstname"], cv["person"]["lastname"])
     elif cmd == "get":
         out(call("GET", f"/api/cvs/{args[0]}"))
     elif cmd == "get-form":
         out(to_form(call("GET", f"/api/cvs/{args[0]}")))
+    elif cmd == "copy-form":
+        base = call("GET", f"/api/cvs/{args[0]}")
+        if not base.get("base"):
+            sys.exit(f"{args[0]} is not a base CV; a copy is always made of the base (see `list`)")
+        form = to_form(base)
+        form.pop("photo")
+        out({**form, "name": args[1], "basedOn": base["code"]})
+    elif cmd == "sync":
+        if len(args) == 3:
+            cv = call("POST", f"/api/cvs/{args[0]}/sync", {"address": args[1], "action": args[2].upper()})
+            print(cv["code"], cv["name"], "| synced", args[1], args[2].upper())
+        else:
+            out(call("GET", f"/api/cvs/{args[0]}/sync"))
     elif cmd == "create":
         form = json.load(open(args[0]))
         photo = form.pop("photo", _NO_PHOTO_KEY)

@@ -78,6 +78,7 @@ describe('CvDocument', () => {
         cv={cv({
           experiences: [
             {
+              id: undefined,
               from: '2022-12',
               to: '2024-07',
               role: 'Software Engineer',
@@ -173,6 +174,7 @@ describe('CvDocument', () => {
         cv={cv({
           experiences: [
             {
+              id: undefined,
               from: '2022-12',
               to: '2024-07',
               role: 'Software Engineer',
