@@ -96,7 +96,7 @@ function SyncButton({
       <span>
         <Button
           size="small"
-          variant={primary ? 'outlined' : 'text'}
+          variant={primary ? 'outlined' : undefined}
           disabled={disabled}
           onClick={onClick}
         >
