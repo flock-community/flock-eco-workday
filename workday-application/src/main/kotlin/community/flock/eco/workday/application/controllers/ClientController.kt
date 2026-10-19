@@ -66,7 +66,7 @@ class ClientController(
     @PreAuthorize("hasAuthority('ClientAuthority.WRITE')")
     override suspend fun deleteClient(request: DeleteClient.Request): DeleteClient.Response<*> {
         clientService.delete(request.path.code)
-        return DeleteClient.Response200(Unit)
+        return DeleteClient.Response200
     }
 
     private fun ClientInternal.externalize() =

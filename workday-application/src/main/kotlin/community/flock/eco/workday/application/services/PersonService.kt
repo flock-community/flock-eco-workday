@@ -4,6 +4,8 @@ import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.PersonPhoto
+import community.flock.eco.workday.application.repository.PersonPhotoRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.user.repositories.UserRepository
@@ -18,8 +20,8 @@ import java.time.LocalDate
 import java.util.Base64
 import java.util.UUID
 
-/** The photo as a data URL the browser can use directly as an `<img src>`; null without one. */
-fun Person.photoDataUrl(): String? = photoData?.let { data -> "data:$photoContentType;base64,${Base64.getEncoder().encodeToString(data)}" }
+/** The photo as a data URL the browser can use directly as an `<img src>`. */
+fun PersonPhoto.dataUrl(): String = "data:$contentType;base64,${Base64.getEncoder().encodeToString(data)}"
 
 /** The image bytes of a base64 string, optionally a data URL (`data:image/png;base64,...`). */
 fun decodeImage(value: String): ByteArray = Base64.getDecoder().decode(value.substringAfter("base64,").trim())
@@ -29,6 +31,7 @@ fun decodeImage(value: String): ByteArray = Base64.getDecoder().decode(value.sub
 class PersonService(
     private val repository: PersonRepository,
     private val userRepository: UserRepository,
+    private val photoRepository: PersonPhotoRepository,
 ) {
     private fun Person.render(form: PersonForm): Person {
         val user =
@@ -56,30 +59,23 @@ class PersonService(
             user = user,
             googleDriveId = form.googleDriveId,
             address = form.address?.toEntity(),
-            photoContentType = photoContentType,
-            photoData = photoData,
-        ).apply { change(form.photo) }
+        )
     }
 
-    /** Applies [photo] to the person; saved along with the rest of the form. */
-    private fun Person.change(photo: PhotoChange) {
-        when (photo) {
-            PhotoChange.Keep -> Unit
-            PhotoChange.Remove -> {
-                photoContentType = null
-                photoData = null
-            }
-            is PhotoChange.Replace -> {
-                photoContentType = photoContentType(photo.data)
-                photoData = photo.data
+    /** Applies [photo] to the saved person. */
+    private fun Person.change(photo: PhotoChange): Person =
+        also {
+            when (photo) {
+                PhotoChange.Keep -> Unit
+                PhotoChange.Remove -> photoRepository.deleteById(id)
+                is PhotoChange.Replace -> photoRepository.save(PersonPhoto(id, photoContentType(photo.data), photo.data))
             }
         }
-    }
 
-    /** The photo's content type, after checking it is a real image within [Person.PHOTO_MAX_SIZE]. */
+    /** The photo's content type, after checking it is a real image within [PersonPhoto.MAX_SIZE]. */
     private fun photoContentType(photo: ByteArray): String {
-        if (photo.size > Person.PHOTO_MAX_SIZE) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "photo may be at most ${Person.PHOTO_MAX_SIZE / 1024} KB")
+        if (photo.size > PersonPhoto.MAX_SIZE) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "photo may be at most ${PersonPhoto.MAX_SIZE / 1024} KB")
         }
         return LogoService.contentTypeOf(photo)
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "photo must be a PNG, JPEG, GIF, WebP or SVG")
@@ -183,13 +179,19 @@ class PersonService(
             shirtSize = form.shirtSize,
             googleDriveId = form.googleDriveId,
             address = form.address?.toEntity(),
-        ).apply { change(form.photo) }.save()
+        ).save().change(form.photo)
     }
 
     fun update(
         code: UUID,
         form: PersonForm,
-    ): Person? = findByUuid(code)?.render(form)?.save()
+    ): Person? = findByUuid(code)?.render(form)?.save()?.change(form.photo)
+
+    fun findPhoto(person: Person): PersonPhoto? = photoRepository.findById(person.id).toNullable()
+
+    /** The photos of [persons] in one go, by person id; a person without a photo is left out. */
+    fun findPhotos(persons: Iterable<Person>): Map<Long, PersonPhoto> =
+        photoRepository.findAllByPersonIdIn(persons.map { it.id }.toSet()).associateBy { it.personId }
 
     @Transactional
     fun deleteByUuid(uuid: UUID) = repository.deleteByUuid(uuid)

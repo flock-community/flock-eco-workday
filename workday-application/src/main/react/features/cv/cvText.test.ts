@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {
   baseOf,
   clientText,
+  cvDownloadUrl,
   cvLink,
   cvUrl,
   groupSkills,
@@ -192,5 +193,18 @@ describe('groupSkills', () => {
         skills: [{ category: 'Tools', name: 'Git', level: 4 }],
       },
     ]);
+  });
+});
+
+describe('cvDownloadUrl', () => {
+  it('downloads the CV from the server', () => {
+    expect(cvDownloadUrl('cv-1', 'pdf')).toBe('/api/cvs/cv-1/pdf');
+    expect(cvDownloadUrl('cv-1', 'docx', null)).toBe('/api/cvs/cv-1/docx');
+  });
+
+  it('downloads an earlier version as it was', () => {
+    expect(cvDownloadUrl('cv-1', 'pdf', 'v-2')).toBe(
+      '/api/cvs/cv-1/pdf?version=v-2',
+    );
   });
 });

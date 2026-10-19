@@ -13,6 +13,7 @@ import community.flock.eco.workday.api.endpoint.PostCvSync
 import community.flock.eco.workday.api.endpoint.PutCv
 import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.application.authorities.CvAuthority
+import community.flock.eco.workday.application.cv.CvDocumentService
 import community.flock.eco.workday.application.forms.CvExperienceForm
 import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
@@ -27,17 +28,26 @@ import community.flock.eco.workday.application.services.CvSync
 import community.flock.eco.workday.application.services.CvSyncAction
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.application.services.photoDataUrl
+import community.flock.eco.workday.application.services.dataUrl
 import community.flock.eco.workday.application.utils.parseSort
 import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.http.CacheControl
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.net.URLEncoder
+import java.text.Normalizer
 import java.time.YearMonth
 import java.util.UUID
 import community.flock.eco.workday.api.model.Cv as CvApi
@@ -64,6 +74,7 @@ import community.flock.eco.workday.application.model.Person as PersonInternal
 class CvController(
     private val cvService: CvService,
     private val personService: PersonService,
+    private val cvDocumentService: CvDocumentService,
 ) : GetCvAll.Handler,
     GetCvByCode.Handler,
     PostCv.Handler,
@@ -91,7 +102,7 @@ class CvController(
             }
         return GetCvAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -129,7 +140,7 @@ class CvController(
             findWritable(request.path.code)
                 ?.let {
                     cvService.deleteByCode(it.code)
-                    DeleteCv.Response204(Unit)
+                    DeleteCv.Response204
                 }
                 ?: DeleteCv.Response404(Error("CV not found"))
         } catch (e: CvConflictException) {
@@ -194,6 +205,56 @@ class CvController(
         } catch (e: CvValidationException) {
             PostCvSync.Response400(Error(e.message))
         }
+
+    /** The CV (or an earlier [version] of it) as PDF, to download; wirespec has no binary responses. */
+    @GetMapping("/api/cvs/{code}/pdf")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    fun getCvPdf(
+        @PathVariable code: String,
+        @RequestParam(required = false) version: String?,
+    ): ResponseEntity<ByteArray> = download(code, version, "pdf", MediaType.APPLICATION_PDF, cvDocumentService::pdf)
+
+    /** The CV (or an earlier [version] of it) as a Word document, to download. */
+    @GetMapping("/api/cvs/{code}/docx")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    fun getCvDocx(
+        @PathVariable code: String,
+        @RequestParam(required = false) version: String?,
+    ): ResponseEntity<ByteArray> = download(code, version, "docx", DOCX, cvDocumentService::word)
+
+    private fun download(
+        code: String,
+        version: String?,
+        extension: String,
+        type: MediaType,
+        render: (Cv) -> ByteArray,
+    ): ResponseEntity<ByteArray> {
+        val current = findReadable(code) ?: return ResponseEntity.notFound().build()
+        val cv =
+            when (version) {
+                null -> current
+                else -> version.toUuidOrNull()?.let { cvService.findRevision(current, it) } ?: return ResponseEntity.notFound().build()
+            }
+        // The name the browser saves it as, like the title of the page showing it
+        val fileName = "CV ${cv.person.getFullName()} ${cv.name}".trim() + ".$extension"
+        return ResponseEntity
+            .ok()
+            .contentType(type)
+            .cacheControl(CacheControl.noStore())
+            .header(HttpHeaders.CONTENT_DISPOSITION, attachment(fileName))
+            .body(render(cv))
+    }
+
+    /** A download named [fileName]: in plain ASCII for old clients, as it is for the others. */
+    private fun attachment(fileName: String): String {
+        val ascii =
+            Normalizer
+                .normalize(fileName, Normalizer.Form.NFD)
+                .replace(Regex("\\p{M}"), "")
+                .replace(Regex("[^\\x20-\\x7E]|[\"\\\\]"), "_")
+        val encoded = URLEncoder.encode(fileName, Charsets.UTF_8).replace("+", "%20")
+        return "attachment; filename=\"$ascii\"; filename*=UTF-8''$encoded"
+    }
 
     /** The CV with [code], when the current user may read it: any for an admin, else their own with READ. */
     private fun findReadable(code: String): Cv? {
@@ -312,7 +373,7 @@ class CvController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
-            photo = photoDataUrl(),
+            photo = personService.findPhoto(this)?.dataUrl(),
         )
 
     /**
@@ -394,4 +455,8 @@ class CvController(
     private fun String.toUuidOrBadRequest(field: String): UUID =
         runCatching { UUID.fromString(trim()) }
             .getOrElse { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "$field must be a UUID") }
+
+    companion object {
+        private val DOCX = MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    }
 }

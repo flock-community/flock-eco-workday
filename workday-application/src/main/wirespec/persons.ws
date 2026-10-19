@@ -1,5 +1,5 @@
-endpoint GetPersonAll GET /api/persons ? {page: Integer32?, size: Integer32?, sort: String?, active: Boolean?, search: String?} -> {
-  200 -> Person[] # { `x-total`: Integer32 }
+endpoint GetPersonAll GET /api/persons ? {...SortedPaging, active: Boolean?, search: String?} -> {
+  200 -> Person[] # { ...TotalCount }
 }
 endpoint GetPersonByUuid GET /api/persons/{uuid: String} -> {
   200 -> Person

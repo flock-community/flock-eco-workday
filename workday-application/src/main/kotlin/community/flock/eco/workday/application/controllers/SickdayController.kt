@@ -56,7 +56,7 @@ class SickdayController(
             }
         return GetSickDayAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -105,7 +105,7 @@ class SickdayController(
             .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { service.deleteByCode(this.code) }
-        return DeleteSickDay.Response204(Unit)
+        return DeleteSickDay.Response204
     }
 
     private fun SickDayFormApi.internalize(): SickDayForm =

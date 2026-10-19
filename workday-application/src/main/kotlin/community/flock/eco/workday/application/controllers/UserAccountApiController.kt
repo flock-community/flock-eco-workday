@@ -43,7 +43,7 @@ class UserAccountApiController(
         val page = userAccountRepository.findAll(pageable)
         return GetUserAccountAll.Response200(
             body = page.map { it.externalize() }.toList(),
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -53,14 +53,14 @@ class UserAccountApiController(
         if (userAccountRepository.existsById(id)) {
             userAccountRepository.deleteById(id)
         }
-        return DeleteUserAccountById.Response200(Unit)
+        return DeleteUserAccountById.Response200
     }
 
     override suspend fun putUserAccountResetPassword(
         request: PutUserAccountResetPassword.Request,
     ): PutUserAccountResetPassword.Response<*> {
         userAccountService.resetPasswordWithResetCode(request.body.resetCode, request.body.password)
-        return PutUserAccountResetPassword.Response200(Unit)
+        return PutUserAccountResetPassword.Response200
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -70,7 +70,7 @@ class UserAccountApiController(
             request.body.oldPassword,
             request.body.newPassword,
         )
-        return PutUserAccountNewPassword.Response200(Unit)
+        return PutUserAccountNewPassword.Response200
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -90,7 +90,7 @@ class UserAccountApiController(
     @PreAuthorize("isAuthenticated()")
     override suspend fun postUserAccountRevokeKey(request: PostUserAccountRevokeKey.Request): PostUserAccountRevokeKey.Response<*> {
         userAccountService.revokeKeyByIdForUserCode(authenticationName(), request.body.id.toLong())
-        return PostUserAccountRevokeKey.Response200(Unit)
+        return PostUserAccountRevokeKey.Response200
     }
 
     private fun UserAccountInternal.externalize(): UserAccountApi =

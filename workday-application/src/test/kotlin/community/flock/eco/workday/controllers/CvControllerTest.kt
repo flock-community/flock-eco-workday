@@ -6,10 +6,14 @@ import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.repository.CvRepository
+import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toDomain
+import org.apache.pdfbox.Loader
+import org.apache.pdfbox.text.PDFTextStripper
 import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -35,6 +39,7 @@ class CvControllerTest(
     @Autowired private val createHelper: CreateHelper,
     @Autowired private val logoService: LogoService,
     @Autowired private val cvRepository: CvRepository,
+    @Autowired private val cvService: CvService,
 ) : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/cvs"
 
@@ -732,6 +737,60 @@ class CvControllerTest(
             .asyncDispatch()
             .andExpect(status().isNotFound)
     }
+
+    @Test
+    fun `a CV downloads as PDF and as Word, an earlier version as it was`() {
+        val (worker, person) = aWorker()
+        val cv = createHelper.createCv(person, name = "Algemeen", summary = "First version.")
+        mvc
+            .perform(put("$baseUrl/${cv.code}").asUser(worker).json(cvJson(summary = "Second version.")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+
+        val pdf =
+            mvc
+                .perform(get("$baseUrl/${cv.code}/pdf").asUser(worker))
+                .andExpect(status().isOk)
+                .andExpect(content().contentType("application/pdf"))
+                .andExpect(header().string("Content-Disposition", containsString("filename=\"CV Tommy Dog Algemeen.pdf\"")))
+                .andReturn()
+                .response.contentAsByteArray
+        assertThat(pdfText(pdf)).contains("Curriculum Vitae - Tommy Dog", "Second version.")
+
+        mvc
+            .perform(get("$baseUrl/${cv.code}/docx").asUser(worker))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
+            .andExpect(header().string("Content-Disposition", containsString("filename=\"CV Tommy Dog Algemeen.docx\"")))
+
+        val first = cvService.findRevisions(cv.code).single().id
+        val earlier =
+            mvc
+                .perform(get("$baseUrl/${cv.code}/pdf").param("version", first.toString()).asUser(worker))
+                .andExpect(status().isOk)
+                .andReturn()
+                .response.contentAsByteArray
+        assertThat(pdfText(earlier)).contains("First version.").doesNotContain("Second version.")
+
+        mvc
+            .perform(get("$baseUrl/${cv.code}/docx").param("version", UUID.randomUUID().toString()).asUser(worker))
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `a CV of somebody else does not download for a worker`() {
+        val (worker, _) = aWorker()
+        val theirs = createHelper.createCv(createHelper.createPersonEntity("Pino", "Woodpecker"))
+
+        mvc.perform(get("$baseUrl/${theirs.code}/pdf").asUser(worker)).andExpect(status().isNotFound)
+        mvc.perform(get("$baseUrl/${theirs.code}/docx").asUser(worker)).andExpect(status().isNotFound)
+        // An admin downloads anybody's CV
+        mvc
+            .perform(get("$baseUrl/${theirs.code}/docx").asUser(createHelper.createUserEntity(adminAuthorities)))
+            .andExpect(status().isOk)
+    }
+
+    private fun pdfText(pdf: ByteArray) = Loader.loadPDF(pdf).use { PDFTextStripper().getText(it) }
 
     @Test
     fun `PUT replaces the CV and DELETE removes it`() {

@@ -1,9 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import DescriptionIcon from '@mui/icons-material/Description';
+import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HistoryIcon from '@mui/icons-material/History';
 import LinkIcon from '@mui/icons-material/Link';
-import PrintIcon from '@mui/icons-material/Print';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {
   Alert,
   Box,
@@ -12,6 +15,7 @@ import {
   CardContent,
   GlobalStyles,
   Link,
+  ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
@@ -41,6 +45,7 @@ import { DIVERGENCE_WARNING, divergence } from './cvDiff';
 import {
   baseOf,
   type CvView,
+  cvDownloadUrl,
   cvLanguageLabel,
   cvLink,
   cvUrl,
@@ -128,6 +133,7 @@ function PersonCv({
   const [revision, setRevision] = useState<Cv | null>(null);
   const [newMenu, setNewMenu] = useState<HTMLElement | null>(null);
   const [historyMenu, setHistoryMenu] = useState<HTMLElement | null>(null);
+  const [downloadMenu, setDownloadMenu] = useState<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   // Counts up to load the CVs again, after the base changed
@@ -539,13 +545,49 @@ function PersonCv({
               {copied ? 'Link copied' : 'Copy link'}
             </Button>
           </Tooltip>
-          <Button
-            variant="contained"
-            startIcon={<PrintIcon />}
-            onClick={() => window.print()}
-          >
-            Print or save as PDF
-          </Button>
+          {!comparing && (
+            <>
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                endIcon={<ExpandMoreIcon />}
+                aria-haspopup="menu"
+                onClick={(event) => setDownloadMenu(event.currentTarget)}
+              >
+                Download
+              </Button>
+              <Menu
+                anchorEl={downloadMenu}
+                open={Boolean(downloadMenu)}
+                onClose={() => setDownloadMenu(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem
+                  component="a"
+                  href={cvDownloadUrl(current.code, 'pdf', version)}
+                  download
+                  onClick={() => setDownloadMenu(null)}
+                >
+                  <ListItemIcon>
+                    <PictureAsPdfIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="PDF" />
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href={cvDownloadUrl(current.code, 'docx', version)}
+                  download
+                  onClick={() => setDownloadMenu(null)}
+                >
+                  <ListItemIcon>
+                    <DescriptionIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Word" />
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </Stack>
       )}
 

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: db.changelog-042-cv-base-1
+      id: db.changelog-043-cv-base-1
       author: ceesjansen
       comment: >-
         One base CV per person and language, and the copies made of it. base is TRUE
@@ -36,7 +36,7 @@ databaseChangeLog:
             columnNames: person_id, language, base
             constraintName: cv_person_language_base_unique
   - changeSet:
-      id: db.changelog-042-cv-base-2
+      id: db.changelog-043-cv-base-2
       author: ceesjansen
       comment: >-
         A person with a single CV in a language has that CV as the base. Where a person
@@ -48,7 +48,7 @@ databaseChangeLog:
               WHERE (SELECT COUNT(*) FROM cv other
                      WHERE other.person_id = cv.person_id AND other.language = cv.language) = 1
   - changeSet:
-      id: db.changelog-042-cv-base-3
+      id: db.changelog-043-cv-base-3
       author: ceesjansen
       comment: >-
         Every assignment and skill on a CV gets an id of its own, kept when the CV is
@@ -75,7 +75,7 @@ databaseChangeLog:
                   name: base_snapshot
                   type: TEXT
   - changeSet:
-      id: db.changelog-042-cv-base-4-postgresql
+      id: db.changelog-043-cv-base-4-postgresql
       author: ceesjansen
       dbms: postgresql
       # md5 of random text rather than gen_random_uuid(), which older Postgres versions lack
@@ -85,14 +85,14 @@ databaseChangeLog:
               UPDATE cv_experience SET item_id = CAST(md5(random()::text || clock_timestamp()::text) AS uuid);
               UPDATE cv_skill SET item_id = CAST(md5(random()::text || clock_timestamp()::text) AS uuid)
   - changeSet:
-      id: db.changelog-042-cv-base-4-h2
+      id: db.changelog-043-cv-base-4-h2
       author: ceesjansen
       dbms: h2
       changes:
         - sql:
             sql: UPDATE cv_experience SET item_id = RANDOM_UUID(); UPDATE cv_skill SET item_id = RANDOM_UUID()
   - changeSet:
-      id: db.changelog-042-cv-base-5
+      id: db.changelog-043-cv-base-5
       author: ceesjansen
       changes:
         - addNotNullConstraint:

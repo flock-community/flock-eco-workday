@@ -18,8 +18,10 @@
     </modules>
 
     <properties>
+        <batik.version>1.19</batik.version>
         <biweekly.version>0.6.8</biweekly.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <commonmark.version>0.30.1</commonmark.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
@@ -42,6 +44,8 @@
         <node.version>v22.22.3</node.version>
         <npm.ci.skip>false</npm.ci.skip>
         <npm.version>10.9.8</npm.version>
+        <openhtmltopdf.version>1.1.96</openhtmltopdf.version>
+        <poi.version>5.5.1</poi.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <reflections.version>0.10.2</reflections.version>
@@ -49,7 +53,8 @@
         <spring.boot.version>3.5.14</spring.boot.version>
         <spring.cloud.gcp.version>6.5.8</spring.cloud.gcp.version>
         <springdoc.version>2.8.6</springdoc.version>
-        <wirespec.version>0.18.13</wirespec.version>
+        <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
+        <wirespec.version>0.22.1</wirespec.version>
     </properties>
 
     <dependencyManagement>

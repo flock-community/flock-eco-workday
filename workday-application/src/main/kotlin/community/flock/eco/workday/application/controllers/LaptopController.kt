@@ -54,7 +54,7 @@ class LaptopController(
             }
         return GetLaptopAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -101,7 +101,7 @@ class LaptopController(
     @PreAuthorize("hasAuthority('LaptopAuthority.ADMIN')")
     override suspend fun deleteLaptop(request: DeleteLaptop.Request): DeleteLaptop.Response<*> {
         laptopService.deleteByCode(request.path.code)
-        return DeleteLaptop.Response204(Unit)
+        return DeleteLaptop.Response204
     }
 
     /**
