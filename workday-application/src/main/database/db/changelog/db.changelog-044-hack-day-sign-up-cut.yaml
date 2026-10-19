@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: db.changelog-043-hack-day-sign-up-cut-1
+      id: db.changelog-044-hack-day-sign-up-cut-1
       author: ceesjansen
       comment: >-
         Holiday or sickness on a hack day cuts the person's sign-up to the hours they were there.

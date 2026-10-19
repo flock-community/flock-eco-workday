@@ -125,5 +125,5 @@ databaseChangeLog:
       file: db.changelog-042-person-photo-table.yaml
       relativeToChangelogFile: true
   - include:
-      file: db.changelog-043-hack-day-sign-up-cut.yaml
+      file: db.changelog-044-hack-day-sign-up-cut.yaml
       relativeToChangelogFile: true
