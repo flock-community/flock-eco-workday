@@ -2,12 +2,14 @@ package community.flock.eco.workday.application.cv
 
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.services.LogoService
+import community.flock.eco.workday.application.services.PersonService
 import org.springframework.stereotype.Service
 
 /** A CV as a document to download: PDF or Word, in the Flock template. */
 @Service
 class CvDocumentService(
     private val logoService: LogoService,
+    private val personService: PersonService,
 ) {
     private val disc by lazy { CvImages.disc(DISC_SIZE) }
 
@@ -19,7 +21,7 @@ class CvDocumentService(
     fun content(cv: Cv): CvDocumentContent =
         CvDocumentContent(
             cv = cv,
-            photo = cv.person.photoData?.let { CvImages.photo(it, PHOTO_SIZE) },
+            photo = personService.findPhoto(cv.person)?.let { CvImages.photo(it.data, PHOTO_SIZE) },
             logos =
                 cv.experiences
                     .mapNotNull { it.logoId }
