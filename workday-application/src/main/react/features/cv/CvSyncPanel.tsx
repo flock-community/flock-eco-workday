@@ -8,6 +8,7 @@ import {
   Collapse,
   Divider,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -21,12 +22,90 @@ import {
 import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import { DIVERGENCE_WARNING, divergence } from './cvDiff';
 
+type Action = { label: string; hint: string };
+
 /** The buttons of an offer of the base, by kind: take it, and keep the copy's. */
-const OFFER_ACTIONS: Record<string, [string, string]> = {
-  ADDED: ['Add it here too', 'Leave it out'],
-  REMOVED: ['Remove it here too', 'Keep it'],
+const OFFER_ACTIONS: Record<string, [Action, Action]> = {
+  ADDED: [
+    {
+      label: 'Add it here too',
+      hint: 'Add what the base added to this copy as well. It then follows the base.',
+    },
+    {
+      label: 'Leave it out',
+      hint: 'Keep it out of this copy. It is not offered again.',
+    },
+  ],
+  REMOVED: [
+    {
+      label: 'Remove it here too',
+      hint: 'The base removed it; remove it from this copy as well.',
+    },
+    {
+      label: 'Keep it',
+      hint: 'Keep it in this copy only. It is not offered again.',
+    },
+  ],
 };
-const OFFER_DEFAULT: [string, string] = ["Take the base's", 'Keep this one'];
+const OFFER_DEFAULT: [Action, Action] = [
+  {
+    label: "Take the base's",
+    hint: "Replace this copy's version with the base's. The field then follows the base again.",
+  },
+  {
+    label: 'Keep this one',
+    hint: "Keep this copy's version. It stays tailored, and this change of the base is not offered again.",
+  },
+];
+
+/** The buttons of a field the copy tailored, by kind: back to the base, and into the base. */
+const BACK_TO_BASE: Record<string, Action> = {
+  COPY_ONLY: {
+    label: 'Remove from this copy',
+    hint: 'Only this copy has it; remove it from this copy.',
+  },
+  HIDDEN: {
+    label: 'Back to the base',
+    hint: 'Put what this copy left out back in. It then follows the base again.',
+  },
+};
+const BACK_TO_BASE_DEFAULT: Action = {
+  label: 'Back to the base',
+  hint: "Undo the tailoring: this copy gets the base's version again and follows the base from then on.",
+};
+const USE_IN_BASE: Action = {
+  label: 'Use in the base',
+  hint: "Put this copy's version in the base, so it is no longer tailored. The base's other copies get it too: facts at once, texts as an offer.",
+};
+
+/** A small button explaining itself when hovered. */
+function SyncButton({
+  action,
+  primary,
+  disabled,
+  onClick,
+}: {
+  action: Action;
+  primary?: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Tooltip title={action.hint} arrow describeChild>
+      {/* A span, so the explanation shows on a disabled button too */}
+      <span>
+        <Button
+          size="small"
+          variant={primary ? 'outlined' : 'text'}
+          disabled={disabled}
+          onClick={onClick}
+        >
+          {action.label}
+        </Button>
+      </span>
+    </Tooltip>
+  );
+}
 
 const percent = (share: number) => `${Math.round(share * 100)}%`;
 
@@ -139,21 +218,17 @@ export function CvSyncPanel({
                 )}
                 {canWrite && (
                   <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
+                    <SyncButton
+                      action={take}
+                      primary
                       disabled={busy}
                       onClick={() => act(item, 'ACCEPT')}
-                    >
-                      {take}
-                    </Button>
-                    <Button
-                      size="small"
+                    />
+                    <SyncButton
+                      action={keep}
                       disabled={busy}
                       onClick={() => act(item, 'SKIP')}
-                    >
-                      {keep}
-                    </Button>
+                    />
                   </Stack>
                 )}
               </Box>
@@ -195,24 +270,20 @@ export function CvSyncPanel({
                       )}
                       {canWrite && (
                         <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                          <Button
-                            size="small"
-                            variant="outlined"
+                          <SyncButton
+                            action={
+                              BACK_TO_BASE[item.kind] ?? BACK_TO_BASE_DEFAULT
+                            }
+                            primary
                             disabled={busy}
                             onClick={() => act(item, 'ACCEPT')}
-                          >
-                            {item.kind === 'COPY_ONLY'
-                              ? 'Remove from this copy'
-                              : 'Back to the base'}
-                          </Button>
+                          />
                           {item.kind !== 'HIDDEN' && (
-                            <Button
-                              size="small"
+                            <SyncButton
+                              action={USE_IN_BASE}
                               disabled={busy}
                               onClick={() => act(item, 'PROMOTE')}
-                            >
-                              Use in the base
-                            </Button>
+                            />
                           )}
                         </Stack>
                       )}
