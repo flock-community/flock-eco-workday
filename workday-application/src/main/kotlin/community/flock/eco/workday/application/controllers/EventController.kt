@@ -6,13 +6,14 @@ import community.flock.eco.workday.api.endpoint.GetEventAll
 import community.flock.eco.workday.api.endpoint.GetEventByCode
 import community.flock.eco.workday.api.endpoint.GetEventRatings
 import community.flock.eco.workday.api.endpoint.GetEventsByYear
-import community.flock.eco.workday.api.endpoint.GetSickHackDaysMe
+import community.flock.eco.workday.api.endpoint.GetMissedHackDaysMe
 import community.flock.eco.workday.api.endpoint.PostEvent
 import community.flock.eco.workday.api.endpoint.PostEventRating
 import community.flock.eco.workday.api.endpoint.PutEvent
 import community.flock.eco.workday.api.endpoint.SubscribeToEvent
 import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
 import community.flock.eco.workday.api.model.Error
+import community.flock.eco.workday.api.model.MissedHackDay
 import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
@@ -25,6 +26,7 @@ import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
+import community.flock.eco.workday.application.services.HackDayAbsenceReason
 import community.flock.eco.workday.application.services.HackDayAbsenceService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.isUser
@@ -71,7 +73,7 @@ class EventController(
     GetEventRatings.Handler,
     PostEventRating.Handler,
     DeleteEventRating.Handler,
-    GetSickHackDaysMe.Handler {
+    GetMissedHackDaysMe.Handler {
     private fun authentication(): Authentication =
         SecurityContextHolder.getContext().authentication
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
@@ -145,7 +147,7 @@ class EventController(
         // generated interface; check the SUBSCRIBE authority explicitly.
         authentication().requireAuthority(EventAuthority.SUBSCRIBE)
         val person = currentPerson()
-        if (isSickOnHackDay(request.path.eventCode, person)) return SubscribeToEvent.Response409(sickOnHackDay)
+        missedHackDay(request.path.eventCode, person)?.let { return SubscribeToEvent.Response409(it) }
         val event = eventService.subscribeToEvent(request.path.eventCode, person, request.body.hours)
         return SubscribeToEvent.Response200(event.externalize())
     }
@@ -157,7 +159,7 @@ class EventController(
             .findByCode(request.path.eventCode)
             ?.applyAuthentication(auth)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
-        if (isSickOnHackDay(request.path.eventCode, person)) return UnsubscribeFromEvent.Response409(sickOnHackDay)
+        missedHackDay(request.path.eventCode, person)?.let { return UnsubscribeFromEvent.Response409(it) }
         val event = eventService.unsubscribeFromEvent(request.path.eventCode, person)
         return UnsubscribeFromEvent.Response200(event.externalize())
     }
@@ -195,24 +197,29 @@ class EventController(
         return DeleteEventRating.Response204
     }
 
-    override suspend fun getSickHackDaysMe(request: GetSickHackDaysMe.Request): GetSickHackDaysMe.Response<*> {
+    override suspend fun getMissedHackDaysMe(request: GetMissedHackDaysMe.Request): GetMissedHackDaysMe.Response<*> {
         authentication().requireAuthority(EventAuthority.SUBSCRIBE)
-        return GetSickHackDaysMe.Response200(
-            hackDayAbsenceService.findSickHackDayCodes(request.queries.year, currentPerson().uuid),
+        return GetMissedHackDaysMe.Response200(
+            hackDayAbsenceService
+                .findMissedHackDays(request.queries.year, currentPerson().uuid)
+                .map { (eventCode, reason) -> MissedHackDay(eventCode = eventCode, reason = reason.name) },
         )
     }
 
-    // A hack day missed through sickness counts against the budget, so its attendance is locked.
-    private fun isSickOnHackDay(
+    // A hack day missed through holiday or sickness counts against the budget, so its attendance is locked.
+    private fun missedHackDay(
         eventCode: String,
         person: Person,
-    ): Boolean =
+    ): Error? =
         eventService
             .findByCode(eventCode)
-            ?.let { hackDayAbsenceService.isSickOnHackDay(it, person.uuid) }
-            ?: false
-
-    private val sickOnHackDay = Error("You were sick on this hack day, so it can't be changed")
+            ?.let { hackDayAbsenceService.missedHackDay(it, person.uuid) }
+            ?.let {
+                when (it) {
+                    HackDayAbsenceReason.HOLIDAY -> Error("You were on holiday on this hack day, so it can't be changed")
+                    HackDayAbsenceReason.SICK -> Error("You were sick on this hack day, so it can't be changed")
+                }
+            }
 
     private fun currentPerson(): Person =
         personService.findByUserCode(authentication().name)

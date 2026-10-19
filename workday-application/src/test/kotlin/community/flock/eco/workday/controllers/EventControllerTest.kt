@@ -3,6 +3,7 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
+import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.model.BudgetCategory
@@ -11,6 +12,7 @@ import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
+import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
@@ -52,6 +54,9 @@ class EventControllerTest : WorkdayIntegrationTest() {
 
     @Autowired
     private lateinit var sickDayService: SickDayService
+
+    @Autowired
+    private lateinit var leaveDayService: LeaveDayService
 
     @Autowired
     private lateinit var userService: UserService
@@ -244,13 +249,14 @@ class EventControllerTest : WorkdayIntegrationTest() {
 
         mvc
             .perform(
-                get("$baseUrl/sick-hack-days?year=2023")
+                get("$baseUrl/missed-hack-days?year=2023")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("\$.length()").value(1))
-            .andExpect(MockMvcResultMatchers.jsonPath("\$[0]").value(hackDay.code))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].eventCode").value(hackDay.code))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].reason").value("SICK"))
 
         mvc
             .perform(
@@ -261,6 +267,38 @@ class EventControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `Person who was on holiday on a hack day cannot change their attendance`() {
+        val day = LocalDate.of(2023, 2, 2)
+        val user = createUser(userAuthorities)
+        val person = createPerson(user.account.user.code)
+        val hackDay = createEvent(day, day.plusDays(1), type = EventType.FLOCK_HACK_DAY)
+        leaveDayService.create(
+            LeaveDayForm(description = "", from = day, to = day, days = mutableListOf(8.0), hours = 8.0, personId = person.uuid),
+        )
+
+        mvc
+            .perform(
+                put("$baseUrl/${hackDay.code}/subscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{}")
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isConflict)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.message").value("You were on holiday on this hack day, so it can't be changed"))
+
+        mvc
+            .perform(
+                get("$baseUrl/missed-hack-days?year=2023")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].eventCode").value(hackDay.code))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].reason").value("HOLIDAY"))
     }
 
     @Test

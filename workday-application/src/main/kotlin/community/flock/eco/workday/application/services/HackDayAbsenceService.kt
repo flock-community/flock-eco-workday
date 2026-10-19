@@ -72,16 +72,19 @@ class HackDayAbsenceService(
         )
     }
 
-    /** Codes of the hack days the person was sick on; their attendance is locked. */
-    fun findSickHackDayCodes(
+    /** Hack days the person was on holiday or sick on, by event code; their attendance is locked. */
+    fun findMissedHackDays(
         year: Int,
         personId: UUID,
-    ): List<String> {
-        val sickDays = sickDayService.findAllActiveByPerson(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31), personId)
+    ): Map<String, HackDayAbsenceReason> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        val leaveDays = leaveDayService.findAllActiveByPerson(from, to, personId)
+        val sickDays = sickDayService.findAllActiveByPerson(from, to, personId)
         return eventService
             .findAllEventsOf(year)
-            .filter { it.isSickOn(sickDays) }
-            .map { it.code }
+            .mapNotNull { event -> event.missedThrough(leaveDays, sickDays)?.let { event.code to it } }
+            .toMap()
     }
 
     // The sign-up must not count hours the person was away as attended, and gets them back once the absence goes.
@@ -103,17 +106,37 @@ class HackDayAbsenceService(
         }
     }
 
-    fun isSickOnHackDay(
+    fun missedHackDay(
         event: Event,
         personId: UUID,
-    ): Boolean = event.isSickOn(sickDayService.findAllActiveByPerson(event.from, event.to, personId))
+    ): HackDayAbsenceReason? =
+        event.missedThrough(
+            leaveDays = leaveDayService.findAllActiveByPerson(event.from, event.to, personId),
+            sickDays = sickDayService.findAllActiveByPerson(event.from, event.to, personId),
+        )
 }
 
-private fun Event.isSickOn(sickDays: Iterable<SickDay>): Boolean {
-    if (type != EventType.FLOCK_HACK_DAY) return false
-    val sickHours = sickDays.filter { it.status != Status.REJECTED }.map { it.hoursPerDay() }
-    return hoursPerDay().any { (date, hours) ->
-        hours > BigDecimal.ZERO && sickHours.any { (it[date] ?: BigDecimal.ZERO) > BigDecimal.ZERO }
+// Sickness wins over holiday when someone has both on the same hack day.
+private fun Event.missedThrough(
+    leaveDays: Iterable<LeaveDay>,
+    sickDays: Iterable<SickDay>,
+): HackDayAbsenceReason? {
+    if (type != EventType.FLOCK_HACK_DAY) return null
+    val hackDates = hoursPerDay().filterValues { it > BigDecimal.ZERO }.keys
+
+    fun absentOn(days: List<Map<LocalDate, BigDecimal>>) =
+        hackDates.any { date ->
+            days.any {
+                (it[date] ?: BigDecimal.ZERO) >
+                    BigDecimal.ZERO
+            }
+        }
+    return when {
+        absentOn(sickDays.filter { it.status != Status.REJECTED }.map { it.hoursPerDay() }) -> HackDayAbsenceReason.SICK
+        absentOn(
+            leaveDays.filter { it.type == LeaveDayType.HOLIDAY && it.status != Status.REJECTED }.map { it.hoursPerDay() },
+        ) -> HackDayAbsenceReason.HOLIDAY
+        else -> null
     }
 }
 

@@ -4,7 +4,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import { alpha, styled } from '@mui/material/styles';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FlockEvent } from '../../clients/EventClient';
+import type { FlockEvent, HackDayMissReason } from '../../clients/EventClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
 import { isPersonAttending } from '../../utils/EventUtils';
@@ -34,8 +34,8 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 
 type FlockEventListItemProps = {
   event: FlockEvent;
-  // Missed through sickness: counts against the hack budget and can't be changed.
-  sick?: boolean;
+  // Missed through holiday or sickness: counts against the hack budget and can't be changed.
+  missedDueTo?: HackDayMissReason;
   onEventToggle: (
     flockEvent: FlockEvent,
     isSubscribed: boolean,
@@ -45,7 +45,7 @@ type FlockEventListItemProps = {
 
 export function EventListItem({
   event,
-  sick = false,
+  missedDueTo,
   onEventToggle,
 }: FlockEventListItemProps) {
   const [person] = usePerson();
@@ -56,12 +56,15 @@ export function EventListItem({
         event.from.isSame(event.to, 'day')
           ? `date: ${event.from.format(DMY_DATE)}`
           : `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`,
-        sick ? 'missed due to sickness' : null,
+        missedDueTo === 'SICK' ? 'missed due to sickness' : null,
+        missedDueTo === 'HOLIDAY' ? 'missed due to holiday' : null,
       ]
         .filter(Boolean)
         .join(' · '),
-    [event, sick],
+    [event, missedDueTo],
   );
+
+  const locked = missedDueTo !== undefined;
 
   const attendingPerServer = person?.uuid
     ? isPersonAttending(event, person.uuid)
@@ -127,7 +130,7 @@ export function EventListItem({
             onBlur={() => {
               editingRef.current = false;
             }}
-            disabled={sick}
+            disabled={locked}
             onChange={(e) => handleHoursChange(Number(e.target.value))}
             sx={[{ width: 96 }, NO_SPINNER_SX]}
             slotProps={{
@@ -141,7 +144,7 @@ export function EventListItem({
         <Switch
           checked={btnState}
           onChange={handleToggle}
-          disabled={sick}
+          disabled={locked}
           name="presentToggle"
           color="primary"
         />

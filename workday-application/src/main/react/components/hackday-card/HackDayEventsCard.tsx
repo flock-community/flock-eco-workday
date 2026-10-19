@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { EventClient, type FlockEvent } from '../../clients/EventClient';
+import {
+  EventClient,
+  type FlockEvent,
+  type HackDayMissReason,
+} from '../../clients/EventClient';
 import { subscribeToEvent, unsubscribeFromEvent } from '../../utils/EventUtils';
 import { HackDayList } from './HackDayList';
 
@@ -10,12 +14,14 @@ type HackDayEventsCardProps = {
 
 export function HackDayEventsCard({ onToggle }: HackDayEventsCardProps) {
   const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
-  const [sickEventCodes, setSickEventCodes] = useState<string[]>([]);
+  const [missedHackDays, setMissedHackDays] = useState<
+    Record<string, HackDayMissReason>
+  >({});
 
   const fetchEvents = useCallback(() => {
     const year = new Date().getFullYear();
     EventClient.getHackDays(year).then((res) => setFlockEvents(res));
-    EventClient.getSickHackDayCodes(year).then((res) => setSickEventCodes(res));
+    EventClient.getMissedHackDays(year).then((res) => setMissedHackDays(res));
   }, []);
 
   useEffect(() => {
@@ -42,7 +48,7 @@ export function HackDayEventsCard({ onToggle }: HackDayEventsCardProps) {
       <CardContent>
         <HackDayList
           items={flockEvents}
-          lockedEventCodes={sickEventCodes}
+          missedHackDays={missedHackDays}
           onEventToggle={eventToggled}
         />
       </CardContent>

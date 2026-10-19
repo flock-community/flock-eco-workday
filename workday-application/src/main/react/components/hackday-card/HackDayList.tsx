@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
-import type { FlockEvent } from '../../clients/EventClient';
+import type { FlockEvent, HackDayMissReason } from '../../clients/EventClient';
 import { FlockPagination } from '../pagination/FlockPagination';
 import { EventList } from './EventList';
 
 type UpcomingEventsCardProps = {
   items: FlockEvent[];
-  lockedEventCodes?: string[];
+  missedHackDays?: Record<string, HackDayMissReason>;
   onEventToggle: (
     event: FlockEvent,
     isSubscribed: boolean,
@@ -27,7 +27,7 @@ const pageOfNextUpcomingEvent = (items: FlockEvent[]) => {
 
 export function HackDayList({
   items,
-  lockedEventCodes,
+  missedHackDays,
   onEventToggle,
 }: UpcomingEventsCardProps) {
   const [page, setPage] = useState(0);
@@ -47,7 +47,7 @@ export function HackDayList({
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage,
         )}
-        lockedEventCodes={lockedEventCodes}
+        missedHackDays={missedHackDays}
         onEventToggle={onEventToggle}
       />
       {items.length > rowsPerPage && (
