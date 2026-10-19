@@ -7,6 +7,7 @@ import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.domain.common.Status
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -23,6 +24,17 @@ data class HackDayAbsence(
     val holidayHours: BigDecimal,
     val sickHours: BigDecimal,
 )
+
+/** A holiday or sick day of this person in this period was created, changed or deleted. */
+data class AbsenceChanged(
+    val personId: UUID,
+    val from: LocalDate,
+    val to: LocalDate,
+) {
+    constructor(sickDay: SickDay) : this(sickDay.person.uuid, sickDay.from, sickDay.to)
+
+    constructor(leaveDay: LeaveDay) : this(leaveDay.person.uuid, leaveDay.from, leaveDay.to)
+}
 
 fun Iterable<HackDayAbsence>.holidayHours(): BigDecimal = fold(BigDecimal.ZERO) { acc, it -> acc + it.holidayHours }
 
@@ -70,6 +82,25 @@ class HackDayAbsenceService(
             .findAllEventsOf(year)
             .filter { it.isSickOn(sickDays) }
             .map { it.code }
+    }
+
+    // The sign-up must not count hours the person was away as attended, and gets them back once the absence goes.
+    @EventListener
+    fun fitHackSignUps(change: AbsenceChanged) {
+        val holidayHours =
+            leaveDayService
+                .findAllActiveByPerson(change.from, change.to, change.personId)
+                .filter { it.type == LeaveDayType.HOLIDAY && it.status != Status.REJECTED }
+                .map { it.hoursPerDay() }
+        val sickHours =
+            sickDayService
+                .findAllActiveByPerson(change.from, change.to, change.personId)
+                .filter { it.status != Status.REJECTED }
+                .map { it.hoursPerDay() }
+        val absences = holidayHours + sickHours
+        eventService.fitHackSignUpsToAbsence(change.personId, change.from, change.to) { date ->
+            absences.fold(BigDecimal.ZERO) { acc, hours -> acc + (hours[date] ?: BigDecimal.ZERO) }
+        }
     }
 
     fun isSickOnHackDay(

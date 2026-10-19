@@ -10,6 +10,7 @@ import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.user.model.User
 import jakarta.persistence.EntityManager
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,6 +24,7 @@ class LeaveDayService(
     private val personService: PersonService,
     private val entityManager: EntityManager,
     private val emailService: LeaveDayMailService,
+    private val publisher: ApplicationEventPublisher,
 ) {
     fun findByCode(code: String) = leaveDayRepository.findByCode(code).toNullable()
 
@@ -88,6 +90,7 @@ class LeaveDayService(
             .consume()
             .validate()
             .save()
+            .also { publisher.publishEvent(AbsenceChanged(it)) }
             .also { emailService.sendNotification(it) }
 
     fun update(
@@ -96,12 +99,17 @@ class LeaveDayService(
         isUpdatedByOwner: Boolean,
     ): LeaveDay {
         val currentLeaveDay = leaveDayRepository.findByCode(code).toNullable()
+        // Saving merges into this same instance, so remember where the absence was before.
+        val previous = currentLeaveDay?.let { AbsenceChanged(it) }
         return currentLeaveDay
             .run {
                 form
                     .validate()
                     .consume(this)
                     .save()
+            }.also {
+                previous?.let { publisher.publishEvent(it) }
+                publisher.publishEvent(AbsenceChanged(it))
             }.also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
@@ -110,9 +118,11 @@ class LeaveDayService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) =
-        leaveDayRepository
-            .deleteByCode(code)
+    fun deleteByCode(code: String) {
+        val leaveDay = findByCode(code)
+        leaveDayRepository.deleteByCode(code)
+        leaveDay?.let { publisher.publishEvent(AbsenceChanged(it)) }
+    }
 
     private fun LeaveDay.save() = leaveDayRepository.save(this)
 

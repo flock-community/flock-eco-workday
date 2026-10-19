@@ -8,6 +8,7 @@ import community.flock.eco.workday.application.services.email.SickDayMailService
 import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.EntityManager
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +21,7 @@ class SickDayService(
     private val personService: PersonService,
     private val entityManager: EntityManager,
     private val emailService: SickDayMailService,
-    private val eventService: EventService,
+    private val publisher: ApplicationEventPublisher,
 ) {
     fun findAll(pageable: Pageable) =
         repository
@@ -89,7 +90,7 @@ class SickDayService(
             .validate()
             .consume()
             .save()
-            .also { capHackHours(it) }
+            .also { publisher.publishEvent(AbsenceChanged(it)) }
             .also { emailService.sendNotification(it) }
 
     fun update(
@@ -98,14 +99,18 @@ class SickDayService(
         isUpdatedByOwner: Boolean,
     ): SickDay {
         val currentSickDay = repository.findByCode(code).toNullable()
+        // Saving merges into this same instance, so remember where the absence was before.
+        val previous = currentSickDay?.let { AbsenceChanged(it) }
         return currentSickDay
             .run {
                 form
                     .validate()
                     .consume(this)
                     .save()
-            }.also { capHackHours(it) }
-            .also {
+            }.also {
+                previous?.let { publisher.publishEvent(it) }
+                publisher.publishEvent(AbsenceChanged(it))
+            }.also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }
@@ -113,7 +118,11 @@ class SickDayService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) = repository.deleteByCode(code)
+    fun deleteByCode(code: String) {
+        val sickDay = findByCode(code)
+        repository.deleteByCode(code)
+        sickDay?.let { publisher.publishEvent(AbsenceChanged(it)) }
+    }
 
     private fun SickDayForm.consume(it: SickDay? = null): SickDay {
         val person =
@@ -135,15 +144,4 @@ class SickDayService(
     }
 
     private fun SickDay.save() = repository.save(this)
-
-    // A hack day missed through sickness still costs budget, so the sign-up must not count those hours as attended.
-    private fun capHackHours(sickDay: SickDay) {
-        if (sickDay.status == Status.REJECTED) return
-        eventService.capHackHoursForSickness(
-            personId = sickDay.person.uuid,
-            from = sickDay.from,
-            to = sickDay.to,
-            sickDays = findAllActiveByPerson(sickDay.from, sickDay.to, sickDay.person.uuid),
-        )
-    }
 }

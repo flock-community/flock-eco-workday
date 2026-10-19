@@ -7,13 +7,13 @@ import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.model.HackDaySignUpCut
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRatingRepository
 import community.flock.eco.workday.application.repository.EventRepository
+import community.flock.eco.workday.application.repository.HackDaySignUpCutRepository
 import community.flock.eco.workday.core.utils.toNullable
-import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -30,6 +30,7 @@ class EventService(
     private val eventRepository: EventRepository,
     private val eventDayRepository: EventDayRepository,
     private val eventRatingRepository: EventRatingRepository,
+    private val hackDaySignUpCutRepository: HackDaySignUpCutRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
 ) {
@@ -87,8 +88,12 @@ class EventService(
                     existing == null -> {
                         eventDayRepository.save(event.eventDayFor(person, hours = hours ?: event.hours))
                         event.rebalanceCosts()
+                        hackDaySignUpCutRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid)
                     }
-                    hours != null && hours != existing.hours -> existing.hours = hours
+                    hours != null && hours != existing.hours -> {
+                        existing.hours = hours
+                        hackDaySignUpCutRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid)
+                    }
                 }
             }?.refreshed()
             ?: error("Cannot subscribe to Event: $eventCode")
@@ -102,48 +107,86 @@ class EventService(
             .toNullable()
             ?.also { event ->
                 eventDayRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid)
+                hackDaySignUpCutRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid)
                 event.rebalanceCosts()
             }?.refreshed()
             ?: error("Cannot unsubscribe from Event: $eventCode")
 
     /**
-     * Sickness on a hack day someone signed up for cuts their hack hours to the hours they weren't sick;
-     * a day missed entirely drops the sign-up. Safe to call again for the same sick days.
+     * Holiday or sickness on a hack day someone signed up for cuts the sign-up to the hours they weren't absent;
+     * a day missed entirely drops it. The original sign-up is kept, so it comes back when the absence goes away.
+     * Safe to call again for the same absences.
      */
-    fun capHackHoursForSickness(
+    fun fitHackSignUpsToAbsence(
         personId: UUID,
         from: LocalDate,
         to: LocalDate,
-        sickDays: Iterable<SickDay>,
+        absentOn: (LocalDate) -> BigDecimal,
     ) {
-        val sickHours = sickDays.filter { it.status != Status.REJECTED && it.person.uuid == personId }.map { it.hoursPerDay() }
-        val sickOn = { date: LocalDate -> sickHours.fold(BigDecimal.ZERO) { acc, it -> acc + (it[date] ?: BigDecimal.ZERO) } }
-        eventDayRepository
-            .findAllActiveByPerson(from, to, personId)
-            .filter { it.event.type == EventType.FLOCK_HACK_DAY }
-            .forEach { eventDay ->
-                val notSick = eventDay.event.hoursPerDay().mapValues { (date, hours) -> (hours - sickOn(date)).max(BigDecimal.ZERO) }
-                val allowed = notSick.values.fold(BigDecimal.ZERO, BigDecimal::add).toDouble()
-                if (eventDay.hours <= allowed) return@forEach
-                if (allowed <= 0.0) {
-                    eventDayRepository.delete(eventDay)
-                    eventDay.event.eventDays.remove(eventDay)
-                    eventDay.event.rebalanceCosts()
-                } else {
-                    eventDay.hours = allowed
-                    eventDay.days
-                        ?.takeIf { it.size == notSick.size }
-                        ?.let { days ->
-                            notSick.values.forEachIndexed { index, hours -> days[index] = minOf(days[index], hours.toDouble()) }
-                        }
+        val signUps =
+            eventDayRepository
+                .findAllActiveByPerson(from, to, personId)
+                .filter { it.event.type == EventType.FLOCK_HACK_DAY }
+                .associateBy { it.event.id }
+        val cuts = hackDaySignUpCutRepository.findAllActiveByPerson(from, to, personId).associateBy { it.event.id }
+        (signUps.keys + cuts.keys).forEach { eventId ->
+            val signUp = signUps[eventId]
+            val cut = cuts[eventId]
+            val event = signUp?.event ?: cut!!.event
+            if (event.hours <= 0.0) return@forEach
+            val signedUpHours = cut?.hours ?: signUp!!.hours
+            val share = signedUpHours.toBigDecimal().divide(event.hours.toBigDecimal(), 10, RoundingMode.HALF_UP)
+            val present =
+                event.hoursPerDay().mapValues { (date, hours) ->
+                    (hours * share).min((hours - absentOn(date)).max(BigDecimal.ZERO)).toDouble()
+                }
+            val presentHours = present.values.sum()
+            when {
+                presentHours >= signedUpHours - 0.001 -> {
+                    if (cut == null) return@forEach
+                    hackDaySignUpCutRepository.delete(cut)
+                    event.putSignUp(signUp, cut.person, signedUpHours, event.days?.map { it * share.toDouble() })
+                }
+                else -> {
+                    if (cut == null) hackDaySignUpCutRepository.save(HackDaySignUpCut(event, signUp!!.person, signedUpHours))
+                    event.putSignUp(signUp, signUp?.person ?: cut!!.person, presentHours, present.values.toList())
                 }
             }
+        }
+    }
+
+    private fun Event.putSignUp(
+        signUp: EventDay?,
+        person: Person,
+        hours: Double,
+        days: List<Double>?,
+    ) {
+        when {
+            hours <= 0.0 && signUp != null -> {
+                eventDayRepository.delete(signUp)
+                eventDays.remove(signUp)
+                rebalanceCosts()
+            }
+            hours <= 0.0 -> Unit
+            signUp == null -> {
+                eventDays.add(eventDayRepository.save(eventDayFor(person, hours = hours, days = days?.toMutableList())))
+                rebalanceCosts()
+            }
+            else -> {
+                signUp.hours = hours
+                signUp.days?.takeIf { days != null && it.size == days.size }?.let {
+                    it.clear()
+                    it.addAll(days!!)
+                }
+            }
+        }
     }
 
     @Transactional
     fun deleteByCode(code: String) {
         eventRatingRepository.deleteByEventCode(code)
         eventDayRepository.deleteByEventCode(code)
+        hackDaySignUpCutRepository.deleteByEventCode(code)
         eventRepository.deleteByCode(code)
     }
 
