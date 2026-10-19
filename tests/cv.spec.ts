@@ -54,8 +54,12 @@ test.describe('CV', () => {
     page,
   }) => {
     await Given_I_am_logged_in_as_user(page, WORKER_USERNAME);
-    // CVs left behind by an earlier, failed run; a worker only gets their own
-    const leftovers = await (await page.request.get('/api/cvs')).json();
+    // CVs left behind by an earlier, failed run; a worker only gets their own.
+    // The copies go first: a base with copies is not deleted
+    const leftovers: { code: string; base?: boolean }[] = await (
+      await page.request.get('/api/cvs')
+    ).json();
+    leftovers.sort((a, b) => Number(!!a.base) - Number(!!b.base));
     for (const cv of leftovers)
       await page.request.delete(`/api/cvs/${cv.code}`);
 
@@ -172,17 +176,31 @@ test.describe('CV', () => {
     await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);
     await expect(cv.getByRole('table')).toContainText('03-2021 - nu');
 
-    // A second version, starting as a copy of the first
+    // The first CV in a language is the base
+    await expect(page.getByTestId('cv-base')).toContainText(
+      'The base CV in Dutch',
+    );
+
+    // A second version, starting as a copy of the base
     await page.getByRole('button', { name: 'New version' }).click();
-    await page.getByRole('menuitem', { name: 'Copy of Algemeen' }).click();
+    await page
+      .getByRole('menuitem', { name: 'Copy of the base Algemeen' })
+      .click();
     const name = page.getByRole('textbox', { name: 'Name of this version' });
     await expect(name).toHaveValue('Algemeen (copy)');
     await expect(page.getByRole('textbox', { name: 'Place' })).toHaveValue(
       'Hilversum',
     );
+    // A copy keeps the language of its base
+    await expect(
+      page.getByRole('combobox', { name: 'Language' }),
+    ).toHaveAttribute('aria-disabled', 'true');
     await name.fill('Backend');
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(versionPicker(page)).toHaveText(/Backend · Dutch/);
+    await expect(page.getByTestId('cv-base')).toContainText(
+      'A copy of the base CV Algemeen',
+    );
 
     // Without a history of its own, the copy is compared with the other CV
     await page.getByRole('button', { name: 'Compare versions' }).click();
@@ -192,15 +210,83 @@ test.describe('CV', () => {
 
     // Both versions are there; switch between them
     await selectVersion(page, 'Algemeen');
-    await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);
+    await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch · Base/);
+    await expect(page.getByTestId('cv-base')).toContainText(
+      'Copies: Backend (0% different)',
+    );
 
-    // And delete them again
+    // And delete them again: the copy first, a base with copies stays
+    await selectVersion(page, 'Backend');
     await deleteShownCv(page);
-    await expect(versionPicker(page)).toHaveText(/Backend · Dutch/);
+    await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);
     await deleteShownCv(page);
     await expect(page.getByTestId('cv-empty')).toContainText(
       'You have no CV yet',
     );
+  });
+
+  test('a copy follows its base: facts at once, texts on offer', async ({
+    page,
+  }) => {
+    await Given_I_am_logged_in_as_user(page, WORKER_USERNAME);
+    const leftovers: { code: string; base?: boolean }[] = await (
+      await page.request.get('/api/cvs')
+    ).json();
+    leftovers.sort((a, b) => Number(!!a.base) - Number(!!b.base));
+    for (const cv of leftovers)
+      await page.request.delete(`/api/cvs/${cv.code}`);
+
+    const form = (name: string, place: string, summary: string) => ({
+      name,
+      language: 'NL',
+      place,
+      summary,
+      experiences: [
+        { from: '2024-08', role: 'Developer', client: 'ING', technologies: [] },
+      ],
+      skills: [],
+    });
+    const base = await (
+      await page.request.post('/api/cvs', {
+        data: form('Algemeen', 'Hilversum', 'Engineer at heart.'),
+      })
+    ).json();
+    const copy = await (
+      await page.request.post('/api/cvs', {
+        data: {
+          ...form('ING', 'Hilversum', 'Engineer at heart.'),
+          basedOn: base.code,
+        },
+      })
+    ).json();
+    await page.request.put(`/api/cvs/${base.code}`, {
+      data: form('Algemeen', 'Utrecht', 'Engineer and coach.'),
+    });
+
+    await page.goto(`/cvs/${copy.code}`);
+    const cv = page.getByRole('article');
+    // The place followed the base at once; the new profile is on offer
+    await expect(cv.getByText('Utrecht')).toBeVisible();
+    await expect(cv.getByText('Engineer at heart.')).toBeVisible();
+    await expect(page.getByTestId('cv-base-changed')).toContainText(
+      '1 change of the base to look at',
+    );
+    await expect(page.getByTestId('cv-offer')).toContainText('Profile');
+    await page.getByRole('button', { name: "Take the base's" }).click();
+    await expect(cv.getByText('Engineer and coach.')).toBeVisible();
+    await expect(page.getByTestId('cv-base-changed')).toHaveCount(0);
+    // How far the copy drifted shows in short; what it tailored when opened
+    await expect(page.getByTestId('cv-divergence')).toHaveText(
+      '0% different · 0 tailored',
+    );
+    await expect(page.getByTestId('cv-sync')).toHaveCount(0);
+    await page.getByTestId('cv-divergence').click();
+    await expect(page.getByTestId('cv-sync')).toContainText(
+      'Everything here follows the base.',
+    );
+
+    await page.request.delete(`/api/cvs/${copy.code}`);
+    await page.request.delete(`/api/cvs/${base.code}`);
   });
 
   test('an admin starts on their own CV and picks whose CV to read', async ({

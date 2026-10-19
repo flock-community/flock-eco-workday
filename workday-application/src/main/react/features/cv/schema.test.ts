@@ -44,6 +44,7 @@ describe('CV_FORM_SCHEMA', () => {
       education: '',
       subjects: '',
       languages: '',
+      basedOn: '',
     });
   });
 
@@ -107,9 +108,9 @@ describe('CV_FORM_SCHEMA', () => {
       errorsOf(
         values({
           skills: [
-            { category: 'Tools', name: '', level: null },
-            { category: '', name: 'Git', level: 6 },
-            { category: '', name: 'Kotlin', level: null },
+            { id: '', category: 'Tools', name: '', level: null },
+            { id: '', category: '', name: 'Git', level: 6 },
+            { id: '', category: '', name: 'Kotlin', level: null },
           ],
         }),
       ),
@@ -138,8 +139,8 @@ describe('toCvRequest', () => {
           place: ' Utrecht ',
           languages: 'Dutch – Native\n',
           skills: [
-            { category: ' Tools ', name: ' Git ', level: 5 },
-            { category: '', name: 'Kotlin', level: null },
+            { id: '', category: ' Tools ', name: ' Git ', level: 5 },
+            { id: '', category: '', name: 'Kotlin', level: null },
           ],
           experiences: [
             {
@@ -180,6 +181,11 @@ describe('toCvRequest', () => {
     });
   });
 
+  it('names the base a new CV is a copy of', () => {
+    expect(toCvRequest(values({ basedOn: 'cv-1' })).basedOn).toBe('cv-1');
+    expect(toCvRequest(values()).basedOn).toBeUndefined();
+  });
+
   it('sends no end month for the current job', () => {
     expect(
       toCvRequest(values({ experiences: [experience] })).experiences?.[0].to,
@@ -190,6 +196,7 @@ describe('toCvRequest', () => {
 describe('toCvFormValues', () => {
   const stored: NonNullable<Cv['experiences']> = [
     {
+      id: 'ing',
       from: '2024-08',
       to: undefined,
       role: 'Software Engineer',
@@ -219,6 +226,8 @@ describe('toCvFormValues', () => {
       phone: '',
       summary: 'Engineer.',
     });
+    // The id ties the assignment to the same one in the base or a copy
+    expect(form.experiences[0].id).toBe('ing');
     expect(form.experiences[0].from?.format('YYYY-MM')).toBe('2024-08');
     expect(form.experiences[0].to).toBeNull();
     expect(form.experiences[0].technologies).toEqual(['Kotlin', 'React']);

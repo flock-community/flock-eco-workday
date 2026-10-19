@@ -98,6 +98,8 @@ PDF once you have it, extracting images) may already be done before or while wai
 | `place`, `phone` | Plain text. |
 | `summary` | The profile, **Markdown** like an experience `description` (paragraphs as `\n\n`, `**bold**`, ...). |
 | `experiences[]` | Newest first. `from`/`to` are `yyyy-MM`; `to: null` means "present". `role` and `client` required (max 255). `employer` is who the person worked through ("via Flock", "via Capgemini"), null when hired directly. `technologies` is a list of strings. `logoId` is a logo UUID or null. `description` is **Markdown**: paragraphs separated by `\n\n`, bullet lists as `- item` lines (one `\n` between items, a blank line before and after the list), `**bold**`, `*italic*`, `[text](https://...)` links (bare URLs are linked too). A single `\n` inside a paragraph renders as a line break. Raw HTML is not rendered; keep it to these basics so the CV prints cleanly. |
+| `basedOn` | Only on create: the code of the person's **base** CV in that language this CV is a copy of (see "Base CV and copies"). |
+| `experiences[].id`, `skills[].id` | The item id (a UUID) that ties an assignment or skill to the same one in the base or a copy. `get-form`/`copy-form` keep them; **never drop or invent them**. Leave them out only for a new item. |
 | `skills[]` | `{category, name, level}`. The CV groups by category in order of first appearance. Level 1-5 = number of stars; `level` is optional, so an unrated list gets `null`. |
 | `education`, `subjects`, `languages` | Free text, one entry per line. |
 | `photo` | Not a real `CvForm` field — the API stores it on the person (`PersonForm.photo` via `PUT /api/persons/{uuid}`, which admins may use on anybody and those with person read and write rights on their own person), shown in the header of each of their CVs, so all CVs of a person share it. `cvapi.py create`/`put` accept it as a convenience key in `form.json` anyway: they strip it out before posting the CV and apply it to the person afterwards (see `set_person_photo` in `cvapi.py`), so you can keep treating it as part of the form. A base64 string, optionally a data URL (`data:image/png;base64,...`); PNG, JPEG, GIF, WebP or SVG, at most 512 KB (same ceiling as a logo). Left out of `form.json` entirely leaves the person's photo as it is; `""` removes it. |
@@ -225,6 +227,9 @@ Pitfalls:
 - Every save creates a revision (`GET /api/cvs/{code}/revisions`), so a bad edit can be undone with
   `POST /api/cvs/{code}/revisions/{id}/restore`.
 - Renaming a CV to a name its person already uses gives a 409.
+- On a **copy**, a field you change becomes tailored and stops following the base. A fact that is
+  true for every CV (a new assignment, a fixed period) goes in the **base**; its copies follow.
+- A base with copies cannot be deleted or change language (409); a copy keeps its base's language.
 
 ## Writing style for rewritten resumes
 
@@ -251,6 +256,22 @@ assignment, write what is there and tell the user which part is missing rather t
 `references/example-resume.md` is a full example of how a resume should read; follow its tone and
 structure.
 
+## Base CV and copies
+
+Per person and language one CV is the **base** (kept up to date); the others are **copies** of it,
+made for a client or a role. `cvapi.py list` marks each CV `base` or `copy`. The first CV in a
+language becomes the base; a new CV in a language that has a base becomes a copy of it.
+
+- A copy follows the base field by field. When the base is saved, facts the copy did not change
+  (details, period, client, role, employer, technologies, skills, new assignments) are taken over
+  at once; texts (profile, assignment descriptions) and fields the copy tailored are offered.
+- A copy is always made of the base (`copy-form BASE_CODE NAME`, then `create`), never of another
+  copy, and keeps the base's language.
+- `sync CODE` shows a copy's offers (changes of the base) and tailored fields; `sync CODE ADDRESS
+  ACCEPT|SKIP|PROMOTE` takes the base's version, keeps the copy's, or puts the copy's into the base.
+- A fact that is true for every CV (a new assignment, a corrected period) belongs in the **base**,
+  not in a copy: edit the base and let the copies follow.
+
 ## Adjusting a CV for a client request
 
 Trigger: "Adjust the resume of `<person>` for the request of `<client name / file name / content>`" —
@@ -274,16 +295,15 @@ client's language.
    knowledge, soft/cultural fit (team style, values, methodology), language, and anything else explicitly
    asked for. If the request is vague or you can't tell what should drive the rewrite, ask the user
    before editing rather than guessing.
-3. **Find the person's CV(s)**: `cvapi.py list PERSON_UUID`. If the person has more than one CV, ask
-   which one to adjust. If none exists yet, say so — this flow edits an existing CV, it doesn't create
-   one from scratch.
-4. **Decide in place vs. a new variant.** Ask the user (unless already specified) whether to:
-   - edit the named CV in place, or
-   - create a copy for this client (`<Full name> - <Client>`, per the naming rule in "Before you start")
-     and leave the original untouched — usually the safer default when the source CV is their "General"
-     CV or already used elsewhere.
+3. **Find the person's CV(s)**: `cvapi.py list PERSON_UUID`. If none exists yet, say so — this flow
+   edits an existing CV, it doesn't create one from scratch.
+4. **Tailor a copy of the base.** Unless the user names an existing copy for this client, make a new
+   copy of the base in the request's language: `copy-form BASE_CODE "<Full name> - <Client>"` (naming
+   rule in "Before you start") -> edit -> `create`. Never tailor the base itself, and never copy a
+   copy. If the language has no base yet, ask the user which CV to make the base first.
 5. **Apply the adjustment** with the normal edit flow (`get-form` -> edit `form.json` -> `put` -> `get`
-   to confirm, or `create` for a new variant):
+   to confirm, or `create` for the new copy). Keep every `id` in the form, so the copy keeps
+   following the base for what you leave alone:
    - **Summary**: lead with the experience and strengths that match the request.
    - **Skills**: reorder so the requested technologies/skills come first within their category; do not
      invent a skill or bump its `level` beyond what the CV already states.
@@ -295,7 +315,8 @@ client's language.
    - Keep every change traceable to something that was already true on the CV.
 6. **Report back**: which requirements from the client request drove which change (summary, skills,
    per-experience), and call out any requirement the person's existing CV doesn't support — surface the
-   gap, don't paper over it by fabricating content.
+   gap, don't paper over it by fabricating content. Run `sync CODE` on the copy and say how many
+   fields it tailored, so the user sees how far it moved from the base.
 
 ## Report back
 
