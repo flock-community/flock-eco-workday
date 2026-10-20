@@ -53,6 +53,7 @@ class AggregationService(
     private val workDayService: WorkDayService,
     private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
+    private val hackDayAbsenceService: HackDayAbsenceService,
 ) {
     fun getHolidayDetailsMe(
         year: Int,
@@ -100,6 +101,7 @@ class AggregationService(
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val data = dataService.findAllData(from, to, person.uuid)
+        val absences = hackDayAbsenceService.findAllByYearAndPerson(year, person.uuid)
         return PersonHackdayDetails(
             name = person.getFullName(),
             hackHoursFromContract =
@@ -112,6 +114,8 @@ class AggregationService(
                     .filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.HACK }
                     .sumOf { it.hours }
                     .toBigDecimal(),
+            holidayOnHackDayHours = absences.holidayHours(),
+            sickOnHackDayHours = absences.sickHours(),
         )
     }
 
@@ -182,9 +186,11 @@ class AggregationService(
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val all = dataService.findAllData(from, to)
+        val absencesByPerson = hackDayAbsenceService.findAllByYear(year).groupBy { it.personId }
         return all
             .allPersons()
             .map { person ->
+                val absences = absencesByPerson[person.uuid].orEmpty()
                 AggregationHackDay(
                     name = person.getFullName(),
                     contractHours =
@@ -199,6 +205,8 @@ class AggregationService(
                             .filter { it.person == person }
                             .sumOf { it.hours }
                             .toBigDecimal(),
+                    holidayOnHackDayHours = absences.holidayHours(),
+                    sickOnHackDayHours = absences.sickHours(),
                 )
             }
     }

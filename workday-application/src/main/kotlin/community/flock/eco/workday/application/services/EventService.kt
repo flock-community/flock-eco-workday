@@ -6,12 +6,14 @@ import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
+import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRatingRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.core.utils.toNullable
 import jakarta.persistence.EntityManager
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -29,6 +31,7 @@ class EventService(
     private val eventRatingRepository: EventRatingRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
+    private val publisher: ApplicationEventPublisher,
 ) {
     fun findAll(): Iterable<Event> = eventRepository.findAll()
 
@@ -103,6 +106,38 @@ class EventService(
             }?.refreshed()
             ?: error("Cannot unsubscribe from Event: $eventCode")
 
+    /**
+     * Holiday or sickness on a hack day someone signed up for cuts the sign-up to the hours they weren't absent;
+     * a day missed entirely drops it. Safe to call again for the same absences.
+     */
+    fun cutHackSignUpsForAbsence(
+        personId: UUID,
+        from: LocalDate,
+        to: LocalDate,
+        absentOn: (LocalDate) -> BigDecimal,
+    ) {
+        eventDayRepository
+            .findAllActiveByPerson(from, to, personId)
+            .filter { it.event.type == EventType.FLOCK_HACK_DAY }
+            .forEach { eventDay ->
+                val present = eventDay.event.hoursPerDay().mapValues { (date, hours) -> (hours - absentOn(date)).max(BigDecimal.ZERO) }
+                val allowed = present.values.fold(BigDecimal.ZERO, BigDecimal::add).toDouble()
+                if (eventDay.hours <= allowed) return@forEach
+                if (allowed <= 0.0) {
+                    eventDayRepository.delete(eventDay)
+                    eventDay.event.eventDays.remove(eventDay)
+                    eventDay.event.rebalanceCosts()
+                } else {
+                    eventDay.hours = allowed
+                    eventDay.days
+                        ?.takeIf { it.size == present.size }
+                        ?.let { days ->
+                            present.values.forEachIndexed { index, hours -> days[index] = minOf(days[index], hours.toDouble()) }
+                        }
+                }
+            }
+    }
+
     @Transactional
     fun deleteByCode(code: String) {
         eventRatingRepository.deleteByEventCode(code)
@@ -131,6 +166,14 @@ class EventService(
         } else {
             val persons = personService.findByPersonCodeIdIn(personIds).toList()
             event.rebuildEventDaysFromTemplate(persons, previousHours)
+        }
+        // Participants an admin adds may be on holiday or sick that day; their hours can't count twice.
+        if (event.type == EventType.FLOCK_HACK_DAY) {
+            eventDayRepository
+                .findAllByEventCode(event.code)
+                .map { it.person.uuid }
+                .distinct()
+                .forEach { publisher.publishEvent(AbsenceChanged(it, event.from, event.to)) }
         }
         return event.refreshed()
     }

@@ -1,10 +1,11 @@
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import type { FlockEvent } from '../../clients/EventClient';
+import type { FlockEvent, HackDayMissReason } from '../../clients/EventClient';
 import { EventListItem } from './EventListItem';
 
 type FlockEventListProps = {
   events: FlockEvent[];
+  missedHackDays?: Record<string, HackDayMissReason>;
   onEventToggle: (
     event: FlockEvent,
     isSubscribed: boolean,
@@ -12,7 +13,11 @@ type FlockEventListProps = {
   ) => void;
 };
 
-export function EventList({ events, onEventToggle }: FlockEventListProps) {
+export function EventList({
+  events,
+  missedHackDays = {},
+  onEventToggle,
+}: FlockEventListProps) {
   if (events && events.length === 0) {
     return (
       <Typography display={'block'}>There are no events planned.</Typography>
@@ -25,6 +30,7 @@ export function EventList({ events, onEventToggle }: FlockEventListProps) {
         <EventListItem
           key={event.code}
           event={event}
+          missedDueTo={missedHackDays[event.code]}
           onEventToggle={onEventToggle}
         />
       ))}

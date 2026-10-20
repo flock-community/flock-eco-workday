@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.forms.LeaveDayForm
+import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.LeaveDayService
@@ -17,6 +18,7 @@ class LoadLeaveDayData(
     loadData: LoadData,
     loadPersonData: LoadPersonData,
     usersWithDefinedHours: UsersWithDefinedHours,
+    loadEventData: LoadEventData,
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
     final val startOfYear: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
@@ -31,7 +33,33 @@ class LoadLeaveDayData(
                 createUnpaidParentalLeave(it)
                 createPaidLeave(it)
             }
+            createHolidayOnHackDays(loadPersonData.findPersonByUserEmail("ieniemienie@sesam.straat"), loadEventData)
         }
+    }
+
+    // Ieniemienie was on holiday on two hack days she skipped, so the hack budget shows "holiday on hack days".
+    private fun createHolidayOnHackDays(
+        person: Person,
+        loadEventData: LoadEventData,
+    ) {
+        loadEventData.data
+            .filter { it.type == EventType.FLOCK_HACK_DAY && it.persons.none { p -> p.uuid == person.uuid } }
+            .map { it.from }
+            // Past hack days that fall inside her contract, which starts eight months ago.
+            .filter { it.isAfter(LocalDate.now().minusMonths(6)) && it.isBefore(LocalDate.now()) }
+            .distinct()
+            .sorted()
+            .take(2)
+            .forEach { date ->
+                LeaveDayForm(
+                    description = "Holiday ${person.firstname} on hack day",
+                    from = date,
+                    to = date,
+                    days = mutableListOf(8.0),
+                    hours = 8.0,
+                    personId = person.uuid,
+                ).create()
+            }
     }
 
     private fun createHolidays(it: Person) {

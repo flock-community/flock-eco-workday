@@ -399,7 +399,11 @@ class CvController(
             skills =
                 skills.orEmpty().mapIndexed { index, it ->
                     CvSkillForm(
-                        id = it.id?.validated("skills[$index].id")?.value?.let(UUID::fromString),
+                        id =
+                            it.id
+                                ?.validated("skills[$index].id")
+                                ?.value
+                                ?.let(UUID::fromString),
                         category = it.category,
                         name = it.name.validated("skills[$index].name").value,
                         level = it.level,

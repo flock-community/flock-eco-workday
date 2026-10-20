@@ -131,7 +131,6 @@ export function DashboardFeature() {
       </Card>
 
       <Card>
-        <CardHeader title="Hack Days budget" />
         <CardContent>
           <HackDaysPerPersonChart year={year} />
         </CardContent>
