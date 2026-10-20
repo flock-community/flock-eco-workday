@@ -72,7 +72,7 @@ export function DashboardFeature() {
       </Box>
 
       <Card>
-        <CardHeader title="Actual cost revenue" />
+        <CardHeader title="Gross margin" />
         <CardContent>
           <div style={{ height: CHART_HEIGHT * 2 }}>
             <TotalPerMonthChart year={year} />
