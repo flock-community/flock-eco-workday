@@ -5,9 +5,6 @@ import {
   HackBudgetLegend,
   type HackBudgetRow,
   hackDays,
-  hackOver,
-  hackOverColor,
-  hackOverText,
   hackUpcomingTotal,
 } from '../../components/charts/HackBudgetBar';
 import type { BudgetSummaryResponse } from '../../wirespec/model';
@@ -71,19 +68,10 @@ export function HackBudgetBarCard({
           <HackBudgetLegend />
         </Box>
         <HackBudgetBar row={row} />
-        {hackOver(row) > 0 ? (
-          <Typography
-            variant="body2"
-            sx={{ mt: 1, color: hackOverColor(row), fontWeight: 600 }}
-          >
-            {hackOverText(row)}
-          </Typography>
-        ) : (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {hackDays(row.left)} left · {hackDays(hackUpcomingTotal(row))} can
-            still be cancelled
-          </Typography>
-        )}
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {hackDays(row.left)} left · {hackDays(hackUpcomingTotal(row))} can
+          still be cancelled
+        </Typography>
       </CardContent>
     </Card>
   );
