@@ -11,8 +11,6 @@ import {
   type HackBudgetRow,
   hackBarExtent,
   hackHours,
-  hackOver,
-  hackOverColor,
 } from './HackBudgetBar';
 
 type HackDaysPerPersonChartProps = {
@@ -52,11 +50,7 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
         res
           .filter((it) => it.contractHours > 0)
           .map(toRow)
-          .sort(
-            (a, b) =>
-              a.left - hackOver(a) - (b.left - hackOver(b)) ||
-              a.name.localeCompare(b.name),
-          ),
+          .sort((a, b) => a.left - b.left || a.name.localeCompare(b.name)),
       ),
     );
   }, [year]);
@@ -136,12 +130,9 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
                     fontSize: { xs: '0.875rem', sm: '1rem' },
                     textAlign: 'right',
                     whiteSpace: 'nowrap',
-                    ...(hackOver(row) > 0 && { color: hackOverColor(row) }),
                   }}
                 >
-                  {hackOver(row) > 0
-                    ? `${hackHours(hackOver(row))} over`
-                    : `${hackHours(row.left)} left`}
+                  {hackHours(row.left)} left
                 </Typography>
               </Box>
             );
