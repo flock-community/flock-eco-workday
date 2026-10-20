@@ -307,6 +307,7 @@ private fun AggregationClient.produce(): AggregationClientApi =
     AggregationClientApi(
         name = name,
         revenueGross = revenueGross.produce(),
+        cost = cost.produce(),
     )
 
 private fun AggregationClientPersonOverview.produce() =

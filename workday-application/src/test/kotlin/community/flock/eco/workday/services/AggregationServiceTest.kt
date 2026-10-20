@@ -1,6 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.BudgetCategory
@@ -12,8 +13,10 @@ import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.application.services.AggregationService
+import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.application.services.countWorkDaysInPeriod
 import community.flock.eco.workday.application.utils.DateUtils.countWorkDaysInMonth
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.helpers.OrganisationHelper
@@ -21,6 +24,7 @@ import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.test.assertEquals
@@ -34,6 +38,7 @@ class AggregationServiceTest(
     @Autowired val aggregationService: AggregationService,
     @Autowired val eventRepository: EventRepository,
     @Autowired val eventDayRepository: EventDayRepository,
+    @Autowired val workDayService: WorkDayService,
 ) : WorkdayIntegrationTest() {
     private val firstDayOfYear = LocalDate.of(2020, 1, 1)
     private val lastDayOfYear = LocalDate.of(2020, 12, 31)
@@ -758,6 +763,55 @@ class AggregationServiceTest(
         assertEquals(BigDecimal("11840.00000000000"), thomasClientsFlock.revenue)
         assertEquals(BigDecimal("960.00000000000"), thomasClientsOther.revenue)
         assertEquals(BigDecimal("14720.00"), jesseTotal)
+    }
+
+    @Test
+    fun `revenue and cost per client are based on registered hours`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+        val client = createHelper.createClient("Billed.client")
+        createHelper.createClient("Idle.client")
+
+        // 4600 a month over the 23 working days of January 2020 at 8 hours a day is 25 an hour
+        val employee = createHelper.createPersonEntity("Internal", "Employee")
+        createHelper.createContractInternal(employee, LocalDate.of(2019, 1, 1), null, monthlySalary = 4600.0)
+        val employeeAssignment = createHelper.createAssignment(client, employee, LocalDate.of(2019, 12, 1), null)
+        // Only the three days in 2020 count
+        createHelper.createWorkDay(employeeAssignment, LocalDate.of(2019, 12, 30), LocalDate.of(2020, 1, 3), 40.0, List(5) { 8.0 })
+        createHelper.createWorkDay(employeeAssignment, LocalDate.of(2020, 1, 6), LocalDate.of(2020, 1, 10), 40.0, List(5) { 8.0 })
+        val rejected =
+            createHelper.createWorkDay(employeeAssignment, LocalDate.of(2020, 1, 13), LocalDate.of(2020, 1, 17), 40.0, List(5) { 8.0 })
+        workDayService.update(
+            rejected.code,
+            WorkDayForm(
+                from = rejected.from,
+                to = rejected.to,
+                hours = 40.0,
+                days = MutableList(5) { 8.0 },
+                status = Status.REJECTED,
+                assignmentCode = employeeAssignment.code,
+                sheets = listOf(),
+            ),
+            isUpdatedByOwner = true,
+        )
+
+        // External contract at 75 an hour
+        val contractor = createHelper.createPersonEntity("External", "Contractor")
+        createHelper.createContractExternal(contractor, from, null)
+        val contractorAssignment = createHelper.createAssignment(client, contractor, from, null)
+        createHelper.createWorkDay(contractorAssignment, LocalDate.of(2020, 2, 3), LocalDate.of(2020, 2, 4), 16.0, List(2) { 8.0 })
+
+        val result = aggregationService.totalPerClient(from, to)
+
+        val billed = result.first { it.name == "Billed.client" }
+        // (24 + 40 + 16) hours at the assignment rate of 80
+        assertEquals(BigDecimal("6400.00"), billed.revenueGross.setScale(2, RoundingMode.HALF_UP))
+        // 64 hours at 25 plus 16 hours at 75
+        assertEquals(BigDecimal("2800.00"), billed.cost.setScale(2, RoundingMode.HALF_UP))
+
+        val idle = result.first { it.name == "Idle.client" }
+        assertEquals(0, idle.revenueGross.signum())
+        assertEquals(0, idle.cost.signum())
     }
 
     @Test

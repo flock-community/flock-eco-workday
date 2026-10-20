@@ -18,6 +18,7 @@ import community.flock.eco.workday.application.model.AggregationPersonClientReve
 import community.flock.eco.workday.application.model.AggregationPersonClientRevenueOverview
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.BudgetCategory
+import community.flock.eco.workday.application.model.Contract
 import community.flock.eco.workday.application.model.ContractExternal
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractManagement
@@ -47,7 +48,6 @@ import java.time.temporal.ChronoUnit
 @Service
 class AggregationService(
     private val clientService: ClientService,
-    private val assignmentService: AssignmentService,
     private val dataService: DataService,
     private val applicationConstants: ApplicationConstants,
     private val workDayService: WorkDayService,
@@ -220,23 +220,46 @@ class AggregationService(
             }
     }
 
+    /**
+     * Revenue and cost per client, based on the hours registered on work days in the period.
+     * Revenue is hours times the assignment's hourly rate, cost is hours times the
+     * person's cost per hour on that day (see [costPerHour]).
+     */
     fun totalPerClient(
         from: LocalDate,
         to: LocalDate,
     ): List<AggregationClient> {
-        val allAssignments = assignmentService.findAllActive(from, to)
+        val all = dataService.findAllData(from, to)
+        val contractsPerPerson = all.contract.groupBy { it.person }
+        val workDaysPerClient =
+            all.workDay
+                .filter { it.status != Status.REJECTED }
+                .groupBy { it.assignment.client }
         return clientService
             .findAll()
             .map { client ->
+                val hoursPerWorkDay =
+                    workDaysPerClient[client]
+                        .orEmpty()
+                        .map { it to it.hoursPerDayInPeriod(maxOf(from, it.from), minOf(to, it.to)) }
                 AggregationClient(
                     name = client.name,
                     revenueGross =
-                        allAssignments
-                            .filter { it.client == client }
-                            .toMapWorkingDay(from, to)
-                            .values
-                            .flatten()
-                            .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() },
+                        hoursPerWorkDay
+                            .map { (workDay, hours) -> hours.calculateRevenue(workDay.assignment.hourlyRate) }
+                            .sum(),
+                    cost =
+                        hoursPerWorkDay
+                            .flatMap { (workDay, hours) ->
+                                val contracts = contractsPerPerson[workDay.assignment.person].orEmpty()
+                                hours.map { (date, hour) ->
+                                    contracts
+                                        .filterInRange(date)
+                                        .map { it.costPerHour(YearMonth.from(date)) }
+                                        .sum()
+                                        .multiply(hour)
+                                }
+                            }.sum(),
                 )
             }
     }
@@ -814,10 +837,30 @@ private fun <T : Period> List<T>.toMapWorkingDay(
     .filterWorkingDay()
     .associateWith { date -> filter { it.inRange(date) } }
 
-private fun Assignment.revenuePerDay(): BigDecimal =
-    (this.hourlyRate * this.hoursPerWeek)
-        .toBigDecimal()
-        .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
+// Management contracts have no contract hours, so their fee is spread over a 40 hour week
+private val MANAGEMENT_HOURS_PER_DAY = BigDecimal.valueOf(8)
+
+/**
+ * What an hour of work costs under this contract: the external hourly rate, or the
+ * monthly salary or fee spread over the contract hours of the month. Time not worked
+ * for a client (leave, sickness, bench) is not part of it.
+ */
+private fun Contract.costPerHour(yearMonth: YearMonth): BigDecimal =
+    when (this) {
+        is ContractExternal -> hourlyRate.toBigDecimal()
+        is ContractInternal ->
+            if (hoursPerWeek <= 0) {
+                BigDecimal.ZERO
+            } else {
+                amountPerWorkingDay(yearMonth)
+                    .multiply(BigDecimal.valueOf(5))
+                    .divide(hoursPerWeek.toBigDecimal(), 10, RoundingMode.HALF_UP)
+            }
+        is ContractManagement ->
+            amountPerWorkingDay(yearMonth)
+                .divide(MANAGEMENT_HOURS_PER_DAY, 10, RoundingMode.HALF_UP)
+        else -> BigDecimal.ZERO
+    }
 
 private fun Iterable<LocalDate>.filterWorkingDay() = this.filter { it.isWorkingDay() }
 
