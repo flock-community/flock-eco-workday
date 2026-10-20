@@ -39,6 +39,27 @@ const passed = (row: HackBudgetRow, key: HackBudgetSegmentKey) =>
 export const hackUpcomingTotal = (row: HackBudgetRow) =>
   row.upcoming.attended + row.upcoming.holiday + row.upcoming.sick;
 
+/** Hours used beyond the budget; 0 when within it. */
+export const hackOver = (row: HackBudgetRow) =>
+  Math.max(row.attended + row.holiday + row.sick - row.budget, 0);
+
+// Over budget, but cancelling hack days that are still ahead brings the person back within it.
+const savable = (row: HackBudgetRow) =>
+  hackOver(row) > 0 && hackUpcomingTotal(row) >= hackOver(row);
+
+export const hackOverColor = (row: HackBudgetRow) =>
+  savable(row) ? 'warning.main' : 'error.main';
+
+export const hackOverText = (row: HackBudgetRow) => {
+  const over = hackOver(row);
+  const upcoming = hackUpcomingTotal(row);
+  if (savable(row))
+    return `${hackHours(over)}h over budget. Cancelling ${hackDays(over)} of upcoming hack days brings it back within budget.`;
+  if (upcoming > 0)
+    return `${hackHours(over)}h over budget. Cancelling all upcoming hack days still leaves ${hackHours(over - upcoming)}h over.`;
+  return `${hackHours(over)}h over budget, with no upcoming hack days left to cancel.`;
+};
+
 /** The total a bar needs room for: its budget, or more when it went over. */
 export const hackBarExtent = (row: HackBudgetRow) =>
   Math.max(row.budget, row.attended + row.holiday + row.sick);
@@ -160,6 +181,22 @@ function Breakdown({
           {hackDays(row.budget)} ({hackHours(row.budget)}h)
         </span>
       </Box>
+      {hackOver(row) > 0 && (
+        <Box
+          sx={{
+            mt: 0.75,
+            pt: 0.75,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            color: hackOverColor(row),
+            fontWeight: 600,
+            whiteSpace: 'normal',
+            maxWidth: 300,
+          }}
+        >
+          {hackOverText(row)}
+        </Box>
+      )}
     </Box>
   );
 }
@@ -213,6 +250,8 @@ export function HackBudgetLegend() {
         />
         Upcoming, can still be cancelled
       </Box>
+      <Box sx={{ color: 'warning.main' }}>Over, cancelling saves it</Box>
+      <Box sx={{ color: 'error.main' }}>Over, can't be saved</Box>
     </Box>
   );
 }
