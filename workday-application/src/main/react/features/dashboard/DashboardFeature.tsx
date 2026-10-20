@@ -117,7 +117,7 @@ export function DashboardFeature() {
       </Card>
 
       <Card>
-        <CardHeader title="Gross revenue per client" />
+        <CardHeader title="Gross margin per client" />
         <CardContent>
           <RevenuePerClientTable year={year} />
         </CardContent>

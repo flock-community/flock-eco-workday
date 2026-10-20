@@ -13,6 +13,7 @@ const path = '/api/aggregations';
 export type ClientGrossRevenue = {
   name: string;
   revenueGross: number;
+  cost: number;
 };
 
 export const totalPerClientByYear = (

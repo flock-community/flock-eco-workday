@@ -101,7 +101,8 @@ type AggregationMonth {
 }
 type AggregationClient {
   name: String?,
-  revenueGross: Number?
+  revenueGross: Number?,
+  cost: Number?
 }
 type NonProductiveHours {
   sickHours: Number?,

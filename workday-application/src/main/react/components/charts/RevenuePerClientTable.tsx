@@ -4,6 +4,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import TableRow from '@mui/material/TableRow';
@@ -23,8 +24,14 @@ const classes = {
 
 const StyledTableContainer = styled(TableContainer)({
   [`& .${classes.table}`]: {
-    maxWidth: 500,
+    maxWidth: 800,
   },
+});
+
+const percentageFormatter = new Intl.NumberFormat('nl-NL', {
+  style: 'percent',
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
 });
 
 type RevenuePerClientChartProps = {
@@ -33,7 +40,6 @@ type RevenuePerClientChartProps = {
 
 export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
   const [items, setItems] = useState<ClientGrossRevenue[]>();
-  const [totalGrossRevenue, setTotalGrossRevenue] = useState<number>();
 
   useEffect(() => {
     const date = new Date();
@@ -50,35 +56,25 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
       .then((res) => setItems(res.filter((item) => item.revenueGross > 0)));
   }, [year]);
 
-  useEffect(() => {
-    if (!items) return;
-
-    const totalGrossRevenue = items
-      .map((item) => item.revenueGross)
-      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-
-    setTotalGrossRevenue(totalGrossRevenue);
-  }, [items]);
-
   if (!items) return <AlignedLoader />;
 
-  const renderItem = (item: ClientGrossRevenue, index: number) => (
-    <TableRow key={index}>
-      <TableCell>{item.name}</TableCell>
-      <TableCell>{currencyFormatter.format(item.revenueGross)}</TableCell>
-    </TableRow>
-  );
+  const totalRevenue = items.reduce((acc, item) => acc + item.revenueGross, 0);
+  const totalCost = items.reduce((acc, item) => acc + item.cost, 0);
 
-  const totals = (
-    <TableRow>
-      <TableCell>Total</TableCell>
-      <TableCell>
-        {totalGrossRevenue !== undefined
-          ? currencyFormatter.format(totalGrossRevenue)
-          : '...'}
-      </TableCell>
-    </TableRow>
-  );
+  const renderRow = (name: string, revenue: number, cost: number) => {
+    const margin = revenue - cost;
+    return (
+      <>
+        <TableCell>{name}</TableCell>
+        <TableCell align="right">{currencyFormatter.format(revenue)}</TableCell>
+        <TableCell align="right">{currencyFormatter.format(cost)}</TableCell>
+        <TableCell align="right">{currencyFormatter.format(margin)}</TableCell>
+        <TableCell align="right">
+          {revenue > 0 ? percentageFormatter.format(margin / revenue) : '–'}
+        </TableCell>
+      </>
+    );
+  };
 
   return (
     <StyledTableContainer>
@@ -86,14 +82,32 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Gross revenue</TableCell>
+            <TableCell align="right">Revenue</TableCell>
+            <TableCell align="right">Cost</TableCell>
+            <TableCell align="right">Margin</TableCell>
+            <TableCell align="right">Margin %</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {items.map(renderItem)}
-          {totals}
+          {items.map((item) => (
+            <TableRow key={item.name}>
+              {renderRow(item.name, item.revenueGross, item.cost)}
+            </TableRow>
+          ))}
+          <TableRow>{renderRow('Total', totalRevenue, totalCost)}</TableRow>
         </TableBody>
       </Table>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        display="block"
+        sx={{ mt: 2, maxWidth: 800 }}
+      >
+        Based on registered hours. Revenue is hours × the assignment rate. Cost
+        is hours × the person's cost per hour: the external hourly rate, or the
+        salary or management fee spread over the contract hours. Leave, sickness
+        and time without an assignment are not charged to a client.
+      </Typography>
     </StyledTableContainer>
   );
 }
