@@ -47,7 +47,7 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
 
     AggregationClient.totalPerClientByYear(year || date.getFullYear())
       .then((res) => validateResponse(res))
-      .then((res) => setItems(res));
+      .then((res) => setItems(res.filter((item) => item.revenueGross > 0)));
   }, [year]);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
 
     const totalGrossRevenue = items
       .map((item) => item.revenueGross)
-      .reduce((previousValue, currentValue) => previousValue + currentValue);
+      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 
     setTotalGrossRevenue(totalGrossRevenue);
   }, [items]);
@@ -73,7 +73,7 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
     <TableRow>
       <TableCell>Total</TableCell>
       <TableCell>
-        {totalGrossRevenue
+        {totalGrossRevenue !== undefined
           ? currencyFormatter.format(totalGrossRevenue)
           : '...'}
       </TableCell>
