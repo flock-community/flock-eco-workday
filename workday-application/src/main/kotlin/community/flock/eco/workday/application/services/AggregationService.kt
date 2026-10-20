@@ -181,7 +181,10 @@ class AggregationService(
                 .totalHoursInPeriod(from, to),
     )
 
-    fun hackdayReport(year: Int): List<AggregationHackDay> {
+    fun hackdayReport(
+        year: Int,
+        today: LocalDate = LocalDate.now(),
+    ): List<AggregationHackDay> {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
@@ -191,6 +194,11 @@ class AggregationService(
             .allPersons()
             .map { person ->
                 val absences = absencesByPerson[person.uuid].orEmpty()
+                val upcomingAbsences = absences.filter { !it.date.isBefore(today) }
+                val hackDays =
+                    all.eventDay
+                        .filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.HACK }
+                        .filter { it.person == person }
                 AggregationHackDay(
                     name = person.getFullName(),
                     contractHours =
@@ -199,14 +207,15 @@ class AggregationService(
                             .filter { it.person == person }
                             .map { it.totalHackDayHoursInPeriod(period) }
                             .sum(),
-                    usedHours =
-                        all.eventDay
-                            .filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.HACK }
-                            .filter { it.person == person }
-                            .sumOf { it.hours }
-                            .toBigDecimal(),
+                    usedHours = hackDays.sumOf { it.hours }.toBigDecimal(),
                     holidayOnHackDayHours = absences.holidayHours(),
                     sickOnHackDayHours = absences.sickHours(),
+                    upcomingUsedHours =
+                        hackDays
+                            .flatMap { it.hoursPerDay().filterKeys { date -> !date.isBefore(today) }.values }
+                            .sum(),
+                    upcomingHolidayOnHackDayHours = upcomingAbsences.holidayHours(),
+                    upcomingSickOnHackDayHours = upcomingAbsences.sickHours(),
                 )
             }
     }

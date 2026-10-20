@@ -8,6 +8,10 @@ data class AggregationHackDay(
     val usedHours: BigDecimal,
     val holidayOnHackDayHours: BigDecimal = BigDecimal.ZERO,
     val sickOnHackDayHours: BigDecimal = BigDecimal.ZERO,
+    // The part of the hours above that falls on hack days from today on, which can still be cancelled.
+    val upcomingUsedHours: BigDecimal = BigDecimal.ZERO,
+    val upcomingHolidayOnHackDayHours: BigDecimal = BigDecimal.ZERO,
+    val upcomingSickOnHackDayHours: BigDecimal = BigDecimal.ZERO,
 )
 
 data class PersonHackdayDetails(
