@@ -303,31 +303,27 @@ jobs:
               log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
 
-  # Manual approval gate for production. It has no `needs`, so the approval request
-  # shows up as soon as the run starts and can be given while the checks are still
-  # running. Configure required reviewers under Settings > Environments >
-  # production-approval (and none on `production`, or the deploy asks a second time).
+  # Manual approval gate for production. It has no `needs`, so the required reviewers
+  # of the production environment are asked as soon as the run starts and can approve
+  # while the checks are still running.
   approve-production:
     name: Approve production deploy
     if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-24.04
-    environment: production-approval
+    environment:
+      name: production
+      url: https://workday.flock.community
 
     steps:
       - run: echo "Production deploy of ${{ github.sha }} approved"
 
   # Runs in parallel with deploy-develop once the checks pass and the deploy is approved.
+  # No `environment` here: that would ask the production reviewers a second time.
   deploy-production:
     name: Deploy to production
     needs: [approve-production, frontend-checks, backend-tests, e2e]
     if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-24.04
-
-    # Approval happens in approve-production; this environment only tracks the
-    # deployment (GitHub records it automatically) and scopes its secrets/OIDC claim.
-    environment:
-      name: production
-      url: https://workday.flock.community
 
     permissions:
       contents: "read"
