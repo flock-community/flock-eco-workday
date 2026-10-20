@@ -87,7 +87,7 @@ function Breakdown({
               {days(passed(row, s.key))}
             </Box>
             <Box sx={{ fontWeight: 600, textAlign: 'right' }}>
-              {days(row.upcoming[s.key])}
+              {s.key === 'holiday' ? '–' : days(row.upcoming[s.key])}
             </Box>
             <Box sx={{ opacity: 0.7, textAlign: 'right' }}>
               {hours(row[s.key])}h
@@ -152,7 +152,9 @@ function Breakdown({
 
 const toRow = (it: AggregationHackDay): Row => {
   const attended = it.hackHoursUsed ?? 0;
-  const holiday = it.holidayOnHackDayHours ?? 0;
+  // Planned holiday is left out until the hack day has passed; until then it still counts as left.
+  const holiday =
+    (it.holidayOnHackDayHours ?? 0) - (it.upcomingHolidayOnHackDayHours ?? 0);
   const sick = it.sickOnHackDayHours ?? 0;
   return {
     name: it.name,
@@ -163,7 +165,7 @@ const toRow = (it: AggregationHackDay): Row => {
     left: Math.max(it.contractHours - attended - holiday - sick, 0),
     upcoming: {
       attended: it.upcomingHackHoursUsed ?? 0,
-      holiday: it.upcomingHolidayOnHackDayHours ?? 0,
+      holiday: 0,
       sick: it.upcomingSickOnHackDayHours ?? 0,
     },
   };
