@@ -388,13 +388,27 @@ class CvControllerTest(
         val tailored = postCv(worker, cvJson(name = "Rabobank", basedOn = code, place = "Amsterdam"))
         val ingId = experiencesOf(base).single()["id"] as String
 
-        val rabo = mapOf("from" to "2025-09", "to" to null, "role" to "Architect", "client" to "Rabobank", "technologies" to listOf("Kotlin"))
+        val rabo =
+            mapOf(
+                "from" to "2025-09",
+                "to" to null,
+                "role" to "Architect",
+                "client" to "Rabobank",
+                "technologies" to listOf("Kotlin"),
+            )
         val changedIng = ingExperience + mapOf("id" to ingId, "role" to "Lead Engineer", "description" to "Led the team.")
         mvc
             .perform(
                 put("$baseUrl/$code")
                     .asUser(worker)
-                    .json(cvJson(name = "Algemeen", place = "Utrecht", summary = "Engineer and coach.", experiences = listOf(rabo, changedIng))),
+                    .json(
+                        cvJson(
+                            name = "Algemeen",
+                            place = "Utrecht",
+                            summary = "Engineer and coach.",
+                            experiences = listOf(rabo, changedIng),
+                        ),
+                    ),
             ).asyncDispatch()
             .andExpect(status().isOk)
 
@@ -440,9 +454,12 @@ class CvControllerTest(
         val other = postCv(worker, cvJson(name = "Rabobank", basedOn = code))
         val copyCode = copy["code"] as String
         val sync = { address: String, action: String ->
-            mvc.perform(
-                post("$baseUrl/$copyCode/sync").asUser(worker).json(mapper.writeValueAsString(mapOf("address" to address, "action" to action))),
-            ).asyncDispatch()
+            mvc
+                .perform(
+                    post(
+                        "$baseUrl/$copyCode/sync",
+                    ).asUser(worker).json(mapper.writeValueAsString(mapOf("address" to address, "action" to action))),
+                ).asyncDispatch()
         }
 
         mvc

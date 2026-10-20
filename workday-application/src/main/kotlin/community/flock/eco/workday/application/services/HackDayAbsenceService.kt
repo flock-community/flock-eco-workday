@@ -25,7 +25,7 @@ data class HackDayAbsence(
     val sickHours: BigDecimal,
 )
 
-/** A holiday or sick day of this person in this period was created or changed. */
+/** A holiday, sick day or hack day sign-up of this person in this period was created or changed. */
 data class AbsenceChanged(
     val personId: UUID,
     val from: LocalDate,

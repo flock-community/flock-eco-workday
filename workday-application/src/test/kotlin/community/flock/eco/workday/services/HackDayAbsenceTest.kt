@@ -49,8 +49,6 @@ class HackDayAbsenceTest(
         }
         createHelper.createHoliDay(onHoliday, weekStart, weekEnd)
         createHelper.createSickDay(sick, weekStart, weekEnd)
-        // Took the week off but came to the hack day anyway: only the attendance counts.
-        createHelper.createHoliDay(attended, weekStart, weekEnd)
         createHelper.createEvent(
             from = hackDay,
             to = hackDay,
@@ -213,6 +211,32 @@ class HackDayAbsenceTest(
         // Cancelling the holiday doesn't sign them up again; they do that themselves.
         leaveDayService.deleteByCode(fullDayHoliday.code)
         assertEquals(mapOf(halfDay.uuid to 4.0, leave.uuid to 8.0), signUpHours(event))
+    }
+
+    @Test
+    fun `an admin adding someone who is already away keeps their hours from counting twice`() {
+        val onHoliday = createHelper.createPersonEntity("Added", "OnHoliday")
+        val halfSick = createHelper.createPersonEntity("Added", "HalfSick")
+        leaveDayService.create(holidayForm(onHoliday.uuid, 8.0))
+        sickDayService.create(sickForm(halfSick.uuid, 4.0))
+
+        val event = signedUpHackDay(onHoliday, halfSick)
+
+        assertEquals(mapOf(halfSick.uuid to 4.0), signUpHours(event))
+        assertEquals(
+            8.0,
+            budgetSummaryService
+                .getSummary(onHoliday.uuid, year)
+                .hackTimeBudget.used
+                .toDouble(),
+        )
+        assertEquals(
+            8.0,
+            budgetSummaryService
+                .getSummary(halfSick.uuid, year)
+                .hackTimeBudget.used
+                .toDouble(),
+        )
     }
 
     private fun signedUpHackDay(vararg persons: Person): Event {

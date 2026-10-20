@@ -43,11 +43,23 @@ class CvSyncTest {
         val result = CvSync.reconcile(copy, base, changed)
 
         assertThat(result.copy.place).isEqualTo("Utrecht")
-        assertThat(result.copy.experiences.single().role).isEqualTo("Lead Engineer")
-        assertThat(result.copy.skills.single().level).isEqualTo(5)
+        assertThat(
+            result.copy.experiences
+                .single()
+                .role,
+        ).isEqualTo("Lead Engineer")
+        assertThat(
+            result.copy.skills
+                .single()
+                .level,
+        ).isEqualTo(5)
         // Texts stay until the copy takes them
         assertThat(result.copy.summary).isEqualTo("Engineer at heart.")
-        assertThat(result.copy.experiences.single().description).isEqualTo("Rebuilt the portal.")
+        assertThat(
+            result.copy.experiences
+                .single()
+                .description,
+        ).isEqualTo("Rebuilt the portal.")
 
         val status = CvSync.status(result.copy, result.agreed, changed)
         assertThat(status.offers.map { it.address }).containsExactly("summary", "experience/ing/description")
@@ -67,7 +79,11 @@ class CvSyncTest {
 
         val changed = base.copy(experiences = listOf(ing.copy(role = "Lead Engineer")))
         val result = CvSync.reconcile(copy, base, changed)
-        assertThat(result.copy.experiences.single().role).isEqualTo("Backend Engineer")
+        assertThat(
+            result.copy.experiences
+                .single()
+                .role,
+        ).isEqualTo("Backend Engineer")
         val offer = CvSync.status(result.copy, result.agreed, changed).offers.single()
         assertThat(offer.address).isEqualTo("experience/ing/role")
         assertThat(offer.base).isEqualTo("Lead Engineer")

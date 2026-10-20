@@ -388,7 +388,10 @@ class CvService(
     private fun CvSnapshot.alignedTo(base: CvSnapshot): CvSnapshot {
         val experienceIds = base.experiences.mapNotNull { it.id }.toSet()
         val skillIds = base.skills.mapNotNull { it.id }.toSet()
-        val used = (experiences.mapNotNull { it.id } + skills.mapNotNull { it.id }).filter { it in experienceIds || it in skillIds }.toMutableSet()
+        val used =
+            (experiences.mapNotNull { it.id } + skills.mapNotNull { it.id })
+                .filter { it in experienceIds || it in skillIds }
+                .toMutableSet()
         return copy(
             experiences =
                 experiences.map { e ->

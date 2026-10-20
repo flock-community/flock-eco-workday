@@ -13,6 +13,7 @@ import community.flock.eco.workday.application.repository.EventRatingRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.core.utils.toNullable
 import jakarta.persistence.EntityManager
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -30,6 +31,7 @@ class EventService(
     private val eventRatingRepository: EventRatingRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
+    private val publisher: ApplicationEventPublisher,
 ) {
     fun findAll(): Iterable<Event> = eventRepository.findAll()
 
@@ -164,6 +166,14 @@ class EventService(
         } else {
             val persons = personService.findByPersonCodeIdIn(personIds).toList()
             event.rebuildEventDaysFromTemplate(persons, previousHours)
+        }
+        // Participants an admin adds may be on holiday or sick that day; their hours can't count twice.
+        if (event.type == EventType.FLOCK_HACK_DAY) {
+            eventDayRepository
+                .findAllByEventCode(event.code)
+                .map { it.person.uuid }
+                .distinct()
+                .forEach { publisher.publishEvent(AbsenceChanged(it, event.from, event.to)) }
         }
         return event.refreshed()
     }

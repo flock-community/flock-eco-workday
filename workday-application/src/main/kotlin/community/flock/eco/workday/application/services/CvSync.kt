@@ -85,7 +85,12 @@ object CvSync {
                 }
             }
         }
-        COLLECTIONS.forEach { col -> col.reconcile(c, r, base).let { (nc, nr) -> c = nc; r = nr } }
+        COLLECTIONS.forEach { col ->
+            col.reconcile(c, r, base).let { (nc, nr) ->
+                c = nc
+                r = nr
+            }
+        }
         return Result(c, r)
     }
 
