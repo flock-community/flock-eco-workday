@@ -38,13 +38,6 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
       actualCostContractManagement: it.actualCostContractManagement,
       actualCostContractExternal: it.actualCostContractExternal,
       actualCostContractInternal: it.actualCostContractInternal,
-      actualCostContractInternalTax: it.actualCostContractInternal * 0.22,
-      actualCostContractInternalHoliday: it.actualCostContractInternal / 12,
-      actualCostContractInternalRetirement: it.actualCostContractInternal * 0.1,
-      actualCostContractInternalTraining:
-        (it.countContractInternal * 5000) / 12,
-      actualCostContractInternalTravel: it.countContractInternal * 300,
-      actualCostContractInternalInsurance: it.countContractInternal * 100,
     }))
     .map((it) => ({
       ...it,
@@ -53,12 +46,6 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
         it.actualCostContractManagement,
         it.actualCostContractExternal,
         it.actualCostContractInternal,
-        it.actualCostContractInternalTax,
-        it.actualCostContractInternalHoliday,
-        it.actualCostContractInternalRetirement,
-        it.actualCostContractInternalTraining,
-        it.actualCostContractInternalTravel,
-        it.actualCostContractInternalInsurance,
       ].reduce((acc, cur) => acc + cur),
     }))
     .map((it) => ({
@@ -67,8 +54,8 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
     }))
     .map((it) => ({
       ...it,
-      profit: it.margin > 0 ? it.margin : 0,
-      loss: it.margin < 0 ? Math.abs(it.margin) : 0,
+      grossMargin: it.margin > 0 ? it.margin : 0,
+      negativeGrossMargin: it.margin < 0 ? Math.abs(it.margin) : 0,
     }));
 
   return (
@@ -87,7 +74,11 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
         <Legend />
 
         <Bar stackId="revenue" dataKey="actualRevenue" fill={colors.revenue} />
-        <Bar stackId="revenue" dataKey="loss" fill={colors.loss} />
+        <Bar
+          stackId="revenue"
+          dataKey="negativeGrossMargin"
+          fill={colors.loss}
+        />
 
         <Bar
           stackId="cost"
@@ -101,36 +92,6 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
         />
         <Bar
           stackId="cost"
-          dataKey="actualCostContractInternalTax"
-          fill={colors.cost}
-        />
-        <Bar
-          stackId="cost"
-          dataKey="actualCostContractInternalHoliday"
-          fill={colors.cost}
-        />
-        <Bar
-          stackId="cost"
-          dataKey="actualCostContractInternalRetirement"
-          fill={colors.cost}
-        />
-        <Bar
-          stackId="cost"
-          dataKey="actualCostContractInternalTraining"
-          fill={colors.cost}
-        />
-        <Bar
-          stackId="cost"
-          dataKey="actualCostContractInternalTravel"
-          fill={colors.cost}
-        />
-        <Bar
-          stackId="cost"
-          dataKey="actualCostContractInternalInsurance"
-          fill={colors.cost}
-        />
-        <Bar
-          stackId="cost"
           dataKey="actualCostContractManagement"
           fill={colors.cost}
         />
@@ -139,7 +100,7 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
           dataKey="actualCostContractService"
           fill={colors.cost}
         />
-        <Bar stackId="cost" dataKey="profit" fill={colors.profit} />
+        <Bar stackId="cost" dataKey="grossMargin" fill={colors.profit} />
       </BarChart>
     </ResponsiveContainer>
   );
