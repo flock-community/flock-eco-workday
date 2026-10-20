@@ -92,6 +92,10 @@ export type AggregationHackDay = {
   hackHoursUsed: number;
   holidayOnHackDayHours: number;
   sickOnHackDayHours: number;
+  // The part of the hours above on hack days from today on.
+  upcomingHackHoursUsed: number;
+  upcomingHolidayOnHackDayHours: number;
+  upcomingSickOnHackDayHours: number;
 };
 export type PersonHolidayDetails = {
   name: string;

@@ -143,7 +143,10 @@ type AggregationHackDay {
   contractHours: Number?,
   hackHoursUsed: Number?,
   holidayOnHackDayHours: Number?,
-  sickOnHackDayHours: Number?
+  sickOnHackDayHours: Number?,
+  upcomingHackHoursUsed: Number?,
+  upcomingHolidayOnHackDayHours: Number?,
+  upcomingSickOnHackDayHours: Number?
 }
 type AggregationClientPersonItem {
   person: AggregationIdentifier?,

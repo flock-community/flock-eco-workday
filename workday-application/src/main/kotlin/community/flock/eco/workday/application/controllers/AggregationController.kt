@@ -207,6 +207,9 @@ private fun AggregationHackDay.produce() =
         hackHoursUsed = usedHours.produce(),
         holidayOnHackDayHours = holidayOnHackDayHours.produce(),
         sickOnHackDayHours = sickOnHackDayHours.produce(),
+        upcomingHackHoursUsed = upcomingUsedHours.produce(),
+        upcomingHolidayOnHackDayHours = upcomingHolidayOnHackDayHours.produce(),
+        upcomingSickOnHackDayHours = upcomingSickOnHackDayHours.produce(),
     )
 
 private fun AggregationLeaveDay.produce() =

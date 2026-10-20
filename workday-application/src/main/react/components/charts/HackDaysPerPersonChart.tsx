@@ -1,4 +1,5 @@
 import { Box, Tooltip, Typography } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useEffect, useState } from 'react';
 import {
@@ -18,6 +19,8 @@ type Row = {
   holiday: number;
   sick: number;
   left: number;
+  // The part of attended, holiday and sick on hack days from today on; these can still be cancelled.
+  upcoming: Record<Segment['key'], number>;
 };
 
 const hours = (value: number) =>
@@ -34,42 +37,76 @@ type Segment = {
   color: string;
 };
 
+// Hack days still ahead are hatched so they read apart from the ones that already passed.
+const upcomingFill = (color: string) =>
+  `repeating-linear-gradient(-45deg, ${color} 0 3px, ${alpha(color, 0.35)} 3px 6px)`;
+
+const passed = (row: Row, key: Segment['key']) => row[key] - row.upcoming[key];
+
+const upcomingTotal = (row: Row) =>
+  row.upcoming.attended + row.upcoming.holiday + row.upcoming.sick;
+
 function Breakdown({
   row,
   segments,
 }: Readonly<{ row: Row; segments: readonly Segment[] }>) {
-  const lines = [
-    ...segments,
-    { key: 'left', label: 'Left', color: undefined },
-  ] as const;
+  const columns = '10px 1fr auto auto 44px';
   return (
-    <Box sx={{ p: 0.5, minWidth: 220 }}>
+    <Box sx={{ p: 0.5, minWidth: 300 }}>
       <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.75 }}>
         {row.name}
       </Typography>
-      {lines.map((line) => (
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: columns,
+          columnGap: 1,
+          rowGap: 0.5,
+          alignItems: 'center',
+          fontVariantNumeric: 'tabular-nums',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <Box />
+        <Box />
+        <Box sx={{ opacity: 0.7, textAlign: 'right' }}>Passed</Box>
+        <Box sx={{ opacity: 0.7, textAlign: 'right' }}>Upcoming</Box>
+        <Box />
+        {segments.map((s) => (
+          <Box key={s.key} sx={{ display: 'contents' }}>
+            <Box
+              sx={{
+                width: 10,
+                height: 10,
+                borderRadius: '2px',
+                bgcolor: s.color,
+              }}
+            />
+            <Box>{s.label}</Box>
+            <Box sx={{ fontWeight: 600, textAlign: 'right' }}>
+              {days(passed(row, s.key))}
+            </Box>
+            <Box sx={{ fontWeight: 600, textAlign: 'right' }}>
+              {days(row.upcoming[s.key])}
+            </Box>
+            <Box sx={{ opacity: 0.7, textAlign: 'right' }}>
+              {hours(row[s.key])}h
+            </Box>
+          </Box>
+        ))}
         <Box
-          key={line.key}
-          sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.25 }}
-        >
-          <Box
-            sx={{
-              width: 10,
-              height: 10,
-              borderRadius: '2px',
-              bgcolor: line.color ?? 'transparent',
-              border: line.color ? 'none' : '1px solid currentColor',
-            }}
-          />
-          <Box sx={{ flex: 1 }}>{line.label}</Box>
-          <Box sx={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-            {days(row[line.key])}
-          </Box>
-          <Box sx={{ opacity: 0.7, width: 44, textAlign: 'right' }}>
-            {hours(row[line.key])}h
-          </Box>
-        </Box>
-      ))}
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: '2px',
+            border: '1px solid currentColor',
+          }}
+        />
+        <Box>Left</Box>
+        <Box />
+        <Box sx={{ fontWeight: 600, textAlign: 'right' }}>{days(row.left)}</Box>
+        <Box sx={{ opacity: 0.7, textAlign: 'right' }}>{hours(row.left)}h</Box>
+      </Box>
       <Box
         sx={{
           display: 'flex',
@@ -84,6 +121,17 @@ function Breakdown({
       >
         <span>Missed (holiday + sick)</span>
         <span>{days(row.holiday + row.sick)}</span>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 2,
+          opacity: 0.85,
+        }}
+      >
+        <span>Can still be cancelled</span>
+        <span>{days(upcomingTotal(row))}</span>
       </Box>
       <Box
         sx={{
@@ -113,6 +161,11 @@ const toRow = (it: AggregationHackDay): Row => {
     holiday,
     sick,
     left: Math.max(it.contractHours - attended - holiday - sick, 0),
+    upcoming: {
+      attended: it.upcomingHackHoursUsed ?? 0,
+      holiday: it.upcomingHolidayOnHackDayHours ?? 0,
+      sick: it.upcomingSickOnHackDayHours ?? 0,
+    },
   };
 };
 
@@ -202,6 +255,17 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
             <Box sx={{ width: 2, height: 14, bgcolor: 'text.primary' }} />
             Budget
           </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+            <Box
+              sx={(theme) => ({
+                width: 12,
+                height: 12,
+                borderRadius: '2px',
+                backgroundImage: upcomingFill(theme.palette.text.secondary),
+              })}
+            />
+            Upcoming, can still be cancelled
+          </Box>
         </Box>
       </Box>
 
@@ -247,6 +311,7 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
                 <Tooltip
                   arrow
                   placement="top"
+                  slotProps={{ tooltip: { sx: { maxWidth: 'none' } } }}
                   title={<Breakdown row={row} segments={segments} />}
                 >
                   <Box
@@ -269,24 +334,33 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
                         bgcolor: colors.available,
                       }}
                     />
-                    {segments.map((s) => {
-                      const left = offset;
-                      offset += row[s.key];
-                      return row[s.key] > 0 ? (
-                        <Box
-                          key={s.key}
-                          sx={{
-                            position: 'absolute',
-                            top: inset,
-                            bottom: inset,
-                            transition: 'top 120ms ease, bottom 120ms ease',
-                            left: pct(left),
-                            width: pct(row[s.key]),
-                            bgcolor: s.color,
-                          }}
-                        />
-                      ) : null;
-                    })}
+                    {/* Everything that passed comes first, then what is still ahead, so the split reads as a timeline. */}
+                    {(['passed', 'upcoming'] as const).flatMap((phase) =>
+                      segments.map((s) => {
+                        const value =
+                          phase === 'passed'
+                            ? passed(row, s.key)
+                            : row.upcoming[s.key];
+                        const left = offset;
+                        offset += value;
+                        return value > 0 ? (
+                          <Box
+                            key={`${phase}-${s.key}`}
+                            sx={{
+                              position: 'absolute',
+                              top: inset,
+                              bottom: inset,
+                              transition: 'top 120ms ease, bottom 120ms ease',
+                              left: pct(left),
+                              width: pct(value),
+                              ...(phase === 'passed'
+                                ? { bgcolor: s.color }
+                                : { backgroundImage: upcomingFill(s.color) }),
+                            }}
+                          />
+                        ) : null;
+                      }),
+                    )}
                     <Box
                       sx={{
                         position: 'absolute',

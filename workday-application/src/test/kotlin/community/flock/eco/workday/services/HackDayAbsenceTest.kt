@@ -94,6 +94,44 @@ class HackDayAbsenceTest(
     }
 
     @Test
+    fun `the hack day report splits off the hours on hack days that are still ahead`() {
+        val attended = createHelper.createPersonEntity("Past", "AndFuture")
+        val onHoliday = createHelper.createPersonEntity("Future", "Holiday")
+        listOf(attended, onHoliday).forEach {
+            createHelper.createContractInternal(person = it, from = from, to = to, hackTimeBudget = 160)
+        }
+        val nextHackDay = hackDay.plusWeeks(1)
+        createHelper.createHoliDay(onHoliday, weekStart.plusWeeks(1), weekEnd.plusWeeks(1))
+        listOf(hackDay, nextHackDay).forEach {
+            createHelper.createEvent(
+                from = it,
+                to = it,
+                hours = 8.0,
+                days = listOf(8.0),
+                persons = listOf(attended.uuid),
+                costs = 0.0,
+                type = EventType.FLOCK_HACK_DAY,
+            )
+        }
+
+        // Today is the second hack day: it hasn't passed yet, so it can still be cancelled.
+        val report = aggregationService.hackdayReport(year, today = nextHackDay).associateBy { it.name }
+        report.getValue(attended.getFullName()).let {
+            assertEquals(16.0, it.usedHours.toDouble())
+            assertEquals(8.0, it.upcomingUsedHours.toDouble())
+        }
+        report.getValue(onHoliday.getFullName()).let {
+            assertEquals(8.0, it.holidayOnHackDayHours.toDouble())
+            assertEquals(8.0, it.upcomingHolidayOnHackDayHours.toDouble())
+            assertEquals(0.0, it.upcomingSickOnHackDayHours.toDouble())
+        }
+
+        val dayAfter = aggregationService.hackdayReport(year, today = nextHackDay.plusDays(1)).associateBy { it.name }
+        assertEquals(0.0, dayAfter.getValue(attended.getFullName()).upcomingUsedHours.toDouble())
+        assertEquals(0.0, dayAfter.getValue(onHoliday.getFullName()).upcomingHolidayOnHackDayHours.toDouble())
+    }
+
+    @Test
     fun `absence on other event types or without a hack budget costs nothing`() {
         val noBudget = createHelper.createPersonEntity("No", "Budget")
         val conferenceMiss = createHelper.createPersonEntity("Conference", "Miss")
