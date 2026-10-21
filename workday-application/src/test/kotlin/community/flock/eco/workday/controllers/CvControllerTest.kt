@@ -758,7 +758,7 @@ class CvControllerTest(
             .andExpect(jsonPath("$[1].language").value("EN"))
 
         mvc
-            .perform(get("/api/cv-experiences?client=%20").asUser(admin).accept(APPLICATION_JSON))
+            .perform(get("/api/cv-experiences").param("client", " ").asUser(admin).accept(APPLICATION_JSON))
             .asyncDispatch()
             .andExpect(status().isBadRequest)
 
