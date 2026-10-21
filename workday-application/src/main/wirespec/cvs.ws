@@ -42,7 +42,7 @@ endpoint GetCvRevision GET /api/cvs/{code: String}/revisions/{id: String} -> {
   200 -> Cv
   404 -> Error
 }
-endpoint GetCvClientExperiences GET /api/cv-experiences ? {client: String, excludePersonId: String?} -> {
+endpoint GetCvClientExperiences GET /api/cv-experiences ? {client: String?, excludePersonId: String?} -> {
   200 -> CvClientExperience[]
   400 -> Error
 }
