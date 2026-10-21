@@ -5,11 +5,15 @@ import community.flock.eco.workday.api.endpoint.GetCvAll
 import community.flock.eco.workday.api.endpoint.GetCvByCode
 import community.flock.eco.workday.api.endpoint.GetCvRevision
 import community.flock.eco.workday.api.endpoint.GetCvRevisions
+import community.flock.eco.workday.api.endpoint.GetCvSync
 import community.flock.eco.workday.api.endpoint.PostCv
+import community.flock.eco.workday.api.endpoint.PostCvBase
 import community.flock.eco.workday.api.endpoint.PostCvRevisionRestore
+import community.flock.eco.workday.api.endpoint.PostCvSync
 import community.flock.eco.workday.api.endpoint.PutCv
 import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.application.authorities.CvAuthority
+import community.flock.eco.workday.application.cv.CvDocumentService
 import community.flock.eco.workday.application.forms.CvExperienceForm
 import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
@@ -17,22 +21,33 @@ import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.repository.CvRevisionSummary
-import community.flock.eco.workday.application.services.CvAlreadyExistsException
+import community.flock.eco.workday.application.services.CvConflictException
 import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
+import community.flock.eco.workday.application.services.CvSync
+import community.flock.eco.workday.application.services.CvSyncAction
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.application.services.photoDataUrl
+import community.flock.eco.workday.application.services.dataUrl
 import community.flock.eco.workday.application.utils.parseSort
 import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.http.CacheControl
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.net.URLEncoder
+import java.text.Normalizer
 import java.time.YearMonth
 import java.util.UUID
 import community.flock.eco.workday.api.model.Cv as CvApi
@@ -42,18 +57,24 @@ import community.flock.eco.workday.api.model.CvForm as CvFormApi
 import community.flock.eco.workday.api.model.CvLanguage as CvLanguageApi
 import community.flock.eco.workday.api.model.CvRevision as CvRevisionApi
 import community.flock.eco.workday.api.model.CvSkill as CvSkillApi
+import community.flock.eco.workday.api.model.CvSync as CvSyncApi
+import community.flock.eco.workday.api.model.CvSyncAction as CvSyncActionApi
+import community.flock.eco.workday.api.model.CvSyncItem as CvSyncItemApi
+import community.flock.eco.workday.api.model.CvSyncKind as CvSyncKindApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.Person as PersonInternal
 
 /**
  * CVs. [CvAuthority.READ] lets you read your own CVs and [CvAuthority.WRITE] write
  * them; [CvAuthority.ADMIN] reads and writes the CVs of everybody. A CV you may not
- * use is reported as not found, so its existence does not leak.
+ * use is reported as not found, so its existence does not leak. Whoever may write a
+ * CV may make it the base in its language.
  */
 @RestController
 class CvController(
     private val cvService: CvService,
     private val personService: PersonService,
+    private val cvDocumentService: CvDocumentService,
 ) : GetCvAll.Handler,
     GetCvByCode.Handler,
     PostCv.Handler,
@@ -61,7 +82,10 @@ class CvController(
     DeleteCv.Handler,
     GetCvRevisions.Handler,
     GetCvRevision.Handler,
-    PostCvRevisionRestore.Handler {
+    PostCvRevisionRestore.Handler,
+    PostCvBase.Handler,
+    GetCvSync.Handler,
+    PostCvSync.Handler {
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
@@ -78,7 +102,7 @@ class CvController(
             }
         return GetCvAll.Response200(
             body = page.content.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -112,12 +136,24 @@ class CvController(
 
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun deleteCv(request: DeleteCv.Request): DeleteCv.Response<*> =
+        try {
+            findWritable(request.path.code)
+                ?.let {
+                    cvService.deleteByCode(it.code)
+                    DeleteCv.Response204
+                }
+                ?: DeleteCv.Response404(Error("CV not found"))
+        } catch (e: CvConflictException) {
+            DeleteCv.Response409(Error(e.message))
+        }
+
+    /** Whoever may write the CV may make it the base. */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
+    override suspend fun postCvBase(request: PostCvBase.Request): PostCvBase.Response<*> =
         findWritable(request.path.code)
-            ?.let {
-                cvService.deleteByCode(it.code)
-                DeleteCv.Response204(Unit)
-            }
-            ?: DeleteCv.Response404(Error("CV not found"))
+            ?.let { cvService.makeBase(it.code) }
+            ?.let { PostCvBase.Response200(it.externalize()) }
+            ?: PostCvBase.Response404(Error("CV not found"))
 
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvRevisions(request: GetCvRevisions.Request): GetCvRevisions.Response<*> =
@@ -146,9 +182,79 @@ class CvController(
                         ?.let { cvService.restore(cv.code, it) }
                 }?.let { PostCvRevisionRestore.Response200(it.externalize()) }
                 ?: PostCvRevisionRestore.Response404(Error("Version not found"))
-        } catch (e: CvAlreadyExistsException) {
+        } catch (e: CvConflictException) {
             PostCvRevisionRestore.Response409(Error(e.message))
         }
+
+    /** How a copy stands against its base; a CV that is no copy has none (404). */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    override suspend fun getCvSync(request: GetCvSync.Request): GetCvSync.Response<*> =
+        findReadable(request.path.code)
+            ?.let { cv -> cvService.syncStatus(cv)?.let { it.externalize(cv.basedOn?.code.orEmpty()) } }
+            ?.let { GetCvSync.Response200(it) }
+            ?: GetCvSync.Response404(Error("Not a copy of a base CV"))
+
+    /** Takes the base's version of a field of a copy, keeps the copy's, or puts it in the base. */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
+    override suspend fun postCvSync(request: PostCvSync.Request): PostCvSync.Response<*> =
+        try {
+            findWritable(request.path.code)
+                ?.let { cvService.sync(it.code, request.body.address, request.body.action.internalize()) }
+                ?.let { PostCvSync.Response200(it.externalize()) }
+                ?: PostCvSync.Response404(Error("CV not found"))
+        } catch (e: CvValidationException) {
+            PostCvSync.Response400(Error(e.message))
+        }
+
+    /** The CV (or an earlier [version] of it) as PDF, to download; wirespec has no binary responses. */
+    @GetMapping("/api/cvs/{code}/pdf")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    fun getCvPdf(
+        @PathVariable code: String,
+        @RequestParam(required = false) version: String?,
+    ): ResponseEntity<ByteArray> = download(code, version, "pdf", MediaType.APPLICATION_PDF, cvDocumentService::pdf)
+
+    /** The CV (or an earlier [version] of it) as a Word document, to download. */
+    @GetMapping("/api/cvs/{code}/docx")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    fun getCvDocx(
+        @PathVariable code: String,
+        @RequestParam(required = false) version: String?,
+    ): ResponseEntity<ByteArray> = download(code, version, "docx", DOCX, cvDocumentService::word)
+
+    private fun download(
+        code: String,
+        version: String?,
+        extension: String,
+        type: MediaType,
+        render: (Cv) -> ByteArray,
+    ): ResponseEntity<ByteArray> {
+        val current = findReadable(code) ?: return ResponseEntity.notFound().build()
+        val cv =
+            when (version) {
+                null -> current
+                else -> version.toUuidOrNull()?.let { cvService.findRevision(current, it) } ?: return ResponseEntity.notFound().build()
+            }
+        // The name the browser saves it as, like the title of the page showing it
+        val fileName = "CV ${cv.person.getFullName()} ${cv.name}".trim() + ".$extension"
+        return ResponseEntity
+            .ok()
+            .contentType(type)
+            .cacheControl(CacheControl.noStore())
+            .header(HttpHeaders.CONTENT_DISPOSITION, attachment(fileName))
+            .body(render(cv))
+    }
+
+    /** A download named [fileName]: in plain ASCII for old clients, as it is for the others. */
+    private fun attachment(fileName: String): String {
+        val ascii =
+            Normalizer
+                .normalize(fileName, Normalizer.Form.NFD)
+                .replace(Regex("\\p{M}"), "")
+                .replace(Regex("[^\\x20-\\x7E]|[\"\\\\]"), "_")
+        val encoded = URLEncoder.encode(fileName, Charsets.UTF_8).replace("+", "%20")
+        return "attachment; filename=\"$ascii\"; filename*=UTF-8''$encoded"
+    }
 
     /** The CV with [code], when the current user may read it: any for an admin, else their own with READ. */
     private fun findReadable(code: String): Cv? {
@@ -168,8 +274,8 @@ class CvController(
 
     /**
      * Runs [block] and turns the validation failures of the CV service into the typed
-     * error responses of the contract: a second CV in the same language for a person
-     * is a 409, anything else that is wrong with the input is a 400.
+     * error responses of the contract: a clash with the other CVs of the person (a name
+     * taken, a base with copies) is a 409, anything else wrong with the input is a 400.
      */
     private inline fun <R> validated(
         onConflict: (Error) -> R,
@@ -178,7 +284,7 @@ class CvController(
     ): R =
         try {
             block()
-        } catch (e: CvAlreadyExistsException) {
+        } catch (e: CvConflictException) {
             onConflict(Error(e.message))
         } catch (e: CvValidationException) {
             onBadRequest(Error(e.message))
@@ -194,16 +300,20 @@ class CvController(
             phone = phone,
             summary = summary,
             experiences = experiences.map { it.externalize() },
-            skills = skills.map { CvSkillApi(category = it.category, name = it.name, level = it.level) },
+            skills = skills.map { CvSkillApi(id = it.itemId.toString(), category = it.category, name = it.name, level = it.level) },
             education = education,
             subjects = subjects,
             languages = languages,
             updatedAt = updatedAt.toString(),
             person = person.externalize(),
+            base = base,
+            basedOn = basedOn?.code,
+            basedOnUpdatedAt = basedOnUpdatedAt?.toString(),
         )
 
     private fun CvExperience.externalize() =
         CvExperienceApi(
+            id = itemId.toString(),
             from = from.toString(),
             to = to?.toString(),
             role = role,
@@ -213,6 +323,21 @@ class CvController(
             description = description,
             logoId = logoId?.toString(),
         )
+
+    private fun CvSync.Status.externalize(base: String) =
+        CvSyncApi(base = base, offers = offers.map { it.externalize() }, tailored = tailored.map { it.externalize() })
+
+    private fun CvSync.Item.externalize() =
+        CvSyncItemApi(
+            address = address,
+            label = label,
+            kind = CvSyncKindApi.valueOf(kind.name),
+            base = base,
+            copy = copy,
+            outdated = outdated,
+        )
+
+    private fun CvSyncActionApi.internalize() = CvSyncAction.valueOf(name)
 
     private fun CvLanguage.externalize() =
         when (this) {
@@ -248,7 +373,7 @@ class CvController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
-            photo = photoDataUrl(),
+            photo = personService.findPhoto(this)?.dataUrl(),
         )
 
     /**
@@ -274,6 +399,11 @@ class CvController(
             skills =
                 skills.orEmpty().mapIndexed { index, it ->
                     CvSkillForm(
+                        id =
+                            it.id
+                                ?.validated("skills[$index].id")
+                                ?.value
+                                ?.let(UUID::fromString),
                         category = it.category,
                         name = it.name.validated("skills[$index].name").value,
                         level = it.level,
@@ -282,11 +412,13 @@ class CvController(
             education = education,
             subjects = subjects,
             languages = languages,
+            basedOn = basedOn?.trim()?.ifEmpty { null },
         )
     }
 
     private fun CvExperienceFormApi.internalize(field: String) =
         CvExperienceForm(
+            id = id?.validated("$field.id")?.value?.let(UUID::fromString),
             from = YearMonth.parse(from.validated("$field.from").value),
             to = to?.validated("$field.to")?.value?.let(YearMonth::parse),
             role = role.validated("$field.role").value.trim(),
@@ -327,4 +459,8 @@ class CvController(
     private fun String.toUuidOrBadRequest(field: String): UUID =
         runCatching { UUID.fromString(trim()) }
             .getOrElse { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "$field must be a UUID") }
+
+    companion object {
+        private val DOCX = MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    }
 }

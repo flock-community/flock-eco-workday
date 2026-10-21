@@ -10,6 +10,8 @@ export type ChartColors = {
   unpaidParentalLeave: string;
   paidLeave: string;
   sick: string;
+  hackHoliday: string;
+  hackSick: string;
   event: string;
   missing: string;
   contract: string;
@@ -30,6 +32,8 @@ const dark: ChartColors = {
   unpaidParentalLeave: '#a9cdf0',
   paidLeave: '#74d6b4',
   sick: '#e57368',
+  hackHoliday: '#c98500',
+  hackSick: '#d6578a',
   event: '#f0c419',
   missing: '#8a877a',
   contract: '#9c9888',

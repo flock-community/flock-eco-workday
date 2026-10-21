@@ -1,9 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import DescriptionIcon from '@mui/icons-material/Description';
+import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HistoryIcon from '@mui/icons-material/History';
 import LinkIcon from '@mui/icons-material/Link';
-import PrintIcon from '@mui/icons-material/Print';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {
   Alert,
   Box,
@@ -11,6 +14,8 @@ import {
   Card,
   CardContent,
   GlobalStyles,
+  Link,
+  ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
@@ -35,10 +40,30 @@ import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CURRENT, CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
-import { type CvView, cvLanguageLabel, cvLink, cvUrl } from './cvText';
+import { CvSyncChip, CvSyncPanel, useCvSync } from './CvSyncPanel';
+import { DIVERGENCE_WARNING, divergence } from './cvDiff';
+import {
+  baseOf,
+  type CvView,
+  cvDownloadUrl,
+  cvLanguageLabel,
+  cvLink,
+  cvUrl,
+  suggestedBase,
+} from './cvText';
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
+/** Remembers whether a copy shows what it tailored, open or closed. */
+const SYNC_DETAILS_KEY = 'cv-sync-details';
+
+function readSyncDetails(): boolean {
+  try {
+    return localStorage.getItem(SYNC_DETAILS_KEY) === 'shown';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * When printing, only the CV is left: the app bar, the sidebar, the person selector
@@ -77,6 +102,10 @@ const printStyles = (
  * Every CV has its own link, `/cvs/{code}`, which opens it for whoever may read it:
  * an admin following a link to somebody else's CV switches to that person. An
  * earlier version and a comparison have a link of their own as well (see [cvLink]).
+ *
+ * Per language one CV is the base and the others are copies of it; a new copy is made
+ * of the base. Where there is no base yet, whoever may write the CVs picks one
+ * (Workday suggests one).
  */
 export function CvPersonPage() {
   const history = useHistory();
@@ -114,8 +143,12 @@ function PersonCv({
   const [revision, setRevision] = useState<Cv | null>(null);
   const [newMenu, setNewMenu] = useState<HTMLElement | null>(null);
   const [historyMenu, setHistoryMenu] = useState<HTMLElement | null>(null);
+  const [downloadMenu, setDownloadMenu] = useState<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Counts up to load the CVs again, after the base changed
+  const [reload, setReload] = useState(0);
+  const [syncDetails, setSyncDetails] = useState(readSyncDetails);
   const [error, setError] = useState<string | null>(null);
   // The CV codes looked up to find whose CV a link is to, so that happens once
   const lookedUp = useRef(new Set<string>());
@@ -140,6 +173,7 @@ function PersonCv({
   // An admin's link to a person: wait until that person is the one shown
   const waiting = isAdmin && !!linkedPerson && linkedPerson !== person.uuid;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reload loads them again
   useEffect(() => {
     setError(null);
     CvClient.queryByPage(
@@ -150,11 +184,19 @@ function PersonCv({
       .catch((err) =>
         setError(apiErrorMessage(err, 'The CVs could not be loaded')),
       );
-  }, [person.uuid]);
+  }, [person.uuid, reload]);
 
   const cvs = !waiting && loaded?.personId === person.uuid ? loaded.cvs : null;
   const current =
     (linked ? cvs?.find((it) => it.code === linked) : cvs?.[0]) ?? null;
+  // The base in the language of the CV shown; a new version is a copy of it
+  const base = current && cvs ? baseOf(cvs, current.language) : undefined;
+  const suggested =
+    current && cvs ? suggestedBase(cvs, current.language) : undefined;
+  const copies = base
+    ? (cvs ?? []).filter((it) => it.basedOn === base.code)
+    : [];
+  const copyOf = base ?? current;
   // A link to a CV of somebody else than the person shown
   const elsewhere = !waiting && cvs != null && !!linked && !current;
 
@@ -281,6 +323,130 @@ function PersonCv({
       .finally(() => setBusy(false));
   };
 
+  const makeBase = (cv: Cv) => {
+    if (!cv.code) return;
+    setBusy(true);
+    CvClient.makeBase(cv.code)
+      .then(() => setReload((it) => it + 1))
+      .catch((err) =>
+        setError(apiErrorMessage(err, 'The base could not be changed')),
+      )
+      .finally(() => setBusy(false));
+  };
+
+  const {
+    sync,
+    error: syncError,
+    setError: setSyncError,
+  } = useCvSync(current, base);
+  const toggleSyncDetails = (shown: boolean) => {
+    setSyncDetails(shown);
+    try {
+      localStorage.setItem(SYNC_DETAILS_KEY, shown ? 'shown' : 'hidden');
+    } catch {
+      // Then the choice is only remembered on this page
+    }
+  };
+
+  const language = current ? cvLanguageLabel(current) : '';
+  const baseLine = current && cvs != null && !version && !comparing && (
+    <Box className="cv-actions" data-testid="cv-base" sx={{ mb: 2 }}>
+      {current.base ? (
+        <Typography variant="body2" color="text.secondary">
+          The base CV in {language}: keep this one up to date, copies are made
+          of it and follow it.{' '}
+          {copies.length === 0 ? (
+            'No copies yet.'
+          ) : (
+            <>
+              Copies:{' '}
+              {copies.map((copy, index) => {
+                const drift = divergence(current, copy);
+                return (
+                  <Box
+                    component="span"
+                    key={copy.code}
+                    sx={{
+                      color:
+                        drift > DIVERGENCE_WARNING ? 'warning.main' : undefined,
+                    }}
+                  >
+                    {index > 0 && ', '}
+                    {copy.name} ({Math.round(drift * 100)}% different)
+                  </Box>
+                );
+              })}
+              .
+            </>
+          )}
+        </Typography>
+      ) : base?.code ? (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="body2" color="text.secondary">
+            A copy of the base CV{' '}
+            <Link component={RouterLink} to={cvLink(base.code)}>
+              {base.name}
+            </Link>
+            {current.basedOnUpdatedAt
+              ? `, made of its version saved ${dayjs(current.basedOnUpdatedAt).format(SAVED_AT)}`
+              : ''}
+            .
+          </Typography>
+          <CvSyncChip
+            copy={current}
+            base={base}
+            sync={sync}
+            open={syncDetails}
+            onToggle={() => toggleSyncDetails(!syncDetails)}
+          />
+          {canWrite && (
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => makeBase(current)}
+              disabled={busy}
+            >
+              Make this the base
+            </Button>
+          )}
+        </Stack>
+      ) : (
+        <Alert
+          severity="warning"
+          action={
+            canWrite &&
+            suggested && (
+              <Stack direction="row" spacing={1}>
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => makeBase(suggested)}
+                  disabled={busy}
+                >
+                  Make {suggested.name} the base
+                </Button>
+                {suggested.code !== current.code && (
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => makeBase(current)}
+                    disabled={busy}
+                  >
+                    Make this the base
+                  </Button>
+                )}
+              </Stack>
+            )
+          }
+        >
+          There is no base CV in {language} yet.{' '}
+          {suggested &&
+            `Workday suggests ${suggested.name}, the one saved last.`}
+        </Alert>
+      )}
+    </Box>
+  );
+
   const newActions = canWrite && (
     <>
       <Button
@@ -299,12 +465,12 @@ function PersonCv({
         <MenuItem component={RouterLink} to={newUrl()}>
           Empty CV
         </MenuItem>
-        {current && (
+        {copyOf && (
           <MenuItem
             component={RouterLink}
-            to={newUrl({ copyFrom: current.code })}
+            to={newUrl({ copyFrom: copyOf.code })}
           >
-            Copy of {current.name}
+            {copyOf.base ? 'Copy of the base' : 'Copy of'} {copyOf.name}
           </MenuItem>
         )}
       </Menu>
@@ -341,6 +507,7 @@ function PersonCv({
             {cvs.map((it) => (
               <MenuItem key={it.code} value={it.code}>
                 {it.name} · {cvLanguageLabel(it)}
+                {it.base ? ' · Base' : ''}
               </MenuItem>
             ))}
           </TextField>
@@ -411,14 +578,64 @@ function PersonCv({
               {copied ? 'Link copied' : 'Copy link'}
             </Button>
           </Tooltip>
-          <Button
-            variant="contained"
-            startIcon={<PrintIcon />}
-            onClick={() => window.print()}
-          >
-            Print or save as PDF
-          </Button>
+          {!comparing && (
+            <>
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                endIcon={<ExpandMoreIcon />}
+                aria-haspopup="menu"
+                onClick={(event) => setDownloadMenu(event.currentTarget)}
+              >
+                Download
+              </Button>
+              <Menu
+                anchorEl={downloadMenu}
+                open={Boolean(downloadMenu)}
+                onClose={() => setDownloadMenu(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem
+                  component="a"
+                  href={cvDownloadUrl(current.code, 'pdf', version)}
+                  download
+                  onClick={() => setDownloadMenu(null)}
+                >
+                  <ListItemIcon>
+                    <PictureAsPdfIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="PDF" />
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href={cvDownloadUrl(current.code, 'docx', version)}
+                  download
+                  onClick={() => setDownloadMenu(null)}
+                >
+                  <ListItemIcon>
+                    <DescriptionIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Word" />
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </Stack>
+      )}
+
+      {baseLine}
+      {current && base && !current.base && !version && !comparing && (
+        <CvSyncPanel
+          copy={current}
+          base={base}
+          sync={sync}
+          error={syncError}
+          setError={setSyncError}
+          canWrite={canWrite}
+          details={syncDetails}
+          onChanged={() => setReload((it) => it + 1)}
+        />
       )}
 
       {revision && shown === revision && (

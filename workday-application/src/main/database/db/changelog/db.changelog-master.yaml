@@ -121,3 +121,9 @@ databaseChangeLog:
   - include:
       file: db.changelog-041-person-photo.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-042-person-photo-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-043-cv-base.yaml
+      relativeToChangelogFile: true

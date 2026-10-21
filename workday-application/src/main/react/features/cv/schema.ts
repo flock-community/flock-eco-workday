@@ -9,6 +9,8 @@ import { validateYearMonth } from '../../wirespec/model/YearMonth';
 import { parseYearMonth, YEAR_MONTH } from './cvText';
 
 export type CvExperienceValues = {
+  /** The id that ties the assignment to the same one in the base or a copy; '' while new. */
+  id: string;
   /** First month of the job; the day is ignored. */
   from: Dayjs | null;
   /** Last month of the job; null while it is the current one. */
@@ -23,6 +25,8 @@ export type CvExperienceValues = {
 };
 
 export type CvSkillValues = {
+  /** Like the id of an assignment; '' while new. */
+  id: string;
   category: string;
   name: string;
   /** 1 to 5 stars; null when the skill has no rating. */
@@ -43,6 +47,8 @@ export type CvFormValues = {
   education: string;
   subjects: string;
   languages: string;
+  /** The code of the base CV a new CV is a copy of; '' when it is none. */
+  basedOn: string;
 };
 
 const LINE = 255;
@@ -76,6 +82,7 @@ const text = (label: string) =>
   string().default('').max(TEXT, `${label} may be at most ${TEXT} characters`);
 
 export const CV_EXPERIENCE_SCHEMA = object({
+  id: string().default(''),
   from: mixed<Dayjs>()
     .nullable()
     .default(null)
@@ -116,6 +123,7 @@ export const CV_EXPERIENCE_SCHEMA = object({
 });
 
 export const CV_SKILL_SCHEMA = object({
+  id: string().default(''),
   category: line('Category'),
   name: requiredLine('Skill'),
   level: number()
@@ -163,15 +171,18 @@ export const CV_FORM_SCHEMA = object({
   education: section('Education'),
   subjects: section('Subjects'),
   languages: section('Languages'),
+  basedOn: string().default(''),
 });
 
 export const emptySkill = (category = ''): CvSkillValues => ({
+  id: '',
   category,
   name: '',
   level: null,
 });
 
 export const emptyExperience = (): CvExperienceValues => ({
+  id: '',
   from: null,
   to: null,
   role: '',
@@ -183,6 +194,7 @@ export const emptyExperience = (): CvExperienceValues => ({
 });
 
 const toExperienceValues = (it: CvExperience): CvExperienceValues => ({
+  id: it.id ?? '',
   from: parseYearMonth(it.from),
   to: it.to ? parseYearMonth(it.to) : null,
   role: it.role ?? '',
@@ -202,6 +214,7 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
   summary: cv.summary ?? '',
   experiences: (cv.experiences ?? []).map(toExperienceValues),
   skills: (cv.skills ?? []).map((it) => ({
+    id: it.id ?? '',
     category: it.category ?? '',
     name: it.name ?? '',
     level: it.level ?? null,
@@ -209,6 +222,7 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
   education: cv.education ?? '',
   subjects: cv.subjects ?? '',
   languages: cv.languages ?? '',
+  basedOn: '',
 });
 
 const optional = (value: string): string | undefined =>
@@ -222,6 +236,7 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
   phone: optional(values.phone),
   summary: optional(values.summary),
   experiences: values.experiences.map((it) => ({
+    id: it.id || undefined,
     from: (it.from as Dayjs).format(YEAR_MONTH),
     to: it.to ? it.to.format(YEAR_MONTH) : undefined,
     role: it.role.trim(),
@@ -234,6 +249,7 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
     logoId: it.logoId || undefined,
   })),
   skills: values.skills.map((it) => ({
+    id: it.id || undefined,
     category: optional(it.category),
     name: it.name.trim(),
     level: it.level ?? undefined,
@@ -241,4 +257,5 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
   education: optional(values.education),
   subjects: optional(values.subjects),
   languages: optional(values.languages),
+  basedOn: optional(values.basedOn),
 });

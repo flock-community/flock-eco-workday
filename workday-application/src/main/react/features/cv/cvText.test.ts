@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import {
+  baseOf,
   clientText,
+  cvDownloadUrl,
   cvLink,
   cvUrl,
   groupSkills,
@@ -10,7 +12,39 @@ import {
   monthsWorked,
   paragraphs,
   periodText,
+  suggestedBase,
 } from './cvText';
+
+describe('baseOf and suggestedBase', () => {
+  const cvs = [
+    {
+      code: 'nl-old',
+      language: 'NL' as const,
+      updatedAt: '2025-01-01T10:00:00Z',
+    },
+    {
+      code: 'nl-new',
+      language: 'NL' as const,
+      updatedAt: '2026-03-01T10:00:00Z',
+    },
+    {
+      code: 'en',
+      language: 'EN' as const,
+      base: true,
+      updatedAt: '2024-01-01T10:00:00Z',
+    },
+  ];
+
+  it('finds the base of a language', () => {
+    expect(baseOf(cvs, 'EN')?.code).toBe('en');
+    expect(baseOf(cvs, 'NL')).toBeUndefined();
+  });
+
+  it('suggests the CV saved last as base, only where there is none', () => {
+    expect(suggestedBase(cvs, 'NL')?.code).toBe('nl-new');
+    expect(suggestedBase(cvs, 'EN')).toBeUndefined();
+  });
+});
 
 describe('monthsWorked', () => {
   const today = dayjs('2025-04-15');
@@ -159,5 +193,18 @@ describe('groupSkills', () => {
         skills: [{ category: 'Tools', name: 'Git', level: 4 }],
       },
     ]);
+  });
+});
+
+describe('cvDownloadUrl', () => {
+  it('downloads the CV from the server', () => {
+    expect(cvDownloadUrl('cv-1', 'pdf')).toBe('/api/cvs/cv-1/pdf');
+    expect(cvDownloadUrl('cv-1', 'docx', null)).toBe('/api/cvs/cv-1/docx');
+  });
+
+  it('downloads an earlier version as it was', () => {
+    expect(cvDownloadUrl('cv-1', 'pdf', 'v-2')).toBe(
+      '/api/cvs/cv-1/pdf?version=v-2',
+    );
   });
 });

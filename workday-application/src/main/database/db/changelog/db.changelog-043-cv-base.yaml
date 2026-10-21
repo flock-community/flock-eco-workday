@@ -1,0 +1,105 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-043-cv-base-1
+      author: ceesjansen
+      comment: >-
+        One base CV per person and language, and the copies made of it. base is TRUE
+        for the base and NULL otherwise, so the unique constraint on person, language
+        and base allows one base next to any number of copies (NULLs never clash).
+        A copy refers to its base (based_on_id) and remembers when the base was saved
+        when the copy was made (based_on_updated_at), to show later what changed since.
+      changes:
+        - addColumn:
+            tableName: cv
+            columns:
+              - column:
+                  name: base
+                  type: BOOLEAN
+              - column:
+                  name: based_on_id
+                  type: BIGINT
+              - column:
+                  name: based_on_updated_at
+                  type: TIMESTAMP
+        - addForeignKeyConstraint:
+            baseColumnNames: based_on_id
+            baseTableName: cv
+            constraintName: FK_cv_based_on
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: cv
+            onDelete: SET NULL
+            validate: true
+        - addUniqueConstraint:
+            tableName: cv
+            columnNames: person_id, language, base
+            constraintName: cv_person_language_base_unique
+  - changeSet:
+      id: db.changelog-043-cv-base-2
+      author: ceesjansen
+      comment: >-
+        A person with a single CV in a language has that CV as the base. Where a person
+        has several, the base is picked on the CV page.
+      changes:
+        - sql:
+            sql: >-
+              UPDATE cv SET base = TRUE
+              WHERE (SELECT COUNT(*) FROM cv other
+                     WHERE other.person_id = cv.person_id AND other.language = cv.language) = 1
+  - changeSet:
+      id: db.changelog-043-cv-base-3
+      author: ceesjansen
+      comment: >-
+        Every assignment and skill on a CV gets an id of its own, kept when the CV is
+        saved and shared by a copy with its base, so a copy can follow the base item by
+        item. A copy also keeps the base as it last agreed with it (base_snapshot, JSON),
+        to tell the fields it follows from the ones it tailored.
+      changes:
+        - addColumn:
+            tableName: cv_experience
+            columns:
+              - column:
+                  name: item_id
+                  type: UUID
+        - addColumn:
+            tableName: cv_skill
+            columns:
+              - column:
+                  name: item_id
+                  type: UUID
+        - addColumn:
+            tableName: cv
+            columns:
+              - column:
+                  name: base_snapshot
+                  type: TEXT
+  - changeSet:
+      id: db.changelog-043-cv-base-4-postgresql
+      author: ceesjansen
+      dbms: postgresql
+      # md5 of random text rather than gen_random_uuid(), which older Postgres versions lack
+      changes:
+        - sql:
+            sql: >-
+              UPDATE cv_experience SET item_id = CAST(md5(random()::text || clock_timestamp()::text) AS uuid);
+              UPDATE cv_skill SET item_id = CAST(md5(random()::text || clock_timestamp()::text) AS uuid)
+  - changeSet:
+      id: db.changelog-043-cv-base-4-h2
+      author: ceesjansen
+      dbms: h2
+      changes:
+        - sql:
+            sql: UPDATE cv_experience SET item_id = RANDOM_UUID(); UPDATE cv_skill SET item_id = RANDOM_UUID()
+  - changeSet:
+      id: db.changelog-043-cv-base-5
+      author: ceesjansen
+      changes:
+        - addNotNullConstraint:
+            tableName: cv_experience
+            columnName: item_id
+            columnDataType: UUID
+        - addNotNullConstraint:
+            tableName: cv_skill
+            columnName: item_id
+            columnDataType: UUID

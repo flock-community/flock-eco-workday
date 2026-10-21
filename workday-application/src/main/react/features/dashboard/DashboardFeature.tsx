@@ -72,7 +72,7 @@ export function DashboardFeature() {
       </Box>
 
       <Card>
-        <CardHeader title="Actual cost revenue" />
+        <CardHeader title="Gross margin" />
         <CardContent>
           <div style={{ height: CHART_HEIGHT * 2 }}>
             <TotalPerMonthChart year={year} />
@@ -117,7 +117,7 @@ export function DashboardFeature() {
       </Card>
 
       <Card>
-        <CardHeader title="Gross revenue per client" />
+        <CardHeader title="Gross margin per client" />
         <CardContent>
           <RevenuePerClientTable year={year} />
         </CardContent>
@@ -131,7 +131,6 @@ export function DashboardFeature() {
       </Card>
 
       <Card>
-        <CardHeader title="Hack Days budget" />
         <CardContent>
           <HackDaysPerPersonChart year={year} />
         </CardContent>

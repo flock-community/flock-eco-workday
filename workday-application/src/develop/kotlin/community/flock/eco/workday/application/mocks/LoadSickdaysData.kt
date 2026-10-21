@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.forms.SickDayForm
+import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.services.SickDayService
@@ -16,6 +17,7 @@ class LoadSickdaysData(
     loadPersonData: LoadPersonData,
     loadData: LoadData,
     usersWithDefinedHours: UsersWithDefinedHours,
+    loadEventData: LoadEventData,
 ) {
     final val startOfYear: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
@@ -26,7 +28,31 @@ class LoadSickdaysData(
             (loadPersonData.data - usersWithDefinedHours.persons).forEach {
                 createSickdays(it)
             }
+            createSickOnHackDays(loadPersonData.findPersonByUserEmail("bert@sesam.straat"), loadEventData)
         }
+    }
+
+    // Bert was sick on a few hack days he skipped, so the hack budget shows "sick on hack days".
+    private fun createSickOnHackDays(
+        person: Person,
+        loadEventData: LoadEventData,
+    ) {
+        loadEventData.data
+            .filter { it.type == EventType.FLOCK_HACK_DAY && it.persons.none { p -> p.uuid == person.uuid } }
+            .map { it.from }
+            .distinct()
+            .sorted()
+            .take(3)
+            .forEach { date ->
+                SickDayForm(
+                    description = "Flu for ${person.firstname}",
+                    from = date,
+                    to = date,
+                    days = mutableListOf(8.0),
+                    hours = 8.0,
+                    personId = person.uuid,
+                ).create()
+            }
     }
 
     private fun createSickdays(person: Person) {

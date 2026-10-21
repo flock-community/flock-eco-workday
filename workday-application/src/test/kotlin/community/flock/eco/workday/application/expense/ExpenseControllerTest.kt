@@ -15,7 +15,7 @@ import community.flock.eco.workday.domain.expense.TravelExpense
 import community.flock.eco.workday.domain.expense.TravelExpenseService
 import community.flock.eco.workday.domain.user.User
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.wirespec.integration.jackson.kotlin.WirespecModuleKotlin
+import community.flock.wirespec.integration.jackson.v2.kotlin.WirespecModuleKotlin
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

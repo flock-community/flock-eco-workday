@@ -1,4 +1,4 @@
-endpoint TotalsPerPersonByYear_1 GET /api/aggregations/total-per-person ? {year: Integer32, month: Integer32?} -> {
+endpoint TotalsPerPersonByYear GET /api/aggregations/total-per-person ? {year: Integer32, month: Integer32?} -> {
   200 -> AggregationPerson[]
 }
 endpoint TotalsPerPersonMeByYearMonth GET /api/aggregations/total-per-person-me -> {
@@ -101,7 +101,8 @@ type AggregationMonth {
 }
 type AggregationClient {
   name: String?,
-  revenueGross: Number?
+  revenueGross: Number?,
+  cost: Number?
 }
 type NonProductiveHours {
   sickHours: Number?,
@@ -134,12 +135,19 @@ type PersonHackdayDetails {
   name: String?,
   hackHoursFromContract: Number?,
   hackHoursUsed: Number?,
+  holidayOnHackDayHours: Number?,
+  sickOnHackDayHours: Number?,
   totalHoursRemaining: Number?
 }
 type AggregationHackDay {
   name: String?,
   contractHours: Number?,
-  hackHoursUsed: Number?
+  hackHoursUsed: Number?,
+  holidayOnHackDayHours: Number?,
+  sickOnHackDayHours: Number?,
+  upcomingHackHoursUsed: Number?,
+  upcomingHolidayOnHackDayHours: Number?,
+  upcomingSickOnHackDayHours: Number?
 }
 type AggregationClientPersonItem {
   person: AggregationIdentifier?,

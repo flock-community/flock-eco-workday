@@ -79,6 +79,7 @@ private fun PersonBudgetEvent.produce(): BudgetEventApi =
         hours = hours,
         cost = cost?.toDouble(),
         category = category.name,
+        absence = absence?.name,
     )
 
 private fun PersonBudgetItem.produce(): BudgetItemApi =

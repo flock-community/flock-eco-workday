@@ -1,6 +1,6 @@
 import type { Cv } from '../../clients/CvClient';
 import type { CvExperience, CvSkill } from '../../wirespec/model';
-import { diffCv, diffList, diffText } from './cvDiff';
+import { diffCv, diffList, diffText, divergence } from './cvDiff';
 
 const job = (it: Partial<CvExperience>): CvExperience =>
   ({
@@ -137,13 +137,13 @@ describe('diffCv', () => {
     const diff = diffCv(
       cv({
         skills: [
-          { name: 'Kotlin', level: 4, category: 'Languages' },
+          { id: undefined, name: 'Kotlin', level: 4, category: 'Languages' },
           { name: 'Cobol', level: 2 } as CvSkill,
         ],
       }),
       cv({
         skills: [
-          { name: 'kotlin', level: 5, category: 'Languages' },
+          { id: undefined, name: 'kotlin', level: 5, category: 'Languages' },
           { name: 'React', level: 3 } as CvSkill,
         ],
       }),
@@ -165,5 +165,25 @@ describe('diffCv', () => {
     ).toEqual(['Language']);
     expect(render(diff.education.parts)).toBe('HBO{+, MSc+}');
     expect(diff.same).toBe(false);
+  });
+});
+
+describe('divergence', () => {
+  it('is 0 for alike CVs and grows with what differs', () => {
+    const base = cv({
+      summary: 'Engineer at heart, who likes to build things.',
+    });
+    expect(divergence(base, cv({ ...base, name: 'Another name' }))).toBe(0);
+    const little = divergence(
+      base,
+      cv({
+        ...base,
+        summary: 'Engineer at heart, who likes to build products.',
+      }),
+    );
+    const much = divergence(base, cv({ ...base, summary: 'Coach.' }));
+    expect(little).toBeGreaterThan(0);
+    expect(little).toBeLessThan(0.3);
+    expect(much).toBeGreaterThan(0.3);
   });
 });

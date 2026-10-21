@@ -1,5 +1,5 @@
-endpoint GetEventAll GET /api/events ? {page: Integer32?, size: Integer32?, sort: String?, year: Integer32?} -> {
-  200 -> Event[] # { `x-total`: Integer32 }
+endpoint GetEventAll GET /api/events ? {...SortedPaging, year: Integer32?} -> {
+  200 -> Event[] # { ...TotalCount }
 }
 endpoint GetEventByCode GET /api/events/{code: String} -> {
   200 -> Event
@@ -16,11 +16,16 @@ endpoint DeleteEvent DELETE /api/events/{code: String} -> {
 endpoint GetEventsByYear GET /api/events/year ? {year: Integer32} -> {
   200 -> EventProjection[]
 }
+endpoint GetMissedHackDaysMe GET /api/events/missed-hack-days ? {year: Integer32} -> {
+  200 -> MissedHackDay[]
+}
 endpoint SubscribeToEvent PUT EventSubscription /api/events/{eventCode: String}/subscribe -> {
   200 -> Event
+  409 -> Error
 }
 endpoint UnsubscribeFromEvent PUT /api/events/{eventCode: String}/unsubscribe -> {
   200 -> Event
+  409 -> Error
 }
 endpoint GetEventRatings GET /api/events/{code: String}/ratings -> {
   200 -> EventRating[]
@@ -78,6 +83,10 @@ type EventDayForm {
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+}
+type MissedHackDay {
+  eventCode: String,
+  reason: String
 }
 type EventSubscription {
   hours: Number?

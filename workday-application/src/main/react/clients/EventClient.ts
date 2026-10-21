@@ -162,6 +162,23 @@ const getEventsByYear = (year: number): Promise<FlockEvent[]> => {
     .then((res) => res?.body.map(internalize));
 };
 
+export type HackDayMissReason = 'HOLIDAY' | 'SICK';
+
+// Hack days the current person was on holiday or sick on, by event code; their attendance is locked.
+const getMissedHackDays = (
+  year: number,
+): Promise<Record<string, HackDayMissReason>> =>
+  fetch(`${path}/missed-hack-days?year=${year}`, { method: 'GET' })
+    .then((it) =>
+      validateResponse<{ eventCode: string; reason: HackDayMissReason }[]>(it),
+    )
+    .then((it) => checkResponse(it))
+    .then((res) =>
+      Object.fromEntries(
+        (res?.body ?? []).map((it) => [it.eventCode, it.reason]),
+      ),
+    );
+
 const getHackDays = (year: number): Promise<FlockEvent[]> =>
   getEventsByYear(year).then((events) =>
     events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
@@ -202,6 +219,7 @@ export const EventClient = {
   deleteRatings,
   getEventsByYear,
   getHackDays,
+  getMissedHackDays,
   subscribeToEvent,
   unsubscribeFromEvent,
 };

@@ -1,0 +1,53 @@
+databaseChangeLog:
+  # Bytes in the row (at most 512 KB); BLOB would make Postgres keep a large object (oid)
+  - property:
+      name: person_photo.data.type
+      value: BYTEA
+      dbms: postgresql
+  - property:
+      name: person_photo.data.type
+      value: VARBINARY(524288)
+      dbms: h2
+  - changeSet:
+      id: db.changelog-042-person-photo-table-1
+      author: ceesjansen
+      comment: >-
+        The person's photo gets a table of its own. In the person table its bytes came along
+        with every person loaded, once per row of the user's accounts and authorities joined
+        in, which ran the hack day report out of memory.
+      changes:
+        - createTable:
+            tableName: person_photo
+            columns:
+              - column:
+                  name: person_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: person_photoPK
+                    foreignKeyName: person_photo_person_fk
+                    references: person(id)
+                    deleteCascade: true
+              - column:
+                  name: content_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data
+                  type: ${person_photo.data.type}
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: >-
+              INSERT INTO person_photo (person_id, content_type, data)
+              SELECT id, photo_content_type, photo_data FROM person
+              WHERE photo_data IS NOT NULL AND photo_content_type IS NOT NULL
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: photo_content_type
+              - column:
+                  name: photo_data

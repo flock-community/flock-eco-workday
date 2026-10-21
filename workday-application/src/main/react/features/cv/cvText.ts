@@ -54,6 +54,36 @@ export const CV_LANGUAGES: { value: CvLanguage; label: string }[] = [
   { value: 'EN', label: 'English' },
 ];
 
+type CvBaseInfo = {
+  code?: string | null;
+  language?: CvLanguage | null;
+  base?: boolean | null;
+  updatedAt?: string | null;
+};
+
+/** The base CV among [cvs] in [language], if there is one. */
+export const baseOf = <T extends CvBaseInfo>(
+  cvs: T[],
+  language: CvLanguage | null | undefined,
+): T | undefined => cvs.find((it) => it.base && it.language === language);
+
+/**
+ * The CV Workday suggests as the base in [language] when there is none yet: the one
+ * saved last, which is most likely up to date. None when there is a base already.
+ */
+export const suggestedBase = <T extends CvBaseInfo>(
+  cvs: T[],
+  language: CvLanguage | null | undefined,
+): T | undefined => {
+  const inLanguage = cvs.filter((it) => it.language === language);
+  if (inLanguage.some((it) => it.base)) return undefined;
+  return inLanguage.reduce<T | undefined>(
+    (latest, it) =>
+      !latest || (it.updatedAt ?? '') > (latest.updatedAt ?? '') ? it : latest,
+    undefined,
+  );
+};
+
 /** `Dutch`, `English`: the language a CV is written in. */
 export const cvLanguageLabel = (cv: { language?: CvLanguage | null }): string =>
   CV_LANGUAGES.find((it) => it.value === cv.language)?.label ??
@@ -106,6 +136,19 @@ export function cvLink(code: string, view: CvView = {}): string {
   const query = search.toString();
   const page = view.compare ? `${base}/compare` : base;
   return query ? `${page}?${query}` : page;
+}
+
+/**
+ * The CV with [code] as a document to download, made by the server: PDF or Word. An
+ * earlier [version] of it downloads as it was then.
+ */
+export function cvDownloadUrl(
+  code: string,
+  format: 'pdf' | 'docx',
+  version?: string | null,
+): string {
+  const url = `/api/cvs/${encodeURIComponent(code)}/${format}`;
+  return version ? `${url}?version=${encodeURIComponent(version)}` : url;
 }
 
 /** A month on the wire is `yyyy-MM`; on a CV it reads `MM-yyyy`. */

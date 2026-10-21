@@ -8,6 +8,7 @@ import community.flock.eco.workday.application.services.email.SickDayMailService
 import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.EntityManager
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,6 +21,7 @@ class SickDayService(
     private val personService: PersonService,
     private val entityManager: EntityManager,
     private val emailService: SickDayMailService,
+    private val publisher: ApplicationEventPublisher,
 ) {
     fun findAll(pageable: Pageable) =
         repository
@@ -88,6 +90,7 @@ class SickDayService(
             .validate()
             .consume()
             .save()
+            .also { publisher.publishEvent(AbsenceChanged(it)) }
             .also { emailService.sendNotification(it) }
 
     fun update(
@@ -102,7 +105,8 @@ class SickDayService(
                     .validate()
                     .consume(this)
                     .save()
-            }.also {
+            }.also { publisher.publishEvent(AbsenceChanged(it)) }
+            .also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }

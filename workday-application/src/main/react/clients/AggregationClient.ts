@@ -13,6 +13,7 @@ const path = '/api/aggregations';
 export type ClientGrossRevenue = {
   name: string;
   revenueGross: number;
+  cost: number;
 };
 
 export const totalPerClientByYear = (
@@ -81,6 +82,8 @@ export type PersonHackdayDetails = {
   name: string;
   hackHoursFromContract: number;
   hackHoursUsed: number;
+  holidayOnHackDayHours: number;
+  sickOnHackDayHours: number;
   totalHoursRemaining: number;
 };
 
@@ -88,6 +91,12 @@ export type AggregationHackDay = {
   name: string;
   contractHours: number;
   hackHoursUsed: number;
+  holidayOnHackDayHours: number;
+  sickOnHackDayHours: number;
+  // The part of the hours above on hack days from today on.
+  upcomingHackHoursUsed: number;
+  upcomingHolidayOnHackDayHours: number;
+  upcomingSickOnHackDayHours: number;
 };
 export type PersonHolidayDetails = {
   name: string;
@@ -107,6 +116,8 @@ const internalizePersonHackdayDetails: (
   name: api.name,
   hackHoursFromContract: api.hackHoursFromContract,
   hackHoursUsed: api.hackHoursUsed,
+  holidayOnHackDayHours: api.holidayOnHackDayHours,
+  sickOnHackDayHours: api.sickOnHackDayHours,
   totalHoursRemaining: api.totalHoursRemaining,
 });
 

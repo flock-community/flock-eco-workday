@@ -6,6 +6,7 @@ import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.services.EventService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
+import java.time.DayOfWeek
 import java.time.LocalDate
 import kotlin.random.Random
 import kotlin.random.Random.Default
@@ -130,11 +131,13 @@ class LoadEventData(
                 loadPersonData.data
                     .filterIndexed { personIdx, _ -> (i + personIdx) % 2 == 0 }
                     .map { it.uuid }
+            // Hack days fall on working days, so a holiday spanning one actually covers it.
+            val date = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14).onWorkingDay()
             hackDays.add(
                 EventForm(
                     description = "Flock. Hack Day",
-                    from = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14),
-                    to = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14),
+                    from = date,
+                    to = date,
                     days = mutableListOf(8.0),
                     hours = 8.0,
                     personIds = attendees,
@@ -147,4 +150,11 @@ class LoadEventData(
     }
 
     private final fun EventForm.create() = service.create(this)
+
+    private fun LocalDate.onWorkingDay(): LocalDate =
+        when (dayOfWeek) {
+            DayOfWeek.SATURDAY -> plusDays(2)
+            DayOfWeek.SUNDAY -> plusDays(1)
+            else -> this
+        }
 }

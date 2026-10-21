@@ -26,6 +26,6 @@ class TaskController(
             .forEach {
                 emailService.sendReminder(it)
             }
-        return GetTaskReminder.Response200(Unit)
+        return GetTaskReminder.Response200
     }
 }

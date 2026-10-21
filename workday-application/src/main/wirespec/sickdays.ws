@@ -1,5 +1,5 @@
-endpoint GetSickDayAll GET /api/sickdays ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> SickDay[] # { `x-total`: Integer32 }
+endpoint GetSickDayAll GET /api/sickdays ? {personId: String?, ...SortedPaging} -> {
+  200 -> SickDay[] # { ...TotalCount }
 }
 endpoint GetSickDayByCode GET /api/sickdays/{code: String} -> {
   200 -> SickDay

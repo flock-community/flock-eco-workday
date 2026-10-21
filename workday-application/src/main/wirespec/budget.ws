@@ -19,5 +19,6 @@ type BudgetEvent {
   from: String,
   hours: Number,
   cost: Number?,
-  category: String
+  category: String,
+  absence: String?
 }

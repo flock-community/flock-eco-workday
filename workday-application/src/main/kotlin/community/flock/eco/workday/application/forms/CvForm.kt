@@ -16,15 +16,21 @@ data class CvForm(
     val education: String? = null,
     val subjects: String? = null,
     val languages: String? = null,
+    /** The code of the base CV a new CV is a copy of; ignored when saving an existing CV. */
+    val basedOn: String? = null,
 )
 
+/** An [id] keeps the item id of the skill; without one a skill like it keeps its id. */
 data class CvSkillForm(
+    val id: UUID? = null,
     val category: String? = null,
     val name: String,
     val level: Int? = null,
 )
 
+/** An [id] keeps the item id of the assignment; without one an assignment like it keeps its id. */
 data class CvExperienceForm(
+    val id: UUID? = null,
     val from: YearMonth,
     val to: YearMonth? = null,
     val role: String,

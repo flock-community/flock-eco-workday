@@ -6,11 +6,14 @@ import community.flock.eco.workday.api.endpoint.GetEventAll
 import community.flock.eco.workday.api.endpoint.GetEventByCode
 import community.flock.eco.workday.api.endpoint.GetEventRatings
 import community.flock.eco.workday.api.endpoint.GetEventsByYear
+import community.flock.eco.workday.api.endpoint.GetMissedHackDaysMe
 import community.flock.eco.workday.api.endpoint.PostEvent
 import community.flock.eco.workday.api.endpoint.PostEventRating
 import community.flock.eco.workday.api.endpoint.PutEvent
 import community.flock.eco.workday.api.endpoint.SubscribeToEvent
 import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
+import community.flock.eco.workday.api.model.Error
+import community.flock.eco.workday.api.model.MissedHackDay
 import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
@@ -23,6 +26,8 @@ import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
+import community.flock.eco.workday.application.services.HackDayAbsenceReason
+import community.flock.eco.workday.application.services.HackDayAbsenceService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.isUser
 import org.springframework.data.domain.PageRequest
@@ -56,6 +61,7 @@ class EventController(
     private val eventService: EventService,
     private val eventRatingService: EventRatingService,
     private val personService: PersonService,
+    private val hackDayAbsenceService: HackDayAbsenceService,
 ) : GetEventAll.Handler,
     GetEventByCode.Handler,
     PostEvent.Handler,
@@ -66,7 +72,8 @@ class EventController(
     UnsubscribeFromEvent.Handler,
     GetEventRatings.Handler,
     PostEventRating.Handler,
-    DeleteEventRating.Handler {
+    DeleteEventRating.Handler,
+    GetMissedHackDaysMe.Handler {
     private fun authentication(): Authentication =
         SecurityContextHolder.getContext().authentication
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
@@ -87,7 +94,7 @@ class EventController(
             }
         return GetEventAll.Response200(
             body = body.map { it.externalize() },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -131,7 +138,7 @@ class EventController(
             .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { eventService.deleteByCode(this.code) }
-        return DeleteEvent.Response204(Unit)
+        return DeleteEvent.Response204
     }
 
     override suspend fun subscribeToEvent(request: SubscribeToEvent.Request): SubscribeToEvent.Response<*> {
@@ -140,6 +147,7 @@ class EventController(
         // generated interface; check the SUBSCRIBE authority explicitly.
         authentication().requireAuthority(EventAuthority.SUBSCRIBE)
         val person = currentPerson()
+        missedHackDay(request.path.eventCode, person)?.let { return SubscribeToEvent.Response409(it) }
         val event = eventService.subscribeToEvent(request.path.eventCode, person, request.body.hours)
         return SubscribeToEvent.Response200(event.externalize())
     }
@@ -151,6 +159,7 @@ class EventController(
             .findByCode(request.path.eventCode)
             ?.applyAuthentication(auth)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
+        missedHackDay(request.path.eventCode, person)?.let { return UnsubscribeFromEvent.Response409(it) }
         val event = eventService.unsubscribeFromEvent(request.path.eventCode, person)
         return UnsubscribeFromEvent.Response200(event.externalize())
     }
@@ -185,8 +194,32 @@ class EventController(
             request.path.eventCode,
             UUID.fromString(request.path.personId),
         )
-        return DeleteEventRating.Response204(Unit)
+        return DeleteEventRating.Response204
     }
+
+    override suspend fun getMissedHackDaysMe(request: GetMissedHackDaysMe.Request): GetMissedHackDaysMe.Response<*> {
+        authentication().requireAuthority(EventAuthority.SUBSCRIBE)
+        return GetMissedHackDaysMe.Response200(
+            hackDayAbsenceService
+                .findMissedHackDays(request.queries.year, currentPerson().uuid)
+                .map { (eventCode, reason) -> MissedHackDay(eventCode = eventCode, reason = reason.name) },
+        )
+    }
+
+    // A hack day missed through holiday or sickness counts against the budget, so its attendance is locked.
+    private fun missedHackDay(
+        eventCode: String,
+        person: Person,
+    ): Error? =
+        eventService
+            .findByCode(eventCode)
+            ?.let { hackDayAbsenceService.missedHackDay(it, person.uuid) }
+            ?.let {
+                when (it) {
+                    HackDayAbsenceReason.HOLIDAY -> Error("You were on holiday on this hack day, so it can't be changed")
+                    HackDayAbsenceReason.SICK -> Error("You were sick on this hack day, so it can't be changed")
+                }
+            }
 
     private fun currentPerson(): Person =
         personService.findByUserCode(authentication().name)

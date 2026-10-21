@@ -7,6 +7,7 @@ import type { BudgetSummaryResponse } from '../../wirespec/model';
 import { EventDialog } from '../event/EventDialog';
 import { BudgetEventsTable } from './BudgetEventsTable';
 import { BudgetSummaryCards } from './BudgetSummaryCards';
+import { HackBudgetBarCard } from './HackBudgetBarCard';
 
 type BudgetFeatureProps = {
   person: Person;
@@ -47,6 +48,9 @@ export function BudgetFeature({ person, year }: BudgetFeatureProps) {
       ) : (
         <>
           <BudgetSummaryCards summary={summary} />
+          {summary && (
+            <HackBudgetBarCard name={person.fullName} summary={summary} />
+          )}
           {summary && (
             <BudgetEventsTable
               events={summary.events}

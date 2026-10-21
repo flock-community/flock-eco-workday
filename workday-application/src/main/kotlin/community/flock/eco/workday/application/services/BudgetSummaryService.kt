@@ -12,6 +12,7 @@ import java.util.UUID
 class BudgetSummaryService(
     private val contractService: ContractService,
     private val eventDayService: EventDayService,
+    private val hackDayAbsenceService: HackDayAbsenceService,
 ) {
     fun getSummary(
         personId: UUID,
@@ -30,24 +31,43 @@ class BudgetSummaryService(
 
         val hackDays = eventDays.filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.HACK }
         val trainingDays = eventDays.filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.TRAINING }
-        val hackHoursUsed = hackDays.sumOf { it.hours }.toBigDecimal()
+        val hackDayAbsences = hackDayAbsenceService.findAllByYearAndPerson(year, personId)
+        val hackHoursUsed =
+            hackDays.sumOf { it.hours }.toBigDecimal() + hackDayAbsences.holidayHours() + hackDayAbsences.sickHours()
         val trainingHoursUsed = trainingDays.sumOf { it.hours }.toBigDecimal()
         val trainingMoneyUsed = trainingDays.sumOf { it.cost ?: BigDecimal.ZERO }
 
         val budgetBearingDays = hackDays + trainingDays
-        val events =
-            budgetBearingDays
-                .sortedBy { it.event.from }
-                .map { day ->
-                    PersonBudgetEvent(
-                        eventCode = day.event.code,
-                        description = day.event.description,
-                        from = day.event.from,
-                        hours = day.hours,
-                        cost = day.cost,
-                        category = day.budgetCategory ?: day.event.budgetCategory!!,
-                    )
-                }
+        val attendedEvents =
+            budgetBearingDays.map { day ->
+                PersonBudgetEvent(
+                    eventCode = day.event.code,
+                    description = day.event.description,
+                    from = day.event.from,
+                    hours = day.hours,
+                    cost = day.cost,
+                    category = day.budgetCategory ?: day.event.budgetCategory!!,
+                )
+            }
+        val missedHackDays =
+            hackDayAbsences.flatMap { absence ->
+                listOf(
+                    HackDayAbsenceReason.HOLIDAY to absence.holidayHours,
+                    HackDayAbsenceReason.SICK to absence.sickHours,
+                ).filter { (_, hours) -> hours > BigDecimal.ZERO }
+                    .map { (reason, hours) ->
+                        PersonBudgetEvent(
+                            eventCode = absence.event.code,
+                            description = absence.event.description,
+                            from = absence.date,
+                            hours = hours.toDouble(),
+                            cost = null,
+                            category = BudgetCategory.HACK,
+                            absence = reason,
+                        )
+                    }
+            }
+        val events = (attendedEvents + missedHackDays).sortedBy { it.from }
 
         return PersonBudgetSummary(
             hackTimeBudget = PersonBudgetItem(hackHoursBudget, hackHoursUsed),
@@ -72,7 +92,14 @@ data class PersonBudgetEvent(
     val hours: Double,
     val cost: BigDecimal?,
     val category: BudgetCategory,
+    // Set when the person missed this hack day but it still counts against their budget.
+    val absence: HackDayAbsenceReason? = null,
 )
+
+enum class HackDayAbsenceReason {
+    HOLIDAY,
+    SICK,
+}
 
 data class PersonBudgetItem(
     val budget: BigDecimal,

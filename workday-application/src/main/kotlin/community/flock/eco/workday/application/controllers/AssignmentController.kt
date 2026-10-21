@@ -65,7 +65,7 @@ class AssignmentController(
                 page.content
                     .map { it.applyHourlyRate(isAdmin) }
                     .map { it.externalize(includeHours = to == null) },
-            xtotal = page.totalElements.toInt(),
+            xTotal = page.totalElements.toInt(),
         )
     }
 
@@ -105,7 +105,7 @@ class AssignmentController(
     override suspend fun deleteAssignment(request: DeleteAssignment.Request): DeleteAssignment.Response<*> {
         requireAuthority(AssignmentAuthority.ADMIN)
         assignmentService.deleteByCode(request.path.code)
-        return DeleteAssignment.Response204(Unit)
+        return DeleteAssignment.Response204
     }
 
     private fun requireAuthority(authority: AssignmentAuthority): User {

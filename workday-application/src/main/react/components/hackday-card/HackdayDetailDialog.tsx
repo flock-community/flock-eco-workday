@@ -14,6 +14,8 @@ const initialData: PersonHackdayDetails = {
   name: '',
   hackHoursFromContract: 0,
   hackHoursUsed: 0,
+  holidayOnHackDayHours: 0,
+  sickOnHackDayHours: 0,
   totalHoursRemaining: 0,
 };
 
@@ -66,6 +68,18 @@ export function HackdayDetailDialog({
             <ListItemText primary={'Used'} />
             <ListItemSecondaryAction>
               {hoursFormatter.format(state?.hackHoursUsed)}
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary={'Holiday on hack days'} />
+            <ListItemSecondaryAction>
+              {hoursFormatter.format(state?.holidayOnHackDayHours)}
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary={'Sick on hack days'} />
+            <ListItemSecondaryAction>
+              {hoursFormatter.format(state?.sickOnHackDayHours)}
             </ListItemSecondaryAction>
           </ListItem>
           <Divider />
