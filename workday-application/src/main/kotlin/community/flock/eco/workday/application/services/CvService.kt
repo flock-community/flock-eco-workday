@@ -76,6 +76,20 @@ class CvService(
     fun findByCode(code: String): Cv? = cvRepository.findByCode(code)
 
     /**
+     * The assignments at [client] on the base CVs of everybody, matched on a part of the
+     * client's name ignoring case, so "DHL" finds "DHL Express" too. Copies are left out:
+     * they mostly repeat their base. Newest first.
+     */
+    fun findClientExperiences(client: String): List<Pair<Cv, CvExperience>> =
+        cvRepository
+            .findAllBaseByExperienceClient(client)
+            .flatMap { cv ->
+                cv.experiences
+                    .filter { it.client.contains(client, ignoreCase = true) }
+                    .map { cv to it }
+            }.sortedByDescending { (_, experience) -> experience.from }
+
+    /**
      * A new CV is a copy of the base it names ([CvForm.basedOn]). Without one it becomes a
      * copy of the base in its language, or the base itself when it is the first CV of the
      * person in that language.

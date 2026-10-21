@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
+import community.flock.eco.workday.application.forms.CvExperienceForm
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.repository.CvRepository
 import community.flock.eco.workday.application.services.CvService
@@ -30,6 +31,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.YearMonth
 import java.util.UUID
 import community.flock.eco.workday.user.model.User as UserEntity
 
@@ -723,6 +725,48 @@ class CvControllerTest(
             .andExpect(status().isOk)
             .andExpect(header().string("x-total", "1"))
             .andExpect(jsonPath("$[0].code").value(theirs.code))
+    }
+
+    @Test
+    fun `an admin finds the assignments at a client on the base CVs of everybody`() {
+        fun atClient(
+            client: String,
+            from: YearMonth,
+        ) = CvExperienceForm(from = from, role = "Engineer", client = client, description = "Shipped parcels at $client.")
+        val pino = createHelper.createPersonEntity("Pino", "Woodpecker")
+        val tommy = createHelper.createPersonEntity("Tommy", "Dog")
+        val ernie = createHelper.createPersonEntity("Ernie", "Bert")
+        val pinoBase =
+            createHelper.createCv(pino, experiences = listOf(atClient("DHL Express", YearMonth.of(2025, 1)), atClient("ING", YearMonth.of(2020, 1))))
+        // a copy repeats its base and is left out
+        createHelper.createCv(pino, name = "Pino - DHL", experiences = listOf(atClient("DHL Express", YearMonth.of(2025, 1))))
+        val tommyBase = createHelper.createCv(tommy, language = CvLanguage.EN, experiences = listOf(atClient("dhl", YearMonth.of(2022, 3))))
+        createHelper.createCv(ernie, experiences = listOf(atClient("DHL Supply Chain", YearMonth.of(2023, 1))))
+        val admin = createHelper.createUserEntity(adminAuthorities)
+
+        mvc
+            .perform(get("/api/cv-experiences?client=DHL&excludePersonId=${ernie.uuid}").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].personName").value("Pino Woodpecker"))
+            .andExpect(jsonPath("$[0].cv").value(pinoBase.code))
+            .andExpect(jsonPath("$[0].experience.client").value("DHL Express"))
+            .andExpect(jsonPath("$[0].experience.description").value("Shipped parcels at DHL Express."))
+            .andExpect(jsonPath("$[1].personId").value(tommy.uuid.toString()))
+            .andExpect(jsonPath("$[1].cv").value(tommyBase.code))
+            .andExpect(jsonPath("$[1].language").value("EN"))
+
+        mvc
+            .perform(get("/api/cv-experiences?client=%20").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
+
+        val (worker, _) = aWorker()
+        mvc
+            .perform(get("/api/cv-experiences?client=DHL").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isForbidden)
     }
 
     @Test

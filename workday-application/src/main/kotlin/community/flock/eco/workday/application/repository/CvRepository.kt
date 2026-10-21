@@ -24,6 +24,13 @@ interface CvRepository : JpaRepository<Cv, Long> {
         pageable: Pageable,
     ): Page<Cv>
 
+    /** The base CVs with an assignment whose client contains [client], ignoring case. */
+    @Query(
+        "select distinct c from Cv c join c.experiences e " +
+            "where c.base = true and lower(e.client) like lower(concat('%', :client, '%'))",
+    )
+    fun findAllBaseByExperienceClient(client: String): List<Cv>
+
     fun deleteByCode(code: String)
 
     fun findByPersonUuidAndLanguageAndBase(

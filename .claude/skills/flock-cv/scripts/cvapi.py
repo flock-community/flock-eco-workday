@@ -9,6 +9,10 @@ Usage: python3 -I cvapi.py <command> [args]
   get CODE                    a CV as the API returns it
   get-form CODE               a CV as an editable CvForm (with personId, logoIds, item ids and photo kept)
   copy-form BASE_CODE NAME    a new copy of the base CV BASE_CODE as a CvForm named NAME (with basedOn), for create
+  client-experiences CLIENT [EXCLUDE_PERSON_UUID]
+                              the assignments at CLIENT (part of the name, any case) on everybody's base
+                              CVs, as context for tailoring a CV for that client; leaves out
+                              EXCLUDE_PERSON_UUID (the person being tailored). Admin only.
   sync CODE                   how a copy stands against its base: changes of the base on offer, tailored fields
   sync CODE ADDRESS ACTION    act on one field of a copy: ACCEPT (the base's), SKIP (keep the copy's), PROMOTE (into the base)
   create FORM.json            POST /api/cvs; a `photo` in the form is applied to the person after
@@ -39,6 +43,7 @@ import mimetypes
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 # -I leaves the script's own directory off sys.path; cvtext.py lives next to this file.
@@ -205,6 +210,11 @@ def main():
         form = to_form(base)
         form.pop("photo")
         out({**form, "name": args[1], "basedOn": base["code"]})
+    elif cmd == "client-experiences":
+        query = {"client": args[0]}
+        if len(args) > 1:
+            query["excludePersonId"] = args[1]
+        out(call("GET", "/api/cv-experiences?" + urllib.parse.urlencode(query)))
     elif cmd == "sync":
         if len(args) == 3:
             cv = call("POST", f"/api/cvs/{args[0]}/sync", {"address": args[1], "action": args[2].upper()})

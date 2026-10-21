@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.controllers
 import community.flock.eco.workday.api.endpoint.DeleteCv
 import community.flock.eco.workday.api.endpoint.GetCvAll
 import community.flock.eco.workday.api.endpoint.GetCvByCode
+import community.flock.eco.workday.api.endpoint.GetCvClientExperiences
 import community.flock.eco.workday.api.endpoint.GetCvRevision
 import community.flock.eco.workday.api.endpoint.GetCvRevisions
 import community.flock.eco.workday.api.endpoint.GetCvSync
@@ -51,6 +52,7 @@ import java.text.Normalizer
 import java.time.YearMonth
 import java.util.UUID
 import community.flock.eco.workday.api.model.Cv as CvApi
+import community.flock.eco.workday.api.model.CvClientExperience as CvClientExperienceApi
 import community.flock.eco.workday.api.model.CvExperience as CvExperienceApi
 import community.flock.eco.workday.api.model.CvExperienceForm as CvExperienceFormApi
 import community.flock.eco.workday.api.model.CvForm as CvFormApi
@@ -85,7 +87,8 @@ class CvController(
     PostCvRevisionRestore.Handler,
     PostCvBase.Handler,
     GetCvSync.Handler,
-    PostCvSync.Handler {
+    PostCvSync.Handler,
+    GetCvClientExperiences.Handler {
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
@@ -103,6 +106,32 @@ class CvController(
         return GetCvAll.Response200(
             body = page.content.map { it.externalize() },
             xTotal = page.totalElements.toInt(),
+        )
+    }
+
+    /**
+     * The assignments at a client on the base CVs of everybody (see
+     * [CvService.findClientExperiences]), as context for tailoring a CV for that client.
+     * They come from the CVs of others, so only an admin reads them.
+     */
+    @PreAuthorize("hasAuthority('CvAuthority.ADMIN')")
+    override suspend fun getCvClientExperiences(request: GetCvClientExperiences.Request): GetCvClientExperiences.Response<*> {
+        val client = request.queries.client.trim()
+        if (client.isEmpty()) return GetCvClientExperiences.Response400(Error("client is required"))
+        val excluded = request.queries.excludePersonId?.toUuidOrBadRequest("excludePersonId")
+        return GetCvClientExperiences.Response200(
+            cvService
+                .findClientExperiences(client)
+                .filter { (cv, _) -> cv.person.uuid != excluded }
+                .map { (cv, experience) ->
+                    CvClientExperienceApi(
+                        personId = cv.person.uuid.toString(),
+                        personName = "${cv.person.firstname} ${cv.person.lastname}",
+                        cv = cv.code,
+                        language = cv.language.externalize(),
+                        experience = experience.externalize(),
+                    )
+                },
         )
     }
 
