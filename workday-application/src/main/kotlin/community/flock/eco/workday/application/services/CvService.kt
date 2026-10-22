@@ -11,6 +11,7 @@ import community.flock.eco.workday.application.model.CvRevision
 import community.flock.eco.workday.application.model.CvSkill
 import community.flock.eco.workday.application.model.CvSnapshot
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.repository.CvClientExperienceRow
 import community.flock.eco.workday.application.repository.CvRepository
 import community.flock.eco.workday.application.repository.CvRevisionRepository
 import community.flock.eco.workday.application.repository.CvRevisionSummary
@@ -18,6 +19,7 @@ import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -74,6 +76,14 @@ class CvService(
     ): Page<Cv> = cvRepository.findAllByPersonUuid(personUuid, pageable)
 
     fun findByCode(code: String): Cv? = cvRepository.findByCode(code)
+
+    /**
+     * The assignments at [client] on the base CVs of everybody, matched on a part of the
+     * client's name ignoring case, so "DHL" finds "DHL Express" too. Copies are left out:
+     * they mostly repeat their base. Newest first, at most [CLIENT_EXPERIENCES_MAX].
+     */
+    fun findClientExperiences(client: String): List<CvClientExperienceRow> =
+        cvRepository.findBaseExperiencesByClient(client, PageRequest.of(0, CLIENT_EXPERIENCES_MAX))
 
     /**
      * A new CV is a copy of the base it names ([CvForm.basedOn]). Without one it becomes a
@@ -575,6 +585,9 @@ class CvService(
     private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(this) }.getOrNull()
 
     companion object {
+        /** Plenty of context for one client, and a bound on what a broad search ("a") reads. */
+        const val CLIENT_EXPERIENCES_MAX = 200
+
         private val mapper = jacksonObjectMapper()
         private const val MAX_LINE_LENGTH = 255
         private const val MAX_TECHNOLOGIES = 50

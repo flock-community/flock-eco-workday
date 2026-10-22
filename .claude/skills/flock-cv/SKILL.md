@@ -1,6 +1,6 @@
 ---
 name: flock-cv
-description: Insert a resume (usually a Flock CV PDF) into Workday as a CV through the CV API, with assignment logos, or edit specific parts of an existing CV (an assignment, the summary, skills, a logo), or tailor an existing CV's content to match a specific client/consultancy request. Use when asked to import, add, upload or insert a CV/resume, to change, fix or update part of a CV in the running Workday app, or to adjust/tailor someone's resume for a client request.
+description: Insert a resume (usually a Flock CV PDF) into Workday as a CV through the CV API, with assignment logos, or edit specific parts of an existing CV (an assignment, the summary, skills, a logo), or tailor an existing CV's content for a specific client, using the client's assignment request and the assignments colleagues did at that client. Use when asked to import, add, upload or insert a CV/resume, to change, fix or update part of a CV in the running Workday app, or to adjust/tailor someone's resume for a client or client request.
 ---
 
 # Flock CV: insert and edit
@@ -86,6 +86,8 @@ PDF once you have it, extracting images) may already be done before or while wai
   Kotlin: `forms/CvForm.kt`, mapping and validation: `controllers/CvController.kt`).
 - There is **no PDF import endpoint** (`POST /api/cvs/import` was removed and answers 405). The
   `CvForm` is built locally with `cvapi.py parse` and checked by you.
+- `GET /api/cv-experiences?client=DHL&excludePersonId=UUID` (admin only) lists the assignments at a
+  client on everybody's base CVs; see "Adjusting a CV for a client request".
 - `GET/POST /api/logos`, `LogoForm {name, image}` where image is base64 or a data URL.
 
 ### CvForm fields
@@ -274,34 +276,53 @@ language becomes the base; a new CV in a language that has a base becomes a copy
 
 ## Adjusting a CV for a client request
 
-Trigger: "Adjust the resume of `<person>` for the request of `<client name / file name / content>`" —
-the person's experience, skills and summary get emphasized, reordered or rephrased to match what a
-specific client or consultancy request is asking for. This never adds a skill or a piece of experience
-the person doesn't actually have; it brings existing, truthful content to the front and into the
-client's language.
+Trigger: "Adjust the resume of `<person>` for `<client>`" or "... for the request of `<client name /
+file name / content>`" — the person's experience, skills and summary get emphasized, reordered or
+rephrased to match a specific client: what that client's assignment request asks for (when there is
+one), and what Flock already knows about the client from the assignments colleagues did there. This
+never adds a skill or a piece of experience the person doesn't actually have; it brings existing,
+truthful content to the front and into the client's language.
 
-1. **Find the client request.** The user may point to a file name, a client name, or paste the request
-   text directly in the chat.
+1. **Pin down the client and the request.** The client's name is required; an assignment request is
+   optional but use it whenever the user gives one.
    - A **file** (PDF, doc, text) is read with `cvapi.py text` or `pdftotext`, wherever the user says
-     it is.
-   - A **client name only**, with no file and no pasted content, is not enough to locate the request:
-     ask the user where to find it (a file name, or ask them to paste the relevant part of the request
-     into the chat).
-   - If the user's message is as bare as "I want to adjust the resume of X for a specific client
-     request" (no file, no client name, no content), stop and ask in a plain message for one of: a file
-     name, the client's name (so you can search for a request already on disk/Drive by that name), or
-     the request pasted into the chat. Do not guess or proceed on an assumed client.
-2. **Extract requirements** from the request: required skills/technologies, years of experience, domain
-   knowledge, soft/cultural fit (team style, values, methodology), language, and anything else explicitly
-   asked for. If the request is vague or you can't tell what should drive the rewrite, ask the user
-   before editing rather than guessing.
-3. **Find the person's CV(s)**: `cvapi.py list PERSON_UUID`. If none exists yet, say so — this flow
+     it is. Pasted text in the chat is used as is.
+   - A **client name only** is enough to start: the colleagues' assignments (step 2) drive the
+     rewrite. Do mention in one line that an assignment description would sharpen it, then go on.
+   - A request with no recognisable client: take the client from the request, or ask.
+   - If the user's message is as bare as "I want to adjust the resume of X for a specific client"
+     (no client name, no file, no content), stop and ask for the client's name, and the request if
+     they have one. Do not guess or proceed on an assumed client.
+2. **Gather what colleagues did at the client**: `cvapi.py client-experiences "<client>" PERSON_UUID`
+   (admin token needed; PERSON_UUID leaves the person being tailored out). It searches the base CVs of
+   everybody for assignments whose client contains the text, ignoring case, so use the shortest
+   distinctive name ("DHL", not "DHL Express B.V."). It returns per assignment the colleague's name,
+   their CV's code and language, and the assignment (period, role, client, technologies, description).
+   - **Check the matched client names** and list them for the user in your report (e.g. "matched DHL
+     Express (3), DHL Supply Chain (1)"). Drop matches that are clearly another company (a short name
+     like "ING" also hits "Booking"), and say so. Nothing found is fine: say so and go on with the
+     request alone.
+   - **Use them as background only.** From them take the client's domain and business context, the
+     tech stack and architecture they use, their methodology and team setup, and the terms they use
+     for things. That informs the Situation part of the person's STAR texts, which skills and
+     experience to bring forward, and which words to use. **Never copy a colleague's tasks, actions or
+     results into this person's CV**, and never imply the person worked at the client unless their own
+     CV says so. Write the context in your own words rather than lifting the colleague's sentences.
+   - If the person did work at the client themselves, their own assignment there gets the most
+     attention; colleagues' assignments may help describe the client's situation in it.
+3. **Extract requirements** from the request (when there is one) and the colleagues' assignments:
+   required skills/technologies, years of experience, domain knowledge, soft/cultural fit (team style,
+   values, methodology), language, and anything else explicitly asked for. Requirements from the
+   request weigh more than what colleagues happened to use. If neither gives you anything to go on,
+   ask the user before editing rather than guessing.
+4. **Find the person's CV(s)**: `cvapi.py list PERSON_UUID`. If none exists yet, say so — this flow
    edits an existing CV, it doesn't create one from scratch.
-4. **Tailor a copy of the base.** Unless the user names an existing copy for this client, make a new
-   copy of the base in the request's language: `copy-form BASE_CODE "<Full name> - <Client>"` (naming
+5. **Tailor a copy of the base.** Unless the user names an existing copy for this client, make a new
+   copy of the base in the request's language (with no request, the language the user asks for; ask
+   when they haven't said and the person has bases in both): `copy-form BASE_CODE "<Full name> - <Client>"` (naming
    rule in "Before you start") -> edit -> `create`. Never tailor the base itself, and never copy a
    copy. If the language has no base yet, ask the user which CV to make the base first.
-5. **Apply the adjustment** with the normal edit flow (`get-form` -> edit `form.json` -> `put` -> `get`
+6. **Apply the adjustment** with the normal edit flow (`get-form` -> edit `form.json` -> `put` -> `get`
    to confirm, or `create` for the new copy). Keep every `id` in the form, so the copy keeps
    following the base for what you leave alone:
    - **Summary**: lead with the experience and strengths that match the request.
@@ -312,8 +333,10 @@ client's language.
      Reword, don't rewrite history — role, client, employer and dates stay exactly as they were.
    - Everything you write follows "Writing style for rewritten resumes" above (one-liner, STAR,
      paragraphs, third person).
-   - Keep every change traceable to something that was already true on the CV.
-6. **Report back**: which requirements from the client request drove which change (summary, skills,
+   - Keep every change traceable to something that was already true on the CV; the colleagues'
+     assignments explain the client, they are never a source of facts about this person.
+7. **Report back**: which client names matched and whose assignments you used, which requirements
+   from the client request or those assignments drove which change (summary, skills,
    per-experience), and call out any requirement the person's existing CV doesn't support — surface the
    gap, don't paper over it by fabricating content. Run `sync CODE` on the copy and say how many
    fields it tailored, so the user sees how far it moved from the base.

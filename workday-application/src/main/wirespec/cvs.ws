@@ -42,6 +42,10 @@ endpoint GetCvRevision GET /api/cvs/{code: String}/revisions/{id: String} -> {
   200 -> Cv
   404 -> Error
 }
+endpoint GetCvClientExperiences GET /api/cv-experiences ? {client: String?, excludePersonId: String?} -> {
+  200 -> CvClientExperience[]
+  400 -> Error
+}
 endpoint PostCvRevisionRestore POST /api/cvs/{code: String}/revisions/{id: String}/restore -> {
   200 -> Cv
   404 -> Error
@@ -122,6 +126,13 @@ type Cv {
   base: Boolean?,
   basedOn: String?,
   basedOnUpdatedAt: String?
+}
+type CvClientExperience {
+  personId: String,
+  personName: String,
+  cv: String,
+  language: CvLanguage,
+  experience: CvExperience
 }
 type CvRevision {
   id: String,
