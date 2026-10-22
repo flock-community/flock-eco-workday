@@ -123,14 +123,14 @@ class CvController(
         return GetCvClientExperiences.Response200(
             cvService
                 .findClientExperiences(client)
-                .filter { (cv, _) -> cv.person.uuid != excluded }
-                .map { (cv, experience) ->
+                .filter { it.personUuid != excluded }
+                .map {
                     CvClientExperienceApi(
-                        personId = cv.person.uuid.toString(),
-                        personName = "${cv.person.firstname} ${cv.person.lastname}",
-                        cv = cv.code,
-                        language = cv.language.externalize(),
-                        experience = experience.externalize(),
+                        personId = it.personUuid.toString(),
+                        personName = "${it.firstname} ${it.lastname}",
+                        cv = it.cvCode,
+                        language = it.language.externalize(),
+                        experience = it.experience.externalize(),
                     )
                 },
         )
