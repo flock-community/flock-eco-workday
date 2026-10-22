@@ -208,6 +208,31 @@ class AssignmentControllerTest(
     }
 
     @Test
+    fun `list without paging parameters returns all assignments of a person`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+        val client = createHelper.createClient()
+        val person = createHelper.createPersonEntity()
+        val firstFrom = LocalDate.of(2024, 1, 1)
+        repeat(25) { week ->
+            createHelper.createAssignment(
+                client = client,
+                person = person,
+                from = firstFrom.plusWeeks(week.toLong()),
+                to = firstFrom.plusWeeks(week.toLong()).plusDays(6),
+            )
+        }
+
+        mvc
+            .perform(
+                get("$baseUrl?personId=${person.uuid}")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(25))
+    }
+
+    @Test
     fun `paged list returns assignments sorted by from descending when requested`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
         val client = createHelper.createClient()

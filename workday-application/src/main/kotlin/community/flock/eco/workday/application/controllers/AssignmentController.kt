@@ -187,5 +187,12 @@ class AssignmentController(
             to = to?.let(LocalDate::parse),
         )
 
-    private fun GetAssignmentAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
+    // Without paging parameters the caller wants every assignment (e.g. the assignment selector),
+    // so don't silently cut the list off at a default page size.
+    private fun GetAssignmentAll.Queries.toPageable(): Pageable =
+        if (page == null && size == null) {
+            Pageable.unpaged(parseSort(sort))
+        } else {
+            PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
+        }
 }
