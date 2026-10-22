@@ -31,8 +31,8 @@ interface CvRepository : JpaRepository<Cv, Long> {
      * and person that go with it are read, not the CVs themselves.
      */
     @Query(
-        "select new community.flock.eco.workday.application.repository.CvClientExperienceRow(" +
-            "c.code, c.language, p.uuid, p.firstname, p.lastname, e) " +
+        "select c.code as cvCode, c.language as language, p.uuid as personUuid, " +
+            "p.firstname as firstname, p.lastname as lastname, e as experience " +
             "from Cv c join c.person p join c.experiences e " +
             "where c.base = true and lower(e.client) like lower(concat('%', :client, '%')) " +
             "order by e.from desc",
@@ -70,11 +70,11 @@ interface CvRepository : JpaRepository<Cv, Long> {
 }
 
 /** An assignment on a base CV with the CV and person it belongs to; see [CvRepository.findBaseExperiencesByClient]. */
-data class CvClientExperienceRow(
-    val cvCode: String,
-    val language: CvLanguage,
-    val personUuid: UUID,
-    val firstname: String,
-    val lastname: String,
-    val experience: CvExperience,
-)
+interface CvClientExperienceRow {
+    val cvCode: String
+    val language: CvLanguage
+    val personUuid: UUID
+    val firstname: String
+    val lastname: String
+    val experience: CvExperience
+}
