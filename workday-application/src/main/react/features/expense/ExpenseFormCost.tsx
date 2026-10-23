@@ -7,6 +7,7 @@ import { DatePickerField } from '../../components/fields/DatePickerField';
 import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
 
 import type { UploadedFile } from '../../components/fields/UploadedFile';
+import { decimalNumber } from '../../utils/validation';
 
 export const EXPENSE_COST_FORM_ID = 'cost-expense-form';
 
@@ -19,7 +20,7 @@ export type ExpenseCostForm = {
 
 const schema = Yup.object({
   description: Yup.string().required().default(''),
-  amount: Yup.number().required().default(0),
+  amount: decimalNumber().required().default(0),
   date: Yup.mixed()
     .required()
     .default(() => dayjs()),
@@ -48,8 +49,8 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
         <Grid size={{ xs: 12 }}>
           <Field
             name="amount"
-            type="number"
             label="Amount"
+            inputProps={{ inputMode: 'decimal' }}
             fullWidth
             component={TextField}
           />
@@ -67,7 +68,7 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
         ...schema.getDefault(),
         ...value,
       }}
-      onSubmit={onSubmit}
+      onSubmit={(values) => onSubmit(schema.cast(values) as ExpenseCostForm)}
       validationSchema={schema}
       enableReinitialize
     >

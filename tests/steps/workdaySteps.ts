@@ -150,8 +150,8 @@ export async function When_I_fill_in_the_expense_details(
 ) {
   const [day, month, year] = date.split('-').map(Number);
   await selectDateInPicker(page, 'Date', day, month, year);
-  await page.fill('input[type="number"]', amount);
-  await page.fill('input[type="text"]', description);
+  await page.fill('input[name="amount"]', amount);
+  await page.fill('input[name="description"]', description);
 }
 
 export async function Then_I_see_the_expense_as(

@@ -4,6 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
+import { decimalNumber } from '../../utils/validation';
 import { Expense } from '../../wirespec/model';
 
 export const EXPENSE_TRAVEL_FORM_ID = 'travel-expense-form';
@@ -20,8 +21,8 @@ export const schema = Yup.object({
   date: Yup.mixed()
     .required()
     .default(() => dayjs()),
-  distance: Yup.number().required().default(0),
-  allowance: Yup.number().required().default(0),
+  distance: decimalNumber().required().default(0),
+  allowance: decimalNumber().required().default(0),
 });
 
 type ExpenseFormTravelProps = {
@@ -51,8 +52,8 @@ export const ExpenseFormTravel = ({
           <Grid size={{ xs: 12 }}>
             <Field
               name="distance"
-              type="number"
               label="Distance"
+              inputProps={{ inputMode: 'decimal' }}
               fullWidth
               component={TextField}
             />
@@ -60,8 +61,8 @@ export const ExpenseFormTravel = ({
           <Grid size={{ xs: 12 }}>
             <Field
               name="allowance"
-              type="number"
               label="Allowance"
+              inputProps={{ inputMode: 'decimal' }}
               fullWidth
               component={TextField}
             />
@@ -77,7 +78,7 @@ export const ExpenseFormTravel = ({
         ...schema.getDefault(),
         ...initialState,
       }}
-      onSubmit={onSubmit}
+      onSubmit={(values) => onSubmit(schema.cast(values) as ExpenseTravelForm)}
       validationSchema={schema}
       enableReinitialize
     >
