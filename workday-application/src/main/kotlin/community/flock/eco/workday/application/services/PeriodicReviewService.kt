@@ -1,10 +1,9 @@
 package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.model.EventType
-import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.EventDayRepository
+import community.flock.eco.workday.application.repository.PersonName
 import community.flock.eco.workday.application.repository.PersonRepository
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -24,7 +23,7 @@ class PeriodicReviewService(
                 .associate { it.personId to it.lastDate }
 
         return personRepository
-            .findAllByActive(Pageable.unpaged(), active = true)
+            .findAllActiveNames()
             .map { person ->
                 val lastReview = lastReviews[person.id]
                 PeriodicReviewDue(person, lastReview, lastReview?.plusMonths(INTERVAL_MONTHS))
@@ -38,7 +37,7 @@ class PeriodicReviewService(
 }
 
 data class PeriodicReviewDue(
-    val person: Person,
+    val person: PersonName,
     val lastReview: LocalDate?,
     val dueDate: LocalDate?,
 )

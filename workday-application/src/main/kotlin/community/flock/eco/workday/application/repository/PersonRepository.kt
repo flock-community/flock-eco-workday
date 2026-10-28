@@ -23,6 +23,10 @@ interface PersonRepository : JpaRepository<Person, Long> {
 
     fun findByUuidIn(userUuid: List<UUID>): Iterable<Person>
 
+    // Only the columns a list of names needs: no user, authorities or photo get loaded.
+    @Query("SELECT p.id AS id, p.uuid AS uuid, p.firstname AS firstname, p.lastname AS lastname FROM Person p WHERE p.active = true")
+    fun findAllActiveNames(): List<PersonName>
+
     fun findAllByActive(
         pageable: Pageable,
         active: Boolean,
@@ -33,4 +37,11 @@ interface PersonRepository : JpaRepository<Person, Long> {
         pageable: Pageable,
         search: String,
     ): Page<Person>
+}
+
+interface PersonName {
+    val id: Long
+    val uuid: UUID
+    val firstname: String
+    val lastname: String
 }

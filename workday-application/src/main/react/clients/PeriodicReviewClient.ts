@@ -1,19 +1,16 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
-import {
-  internalize as internalizePerson,
-  type Person,
-  type PersonRaw,
-} from './PersonClient';
 
 export type PeriodicReviewDue = {
-  person: Person;
+  personUuid: string;
+  personName: string;
   lastReview: Dayjs | null;
   dueDate: Dayjs | null;
 };
 
 export type PeriodicReviewDueRaw = {
-  person: PersonRaw;
+  personUuid: string;
+  personName: string;
   lastReview: string | null;
   dueDate: string | null;
 };
@@ -21,7 +18,8 @@ export type PeriodicReviewDueRaw = {
 const path = '/api/persons/periodic-reviews';
 
 const internalize = (json: PeriodicReviewDueRaw): PeriodicReviewDue => ({
-  person: internalizePerson(json.person),
+  personUuid: json.personUuid,
+  personName: json.personName,
   lastReview: json.lastReview ? dayjs(json.lastReview) : null,
   dueDate: json.dueDate ? dayjs(json.dueDate) : null,
 });

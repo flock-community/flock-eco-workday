@@ -1,9 +1,9 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.application.model.EventType
-import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.PersonLastDate
+import community.flock.eco.workday.application.repository.PersonName
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.application.services.PeriodicReviewService
 import io.mockk.every
@@ -12,9 +12,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.time.LocalDate
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -39,8 +38,7 @@ class PeriodicReviewServiceTest {
         val notYet = person(4, "notyet")
         val planned = person(5, "planned")
 
-        every { personRepository.findAllByActive(Pageable.unpaged(), true) } returns
-            PageImpl(listOf(notYet, dueSoon, planned, overdue, never))
+        every { personRepository.findAllActiveNames() } returns listOf(notYet, dueSoon, planned, overdue, never)
         every { eventDayRepository.findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW) } returns
             listOf(
                 lastDate(2, LocalDate.of(2026, 3, 1)),
@@ -61,15 +59,12 @@ class PeriodicReviewServiceTest {
     private fun person(
         id: Long,
         firstname: String,
-    ) = Person(
-        id = id,
-        firstname = firstname,
-        lastname = "doe",
-        email = "$firstname@doe",
-        position = "Software engineer",
-        number = null,
-        user = null,
-    )
+    ) = object : PersonName {
+        override val id = id
+        override val uuid: UUID = UUID.randomUUID()
+        override val firstname = firstname
+        override val lastname = "doe"
+    }
 
     private fun lastDate(
         personId: Long,

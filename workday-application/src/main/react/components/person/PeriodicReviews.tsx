@@ -36,8 +36,8 @@ export default function PeriodicReviews({
   };
 
   const renderItem = (item: PeriodicReviewDue) => (
-    <TableRow key={item.person.uuid}>
-      <TableCell>{item.person.fullName}</TableCell>
+    <TableRow key={item.personUuid}>
+      <TableCell>{item.personName}</TableCell>
       <TableCell>
         {item.lastReview ? item.lastReview.format('DD-MM-YYYY') : 'None yet'}
       </TableCell>

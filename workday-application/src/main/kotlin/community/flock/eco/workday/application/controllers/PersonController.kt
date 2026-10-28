@@ -114,8 +114,7 @@ class PersonController(
         requireAuthority(PersonAuthority.READ)
         val before = LocalDate.parse(request.queries.before)
         val due = periodicReviewService.findAllDue(before)
-        val photos = service.findPhotos(due.map { it.person })
-        return GetPersonPeriodicReviewsDue.Response200(due.map { it.externalize(photos[it.person.id]) })
+        return GetPersonPeriodicReviewsDue.Response200(due.map { it.externalize() })
     }
 
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
@@ -268,9 +267,10 @@ class PersonController(
             eventDate = eventDate.toString(),
         )
 
-    private fun PeriodicReviewDue.externalize(photo: PersonPhoto?): PeriodicReviewDueApi =
+    private fun PeriodicReviewDue.externalize(): PeriodicReviewDueApi =
         PeriodicReviewDueApi(
-            person = person.externalize(photo),
+            personUuid = person.uuid.toString(),
+            personName = "${person.firstname} ${person.lastname}",
             lastReview = lastReview?.toString(),
             dueDate = dueDate?.toString(),
         )

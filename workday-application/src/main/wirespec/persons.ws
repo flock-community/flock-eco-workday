@@ -76,7 +76,8 @@ type PersonEvent {
   eventDate: String?
 }
 type PeriodicReviewDue {
-  person: Person,
+  personUuid: String,
+  personName: String,
   lastReview: String?,
   dueDate: String?
 }
