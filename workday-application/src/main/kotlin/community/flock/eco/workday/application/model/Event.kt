@@ -40,6 +40,6 @@ class Event(
             when (type) {
                 EventType.FLOCK_HACK_DAY -> BudgetCategory.HACK
                 EventType.CONFERENCE -> BudgetCategory.TRAINING
-                EventType.FLOCK_COMMUNITY_DAY, EventType.GENERAL_EVENT -> null
+                EventType.FLOCK_COMMUNITY_DAY, EventType.GENERAL_EVENT, EventType.PERIODIC_REVIEW -> null
             }
 }

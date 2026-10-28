@@ -62,4 +62,24 @@ class EventRepositoryTest : WorkdayIntegrationTest() {
 
         assertEquals(0, eventRepository.findAll().count())
     }
+
+    @Test
+    fun `last date per person only counts the given event type`() {
+        val person1 = createHelper.createPersonEntity()
+        val person2 = createHelper.createPersonEntity()
+        val march = LocalDate.of(2026, 3, 2)
+        val september = LocalDate.of(2026, 9, 1)
+
+        val review = EventType.PERIODIC_REVIEW
+        createHelper.createEvent(march, march, hours = 0.0, days = listOf(0.0), persons = listOf(person1.uuid, person2.uuid), type = review)
+        createHelper.createEvent(september, september, hours = 0.0, days = listOf(0.0), persons = listOf(person1.uuid), type = review)
+        createHelper.createEvent(september, september, persons = listOf(person2.uuid), type = EventType.GENERAL_EVENT)
+
+        val lastDates =
+            eventDayRepository
+                .findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW)
+                .associate { it.personId to it.lastDate }
+
+        assertEquals(mapOf(person1.id to september, person2.id to march), lastDates)
+    }
 }

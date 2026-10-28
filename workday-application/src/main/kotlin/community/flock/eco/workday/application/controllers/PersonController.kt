@@ -4,6 +4,7 @@ import community.flock.eco.workday.api.endpoint.DeletePerson
 import community.flock.eco.workday.api.endpoint.GetPersonAll
 import community.flock.eco.workday.api.endpoint.GetPersonByUuid
 import community.flock.eco.workday.api.endpoint.GetPersonMe
+import community.flock.eco.workday.api.endpoint.GetPersonPeriodicReviewsDue
 import community.flock.eco.workday.api.endpoint.GetPersonSpecialDates
 import community.flock.eco.workday.api.endpoint.PostPerson
 import community.flock.eco.workday.api.endpoint.PutPerson
@@ -12,6 +13,8 @@ import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.PersonPhoto
+import community.flock.eco.workday.application.services.PeriodicReviewDue
+import community.flock.eco.workday.application.services.PeriodicReviewService
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.dataUrl
@@ -33,6 +36,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 import community.flock.eco.workday.api.model.Address as AddressApi
+import community.flock.eco.workday.api.model.PeriodicReviewDue as PeriodicReviewDueApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.PersonEvent as PersonEventApi
 import community.flock.eco.workday.api.model.PersonEventEventType as PersonEventEventTypeApi
@@ -44,10 +48,12 @@ import community.flock.eco.workday.application.model.Address as AddressEntity
 class PersonController(
     private val service: PersonService,
     private val userService: UserService,
+    private val periodicReviewService: PeriodicReviewService,
 ) : GetPersonAll.Handler,
     GetPersonByUuid.Handler,
     GetPersonMe.Handler,
     GetPersonSpecialDates.Handler,
+    GetPersonPeriodicReviewsDue.Handler,
     PostPerson.Handler,
     PutPerson.Handler,
     DeletePerson.Handler {
@@ -99,6 +105,16 @@ class PersonController(
         val events = service.findAllPersonEvents(start, end)
         val photos = service.findPhotos(events.map { it.person })
         return GetPersonSpecialDates.Response200(events.map { it.externalize(photos[it.person.id]) })
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    override suspend fun getPersonPeriodicReviewsDue(
+        request: GetPersonPeriodicReviewsDue.Request,
+    ): GetPersonPeriodicReviewsDue.Response<*> {
+        requireAuthority(PersonAuthority.READ)
+        val before = LocalDate.parse(request.queries.before)
+        val due = periodicReviewService.findAllDue(before)
+        return GetPersonPeriodicReviewsDue.Response200(due.map { it.externalize() })
     }
 
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
@@ -249,6 +265,14 @@ class PersonController(
                     PersonEvent.EventType.JOIN_DAY -> PersonEventEventTypeApi.JOIN_DAY
                 },
             eventDate = eventDate.toString(),
+        )
+
+    private fun PeriodicReviewDue.externalize(): PeriodicReviewDueApi =
+        PeriodicReviewDueApi(
+            personUuid = person.uuid.toString(),
+            personName = "${person.firstname} ${person.lastname}",
+            lastReview = lastReview?.toString(),
+            dueDate = dueDate?.toString(),
         )
 
     private fun PersonFormApi.internalize(): PersonForm =

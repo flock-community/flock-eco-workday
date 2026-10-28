@@ -10,6 +10,9 @@ endpoint GetPersonMe GET /api/persons/me -> {
 endpoint GetPersonSpecialDates GET /api/persons/specialDates ? {start: String, end: String} -> {
   200 -> PersonEvent[]
 }
+endpoint GetPersonPeriodicReviewsDue GET /api/persons/periodic-reviews ? {before: String} -> {
+  200 -> PeriodicReviewDue[]
+}
 endpoint PostPerson POST PersonForm /api/persons -> {
   200 -> Person
 }
@@ -71,6 +74,12 @@ type PersonEvent {
   person: Person?,
   eventType: PersonEventEventType?,
   eventDate: String?
+}
+type PeriodicReviewDue {
+  personUuid: String,
+  personName: String,
+  lastReview: String?,
+  dueDate: String?
 }
 enum PersonEventEventType {
   JOIN_DAY, BIRTHDAY

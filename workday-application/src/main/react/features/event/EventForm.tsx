@@ -5,11 +5,12 @@ import { Field, Form, Formik, type FormikProps } from 'formik';
 import { TextField } from 'formik-mui';
 import { useState } from 'react';
 import * as Yup from 'yup';
-import type { EventType } from '../../clients/EventClient';
+import { EventType } from '../../clients/EventClient';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
 import { NO_SPINNER_SX } from '../../components/inputs/noSpinnerSx';
+import { PersonSelector } from '../../components/selector';
 import {
   EventTypeBudgetLabel,
   EventTypeMappingToBillable,
@@ -26,7 +27,13 @@ const sumHours = (days: unknown): number =>
 export const EVENT_FORM_ID = 'event-form';
 
 const schema = Yup.object().shape({
-  description: Yup.string().required('Description is required').default(''),
+  // Periodic reviews get their description from the person on the server.
+  description: Yup.string()
+    .default('')
+    .when('type', {
+      is: EventType.PERIODIC_REVIEW,
+      otherwise: (it) => it.required('Description is required'),
+    }),
   from: Yup.mixed<dayjs.Dayjs>()
     .required('From date is required')
     .default(() => dayjs()),
@@ -55,35 +62,56 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
 
   const handleEventTypeChange = (newValue: string) => {
     setFieldValue('type', newValue);
+    // A review is with one person
+    if (newValue === EventType.PERIODIC_REVIEW) {
+      setFieldValue('personIds', (values.personIds ?? []).slice(0, 1));
+    }
     setResetHours(EventTypeMappingToBillable[newValue]);
   };
 
   const budgetLabel = EventTypeBudgetLabel[values.type];
+  const isReview = values.type === EventType.PERIODIC_REVIEW;
 
   return (
     <Form id={EVENT_FORM_ID}>
       <Grid container spacing={1}>
+        {!isReview && (
+          <Grid size={{ xs: 12 }}>
+            <Field
+              name="description"
+              type="text"
+              label="Description"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+        )}
+        {!isReview && (
+          <Grid size={{ xs: 12 }}>
+            <Field
+              name="costs"
+              type="number"
+              label="Costs"
+              fullWidth
+              component={TextField}
+              sx={NO_SPINNER_SX}
+            />
+          </Grid>
+        )}
         <Grid size={{ xs: 12 }}>
-          <Field
-            name="description"
-            type="text"
-            label="Description"
-            fullWidth
-            component={TextField}
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <Field
-            name="costs"
-            type="number"
-            label="Costs"
-            fullWidth
-            component={TextField}
-            sx={NO_SPINNER_SX}
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <PersonSelectorField name="personIds" multiple fullWidth />
+          {isReview ? (
+            <PersonSelector
+              label="Person"
+              value={values.personIds?.[0] ?? ''}
+              onChange={(uuid) => {
+                setFieldValue('personIds', uuid ? [uuid] : []);
+              }}
+              embedded
+              fullWidth
+            />
+          ) : (
+            <PersonSelectorField name="personIds" multiple fullWidth />
+          )}
         </Grid>
         <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
           <EventTypeSelect
@@ -100,37 +128,49 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             </Typography>
           )}
         </Grid>
-        <Grid size={{ xs: 6 }}>
-          <DatePickerField name="from" label="From" maxDate={values.to} />
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <DatePickerField name="to" label="To" minDate={values.from} />
-        </Grid>
-        <Grid size={{ xs: 12 }} sx={{ px: 1.5 }}>
-          <PeriodInputField
-            name="days"
-            from={values.from}
-            to={values.to}
-            reset={resetHours}
-            weekLabel
-            labelInset={1}
-            hideWeekTotal
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <EventParticipants
-            personIds={values.personIds ?? []}
-            participants={values.participants ?? []}
-            defaultHours={sumHours(values.days)}
-            defaultDays={values.days ?? []}
-            from={values.from}
-            to={values.to}
-            total={Number(values.costs) || 0}
-            type={values.type}
-            knownPersons={values.persons}
-            setFieldValue={setFieldValue}
-          />
-        </Grid>
+        {isReview ? (
+          <Grid size={{ xs: 12 }}>
+            <DatePickerField name="from" label="Date" />
+          </Grid>
+        ) : (
+          <>
+            <Grid size={{ xs: 6 }}>
+              <DatePickerField name="from" label="From" maxDate={values.to} />
+            </Grid>
+            <Grid size={{ xs: 6 }}>
+              <DatePickerField name="to" label="To" minDate={values.from} />
+            </Grid>
+          </>
+        )}
+        {!isReview && (
+          <>
+            <Grid size={{ xs: 12 }} sx={{ px: 1.5 }}>
+              <PeriodInputField
+                name="days"
+                from={values.from}
+                to={values.to}
+                reset={resetHours}
+                weekLabel
+                labelInset={1}
+                hideWeekTotal
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <EventParticipants
+                personIds={values.personIds ?? []}
+                participants={values.participants ?? []}
+                defaultHours={sumHours(values.days)}
+                defaultDays={values.days ?? []}
+                from={values.from}
+                to={values.to}
+                total={Number(values.costs) || 0}
+                type={values.type}
+                knownPersons={values.persons}
+                setFieldValue={setFieldValue}
+              />
+            </Grid>
+          </>
+        )}
       </Grid>
     </Form>
   );
@@ -138,6 +178,20 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
 
 export function EventForm({ value, onSubmit }: EventFormProps) {
   const handleSubmit = (data: any) => {
+    if (data.type === EventType.PERIODIC_REVIEW) {
+      // A review is one date without hours or costs; no participants makes every person follow that.
+      onSubmit?.({
+        description: data.description,
+        personIds: data.personIds,
+        participants: [],
+        from: data.from,
+        to: data.from,
+        days: [0],
+        costs: 0,
+        type: data.type,
+      });
+      return;
+    }
     onSubmit?.({
       description: data.description,
       personIds: data.personIds,

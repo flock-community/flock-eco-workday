@@ -61,7 +61,7 @@ enum BudgetCategory {
   HACK, TRAINING
 }
 enum EventType {
-  FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+  FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT, PERIODIC_REVIEW
 }
 type EventForm {
   description: String?,
@@ -82,7 +82,7 @@ type EventDayForm {
   budgetCategory: BudgetCategory?
 }
 enum EventFormType {
-  FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+  FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT, PERIODIC_REVIEW
 }
 type MissedHackDay {
   eventCode: String,
@@ -110,7 +110,7 @@ type EventProjection {
   hours: Number?
 }
 enum EventProjectionType {
-  FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+  FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT, PERIODIC_REVIEW
 }
 type PersonProjection {
   uuid: String?,
