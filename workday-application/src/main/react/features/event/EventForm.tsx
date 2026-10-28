@@ -27,11 +27,11 @@ const sumHours = (days: unknown): number =>
 export const EVENT_FORM_ID = 'event-form';
 
 const schema = Yup.object().shape({
-  // Mid-year talks get their description from the person on the server.
+  // Periodic reviews get their description from the person on the server.
   description: Yup.string()
     .default('')
     .when('type', {
-      is: EventType.MID_YEAR_TALK,
+      is: EventType.PERIODIC_REVIEW,
       otherwise: (it) => it.required('Description is required'),
     }),
   from: Yup.mixed<dayjs.Dayjs>()
@@ -62,20 +62,20 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
 
   const handleEventTypeChange = (newValue: string) => {
     setFieldValue('type', newValue);
-    // A talk is with one person
-    if (newValue === EventType.MID_YEAR_TALK) {
+    // A review is with one person
+    if (newValue === EventType.PERIODIC_REVIEW) {
       setFieldValue('personIds', (values.personIds ?? []).slice(0, 1));
     }
     setResetHours(EventTypeMappingToBillable[newValue]);
   };
 
   const budgetLabel = EventTypeBudgetLabel[values.type];
-  const isTalk = values.type === EventType.MID_YEAR_TALK;
+  const isReview = values.type === EventType.PERIODIC_REVIEW;
 
   return (
     <Form id={EVENT_FORM_ID}>
       <Grid container spacing={1}>
-        {!isTalk && (
+        {!isReview && (
           <Grid size={{ xs: 12 }}>
             <Field
               name="description"
@@ -86,7 +86,7 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             />
           </Grid>
         )}
-        {!isTalk && (
+        {!isReview && (
           <Grid size={{ xs: 12 }}>
             <Field
               name="costs"
@@ -99,7 +99,7 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
           </Grid>
         )}
         <Grid size={{ xs: 12 }}>
-          {isTalk ? (
+          {isReview ? (
             <PersonSelector
               label="Person"
               value={values.personIds?.[0] ?? ''}
@@ -128,7 +128,7 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             </Typography>
           )}
         </Grid>
-        {isTalk ? (
+        {isReview ? (
           <Grid size={{ xs: 12 }}>
             <DatePickerField name="from" label="Date" />
           </Grid>
@@ -142,7 +142,7 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             </Grid>
           </>
         )}
-        {!isTalk && (
+        {!isReview && (
           <>
             <Grid size={{ xs: 12 }} sx={{ px: 1.5 }}>
               <PeriodInputField
@@ -178,8 +178,8 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
 
 export function EventForm({ value, onSubmit }: EventFormProps) {
   const handleSubmit = (data: any) => {
-    if (data.type === EventType.MID_YEAR_TALK) {
-      // A talk is one date without hours or costs; no participants makes every person follow that.
+    if (data.type === EventType.PERIODIC_REVIEW) {
+      // A review is one date without hours or costs; no participants makes every person follow that.
       onSubmit?.({
         description: data.description,
         personIds: data.personIds,

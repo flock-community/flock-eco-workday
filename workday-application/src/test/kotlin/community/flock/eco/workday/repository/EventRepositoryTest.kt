@@ -70,14 +70,14 @@ class EventRepositoryTest : WorkdayIntegrationTest() {
         val march = LocalDate.of(2026, 3, 2)
         val september = LocalDate.of(2026, 9, 1)
 
-        val talk = EventType.MID_YEAR_TALK
-        createHelper.createEvent(march, march, hours = 0.0, persons = listOf(person1.uuid, person2.uuid), type = talk)
-        createHelper.createEvent(september, september, hours = 0.0, persons = listOf(person1.uuid), type = talk)
+        val review = EventType.PERIODIC_REVIEW
+        createHelper.createEvent(march, march, hours = 0.0, persons = listOf(person1.uuid, person2.uuid), type = review)
+        createHelper.createEvent(september, september, hours = 0.0, persons = listOf(person1.uuid), type = review)
         createHelper.createEvent(september, september, persons = listOf(person2.uuid), type = EventType.GENERAL_EVENT)
 
         val lastDates =
             eventDayRepository
-                .findLastDatePerPersonByEventType(EventType.MID_YEAR_TALK)
+                .findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW)
                 .associate { it.personId to it.lastDate }
 
         assertEquals(mapOf(person1.id to september, person2.id to march), lastDates)

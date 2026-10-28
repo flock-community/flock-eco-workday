@@ -6,35 +6,35 @@ import {
   type PersonRaw,
 } from './PersonClient';
 
-export type MidYearTalkDue = {
+export type PeriodicReviewDue = {
   person: Person;
-  lastTalk: Dayjs | null;
+  lastReview: Dayjs | null;
   dueDate: Dayjs | null;
 };
 
-export type MidYearTalkDueRaw = {
+export type PeriodicReviewDueRaw = {
   person: PersonRaw;
-  lastTalk: string | null;
+  lastReview: string | null;
   dueDate: string | null;
 };
 
-const path = '/api/persons/mid-year-talks';
+const path = '/api/persons/periodic-reviews';
 
-const internalize = (json: MidYearTalkDueRaw): MidYearTalkDue => ({
+const internalize = (json: PeriodicReviewDueRaw): PeriodicReviewDue => ({
   person: internalizePerson(json.person),
-  lastTalk: json.lastTalk ? dayjs(json.lastTalk) : null,
+  lastReview: json.lastReview ? dayjs(json.lastReview) : null,
   dueDate: json.dueDate ? dayjs(json.dueDate) : null,
 });
 
 const internalizingClient = InternalizingClient<
-  MidYearTalkDue,
-  MidYearTalkDueRaw,
-  MidYearTalkDue
+  PeriodicReviewDue,
+  PeriodicReviewDueRaw,
+  PeriodicReviewDue
 >(path, internalize);
 
 const findAllDueBefore = (before: Date) =>
   internalizingClient.query({ before: before.toISOString().substring(0, 10) });
 
-export const MidYearTalkClient = {
+export const PeriodicReviewClient = {
   findAllDueBefore,
 };

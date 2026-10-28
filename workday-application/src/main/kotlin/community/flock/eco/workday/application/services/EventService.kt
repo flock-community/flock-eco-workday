@@ -145,10 +145,10 @@ class EventService(
         eventRepository.deleteByCode(code)
     }
 
-    private fun EventForm.midYearTalkDescription() =
+    private fun EventForm.periodicReviewDescription() =
         personService
             .findByPersonCodeIdIn(personIds)
-            .joinToString(", ", prefix = "Mid-year talk ") { "${it.firstname} ${it.lastname}" }
+            .joinToString(", ", prefix = "Periodic review ") { "${it.firstname} ${it.lastname}" }
 
     private fun EventForm.consume(existing: Event? = null): Event {
         val previousHours = existing?.hours
@@ -157,7 +157,7 @@ class EventService(
                 Event(
                     id = existing?.id ?: 0L,
                     code = existing?.code ?: UUID.randomUUID().toString(),
-                    description = if (type == EventType.MID_YEAR_TALK) midYearTalkDescription() else description,
+                    description = if (type == EventType.PERIODIC_REVIEW) periodicReviewDescription() else description,
                     from = from,
                     to = to,
                     hours = hours,

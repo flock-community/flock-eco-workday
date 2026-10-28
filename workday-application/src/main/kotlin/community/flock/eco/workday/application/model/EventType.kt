@@ -5,5 +5,5 @@ enum class EventType {
     FLOCK_COMMUNITY_DAY,
     CONFERENCE,
     GENERAL_EVENT,
-    MID_YEAR_TALK,
+    PERIODIC_REVIEW,
 }

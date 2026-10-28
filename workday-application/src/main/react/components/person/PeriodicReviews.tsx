@@ -12,34 +12,34 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import dayjs from 'dayjs';
-import type { MidYearTalkDue } from '../../clients/MidYearTalkClient';
+import type { PeriodicReviewDue } from '../../clients/PeriodicReviewClient';
 
-type MidYearTalksProps = {
+type PeriodicReviewsProps = {
   withinNWeeks: number;
-  midYearTalks?: MidYearTalkDue[];
+  periodicReviews?: PeriodicReviewDue[];
 };
 
-export default function MidYearTalks({
+export default function PeriodicReviews({
   withinNWeeks,
-  midYearTalks,
-}: MidYearTalksProps) {
+  periodicReviews,
+}: PeriodicReviewsProps) {
   const noContent = (
     <Typography color="text.secondary">
-      No mid-year talks to plan within {withinNWeeks} weeks
+      No periodic reviews to plan within {withinNWeeks} weeks
     </Typography>
   );
 
-  const renderDue = (item: MidYearTalkDue) => {
+  const renderDue = (item: PeriodicReviewDue) => {
     if (item.dueDate === null) return 'Now';
     const date = item.dueDate.format('DD-MM-YYYY');
     return item.dueDate.isBefore(dayjs(), 'day') ? `${date} (overdue)` : date;
   };
 
-  const renderItem = (item: MidYearTalkDue) => (
+  const renderItem = (item: PeriodicReviewDue) => (
     <TableRow key={item.person.uuid}>
       <TableCell>{item.person.fullName}</TableCell>
       <TableCell>
-        {item.lastTalk ? item.lastTalk.format('DD-MM-YYYY') : 'None yet'}
+        {item.lastReview ? item.lastReview.format('DD-MM-YYYY') : 'None yet'}
       </TableCell>
       <TableCell>{renderDue(item)}</TableCell>
     </TableRow>
@@ -51,22 +51,22 @@ export default function MidYearTalks({
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Last talk</TableCell>
+            <TableCell>Last review</TableCell>
             <TableCell>Due</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{midYearTalks?.map(renderItem)}</TableBody>
+        <TableBody>{periodicReviews?.map(renderItem)}</TableBody>
       </Table>
     </TableContainer>
   );
 
   return (
     <Card variant="outlined" sx={{ borderRadius: '14px' }}>
-      <CardHeader title="Mid-year talks to plan" />
+      <CardHeader title="Periodic reviews to plan" />
       <CardContent>
-        {midYearTalks === undefined ? (
+        {periodicReviews === undefined ? (
           <AlignedLoader />
-        ) : midYearTalks.length > 0 ? (
+        ) : periodicReviews.length > 0 ? (
           table
         ) : (
           noContent

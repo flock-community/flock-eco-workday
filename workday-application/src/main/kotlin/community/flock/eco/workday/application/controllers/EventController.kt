@@ -353,7 +353,7 @@ class EventController(
             EventType.FLOCK_COMMUNITY_DAY -> EventTypeApi.FLOCK_COMMUNITY_DAY
             EventType.CONFERENCE -> EventTypeApi.CONFERENCE
             EventType.GENERAL_EVENT -> EventTypeApi.GENERAL_EVENT
-            EventType.MID_YEAR_TALK -> EventTypeApi.MID_YEAR_TALK
+            EventType.PERIODIC_REVIEW -> EventTypeApi.PERIODIC_REVIEW
         }
 
     private fun EventType.toProjectionApi(): EventProjectionTypeApi =
@@ -362,7 +362,7 @@ class EventController(
             EventType.FLOCK_COMMUNITY_DAY -> EventProjectionTypeApi.FLOCK_COMMUNITY_DAY
             EventType.CONFERENCE -> EventProjectionTypeApi.CONFERENCE
             EventType.GENERAL_EVENT -> EventProjectionTypeApi.GENERAL_EVENT
-            EventType.MID_YEAR_TALK -> EventProjectionTypeApi.MID_YEAR_TALK
+            EventType.PERIODIC_REVIEW -> EventProjectionTypeApi.PERIODIC_REVIEW
         }
 
     private fun EventFormTypeApi.toDomain(): EventType =
@@ -371,7 +371,7 @@ class EventController(
             EventFormTypeApi.FLOCK_COMMUNITY_DAY -> EventType.FLOCK_COMMUNITY_DAY
             EventFormTypeApi.CONFERENCE -> EventType.CONFERENCE
             EventFormTypeApi.GENERAL_EVENT -> EventType.GENERAL_EVENT
-            EventFormTypeApi.MID_YEAR_TALK -> EventType.MID_YEAR_TALK
+            EventFormTypeApi.PERIODIC_REVIEW -> EventType.PERIODIC_REVIEW
         }
 
     private fun GetEventAll.Queries.toPageable(): Pageable {

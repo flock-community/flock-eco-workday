@@ -10,8 +10,8 @@ endpoint GetPersonMe GET /api/persons/me -> {
 endpoint GetPersonSpecialDates GET /api/persons/specialDates ? {start: String, end: String} -> {
   200 -> PersonEvent[]
 }
-endpoint GetPersonMidYearTalksDue GET /api/persons/mid-year-talks ? {before: String} -> {
-  200 -> MidYearTalkDue[]
+endpoint GetPersonPeriodicReviewsDue GET /api/persons/periodic-reviews ? {before: String} -> {
+  200 -> PeriodicReviewDue[]
 }
 endpoint PostPerson POST PersonForm /api/persons -> {
   200 -> Person
@@ -75,9 +75,9 @@ type PersonEvent {
   eventType: PersonEventEventType?,
   eventDate: String?
 }
-type MidYearTalkDue {
+type PeriodicReviewDue {
   person: Person,
-  lastTalk: String?,
+  lastReview: String?,
   dueDate: String?
 }
 enum PersonEventEventType {

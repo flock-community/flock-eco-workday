@@ -5,7 +5,7 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.PersonLastDate
 import community.flock.eco.workday.application.repository.PersonRepository
-import community.flock.eco.workday.application.services.MidYearTalkService
+import community.flock.eco.workday.application.services.PeriodicReviewService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @ExtendWith(MockKExtension::class)
-class MidYearTalkServiceTest {
+class PeriodicReviewServiceTest {
     @MockK
     lateinit var personRepository: PersonRepository
 
@@ -27,12 +27,12 @@ class MidYearTalkServiceTest {
     lateinit var eventDayRepository: EventDayRepository
 
     @InjectMockKs
-    lateinit var service: MidYearTalkService
+    lateinit var service: PeriodicReviewService
 
     private val before = LocalDate.of(2026, 12, 9)
 
     @Test
-    fun `lists persons without a talk first, then those due by the given date`() {
+    fun `lists persons without a review first, then those due by the given date`() {
         val never = person(1, "never")
         val overdue = person(2, "overdue")
         val dueSoon = person(3, "soon")
@@ -41,7 +41,7 @@ class MidYearTalkServiceTest {
 
         every { personRepository.findAllByActive(Pageable.unpaged(), true) } returns
             PageImpl(listOf(notYet, dueSoon, planned, overdue, never))
-        every { eventDayRepository.findLastDatePerPersonByEventType(EventType.MID_YEAR_TALK) } returns
+        every { eventDayRepository.findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW) } returns
             listOf(
                 lastDate(2, LocalDate.of(2026, 3, 1)),
                 lastDate(3, LocalDate.of(2026, 6, 1)),
@@ -52,7 +52,7 @@ class MidYearTalkServiceTest {
         val result = service.findAllDue(before)
 
         assertEquals(listOf("never", "overdue", "soon"), result.map { it.person.firstname })
-        assertNull(result[0].lastTalk)
+        assertNull(result[0].lastReview)
         assertNull(result[0].dueDate)
         assertEquals(LocalDate.of(2026, 9, 1), result[1].dueDate)
         assertEquals(LocalDate.of(2026, 12, 1), result[2].dueDate)

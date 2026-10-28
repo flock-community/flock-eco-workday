@@ -9,25 +9,25 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class MidYearTalkService(
+class PeriodicReviewService(
     private val personRepository: PersonRepository,
     private val eventDayRepository: EventDayRepository,
 ) {
     /**
-     * Active persons whose next mid-year talk is due on or before [before]: six months after
-     * their last talk (a planned one in the future counts), or straight away when they never had one.
+     * Active persons whose next periodic review is due on or before [before]: six months after
+     * their last review (a planned one in the future counts), or straight away when they never had one.
      */
-    fun findAllDue(before: LocalDate): List<MidYearTalkDue> {
-        val lastTalks =
+    fun findAllDue(before: LocalDate): List<PeriodicReviewDue> {
+        val lastReviews =
             eventDayRepository
-                .findLastDatePerPersonByEventType(EventType.MID_YEAR_TALK)
+                .findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW)
                 .associate { it.personId to it.lastDate }
 
         return personRepository
             .findAllByActive(Pageable.unpaged(), active = true)
             .map { person ->
-                val lastTalk = lastTalks[person.id]
-                MidYearTalkDue(person, lastTalk, lastTalk?.plusMonths(INTERVAL_MONTHS))
+                val lastReview = lastReviews[person.id]
+                PeriodicReviewDue(person, lastReview, lastReview?.plusMonths(INTERVAL_MONTHS))
             }.filter { it.dueDate == null || !it.dueDate.isAfter(before) }
             .sortedWith(compareBy(nullsFirst()) { it.dueDate })
     }
@@ -37,8 +37,8 @@ class MidYearTalkService(
     }
 }
 
-data class MidYearTalkDue(
+data class PeriodicReviewDue(
     val person: Person,
-    val lastTalk: LocalDate?,
+    val lastReview: LocalDate?,
     val dueDate: LocalDate?,
 )
