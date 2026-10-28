@@ -71,8 +71,8 @@ class EventRepositoryTest : WorkdayIntegrationTest() {
         val september = LocalDate.of(2026, 9, 1)
 
         val review = EventType.PERIODIC_REVIEW
-        createHelper.createEvent(march, march, hours = 0.0, persons = listOf(person1.uuid, person2.uuid), type = review)
-        createHelper.createEvent(september, september, hours = 0.0, persons = listOf(person1.uuid), type = review)
+        createHelper.createEvent(march, march, hours = 0.0, days = listOf(0.0), persons = listOf(person1.uuid, person2.uuid), type = review)
+        createHelper.createEvent(september, september, hours = 0.0, days = listOf(0.0), persons = listOf(person1.uuid), type = review)
         createHelper.createEvent(september, september, persons = listOf(person2.uuid), type = EventType.GENERAL_EVENT)
 
         val lastDates =
