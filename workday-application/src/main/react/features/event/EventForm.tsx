@@ -10,6 +10,7 @@ import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
 import { NO_SPINNER_SX } from '../../components/inputs/noSpinnerSx';
+import { PersonSelector } from '../../components/selector';
 import {
   EventTypeBudgetLabel,
   EventTypeMappingToBillable,
@@ -26,7 +27,13 @@ const sumHours = (days: unknown): number =>
 export const EVENT_FORM_ID = 'event-form';
 
 const schema = Yup.object().shape({
-  description: Yup.string().required('Description is required').default(''),
+  // Mid-year talks get their description from the person on the server.
+  description: Yup.string()
+    .default('')
+    .when('type', {
+      is: EventType.MID_YEAR_TALK,
+      otherwise: (it) => it.required('Description is required'),
+    }),
   from: Yup.mixed<dayjs.Dayjs>()
     .required('From date is required')
     .default(() => dayjs()),
@@ -55,6 +62,10 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
 
   const handleEventTypeChange = (newValue: string) => {
     setFieldValue('type', newValue);
+    // A talk is with one person
+    if (newValue === EventType.MID_YEAR_TALK) {
+      setFieldValue('personIds', (values.personIds ?? []).slice(0, 1));
+    }
     setResetHours(EventTypeMappingToBillable[newValue]);
   };
 
@@ -64,15 +75,17 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
   return (
     <Form id={EVENT_FORM_ID}>
       <Grid container spacing={1}>
-        <Grid size={{ xs: 12 }}>
-          <Field
-            name="description"
-            type="text"
-            label="Description"
-            fullWidth
-            component={TextField}
-          />
-        </Grid>
+        {!isTalk && (
+          <Grid size={{ xs: 12 }}>
+            <Field
+              name="description"
+              type="text"
+              label="Description"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+        )}
         {!isTalk && (
           <Grid size={{ xs: 12 }}>
             <Field
@@ -86,7 +99,19 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
           </Grid>
         )}
         <Grid size={{ xs: 12 }}>
-          <PersonSelectorField name="personIds" multiple fullWidth />
+          {isTalk ? (
+            <PersonSelector
+              label="Person"
+              value={values.personIds?.[0] ?? ''}
+              onChange={(uuid) => {
+                setFieldValue('personIds', uuid ? [uuid] : []);
+              }}
+              embedded
+              fullWidth
+            />
+          ) : (
+            <PersonSelectorField name="personIds" multiple fullWidth />
+          )}
         </Grid>
         <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
           <EventTypeSelect
