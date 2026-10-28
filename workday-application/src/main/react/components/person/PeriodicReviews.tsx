@@ -12,17 +12,29 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import type { PeriodicReviewDue } from '../../clients/PeriodicReviewClient';
+import { PlanPeriodicReviewDialog } from './PlanPeriodicReviewDialog';
 
 type PeriodicReviewsProps = {
   withinNWeeks: number;
   periodicReviews?: PeriodicReviewDue[];
+  // Makes the rows open a dialog to plan the next review; leave out when the user cannot create events.
+  onPlanned?: () => void;
 };
 
 export default function PeriodicReviews({
   withinNWeeks,
   periodicReviews,
+  onPlanned,
 }: PeriodicReviewsProps) {
+  const [planning, setPlanning] = useState<PeriodicReviewDue>();
+
+  const handlePlanned = () => {
+    setPlanning(undefined);
+    onPlanned?.();
+  };
+
   const noContent = (
     <Typography color="text.secondary">
       No periodic reviews to plan within {withinNWeeks} weeks
@@ -30,17 +42,19 @@ export default function PeriodicReviews({
   );
 
   const renderDue = (item: PeriodicReviewDue) => {
-    if (item.dueDate === null) return 'Now';
     const date = item.dueDate.format('DD-MM-YYYY');
     return item.dueDate.isBefore(dayjs(), 'day') ? `${date} (overdue)` : date;
   };
 
   const renderItem = (item: PeriodicReviewDue) => (
-    <TableRow key={item.personUuid}>
+    <TableRow
+      hover={!!onPlanned}
+      key={item.personUuid}
+      onClick={onPlanned && (() => setPlanning(item))}
+      sx={onPlanned && { cursor: 'pointer' }}
+    >
       <TableCell>{item.personName}</TableCell>
-      <TableCell>
-        {item.lastReview ? item.lastReview.format('DD-MM-YYYY') : 'None yet'}
-      </TableCell>
+      <TableCell>{item.lastReview.format('DD-MM-YYYY')}</TableCell>
       <TableCell>{renderDue(item)}</TableCell>
     </TableRow>
   );
@@ -72,6 +86,13 @@ export default function PeriodicReviews({
           noContent
         )}
       </CardContent>
+      {onPlanned && (
+        <PlanPeriodicReviewDialog
+          item={planning}
+          onClose={() => setPlanning(undefined)}
+          onPlanned={handlePlanned}
+        />
+      )}
     </Card>
   );
 }

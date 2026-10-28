@@ -13,8 +13,8 @@ class PeriodicReviewService(
     private val eventDayRepository: EventDayRepository,
 ) {
     /**
-     * Active persons whose next periodic review is due on or before [before]: six months after
-     * their last review (a planned one in the future counts), or straight away when they never had one.
+     * Active persons with a periodic review whose next one is due on or before [before]: six months
+     * after their last review (a planned one in the future counts). Persons without any review are left out.
      */
     fun findAllDue(before: LocalDate): List<PeriodicReviewDue> {
         val lastReviews =
@@ -24,11 +24,10 @@ class PeriodicReviewService(
 
         return personRepository
             .findAllActiveNames()
-            .map { person ->
-                val lastReview = lastReviews[person.id]
-                PeriodicReviewDue(person, lastReview, lastReview?.plusMonths(INTERVAL_MONTHS))
-            }.filter { it.dueDate == null || !it.dueDate.isAfter(before) }
-            .sortedWith(compareBy(nullsFirst()) { it.dueDate })
+            .mapNotNull { person ->
+                lastReviews[person.id]?.let { PeriodicReviewDue(person, it, it.plusMonths(INTERVAL_MONTHS)) }
+            }.filter { !it.dueDate.isAfter(before) }
+            .sortedBy { it.dueDate }
     }
 
     companion object {
@@ -38,6 +37,6 @@ class PeriodicReviewService(
 
 data class PeriodicReviewDue(
     val person: PersonName,
-    val lastReview: LocalDate?,
-    val dueDate: LocalDate?,
+    val lastReview: LocalDate,
+    val dueDate: LocalDate,
 )

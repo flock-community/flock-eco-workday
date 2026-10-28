@@ -78,8 +78,8 @@ type PersonEvent {
 type PeriodicReviewDue {
   personUuid: String,
   personName: String,
-  lastReview: String?,
-  dueDate: String?
+  lastReview: String,
+  dueDate: String
 }
 enum PersonEventEventType {
   JOIN_DAY, BIRTHDAY

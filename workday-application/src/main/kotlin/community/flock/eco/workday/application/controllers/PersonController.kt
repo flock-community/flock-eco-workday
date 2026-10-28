@@ -271,8 +271,8 @@ class PersonController(
         PeriodicReviewDueApi(
             personUuid = person.uuid.toString(),
             personName = "${person.firstname} ${person.lastname}",
-            lastReview = lastReview?.toString(),
-            dueDate = dueDate?.toString(),
+            lastReview = lastReview.toString(),
+            dueDate = dueDate.toString(),
         )
 
     private fun PersonFormApi.internalize(): PersonForm =

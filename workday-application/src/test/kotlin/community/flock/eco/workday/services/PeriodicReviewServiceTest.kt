@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @ExtendWith(MockKExtension::class)
 class PeriodicReviewServiceTest {
@@ -31,7 +30,7 @@ class PeriodicReviewServiceTest {
     private val before = LocalDate.of(2026, 12, 9)
 
     @Test
-    fun `lists persons without a review first, then those due by the given date`() {
+    fun `lists persons with a review that is due by the given date, leaving out those without one`() {
         val never = person(1, "never")
         val overdue = person(2, "overdue")
         val dueSoon = person(3, "soon")
@@ -49,11 +48,10 @@ class PeriodicReviewServiceTest {
 
         val result = service.findAllDue(before)
 
-        assertEquals(listOf("never", "overdue", "soon"), result.map { it.person.firstname })
-        assertNull(result[0].lastReview)
-        assertNull(result[0].dueDate)
-        assertEquals(LocalDate.of(2026, 9, 1), result[1].dueDate)
-        assertEquals(LocalDate.of(2026, 12, 1), result[2].dueDate)
+        assertEquals(listOf("overdue", "soon"), result.map { it.person.firstname })
+        assertEquals(LocalDate.of(2026, 3, 1), result[0].lastReview)
+        assertEquals(LocalDate.of(2026, 9, 1), result[0].dueDate)
+        assertEquals(LocalDate.of(2026, 12, 1), result[1].dueDate)
     }
 
     private fun person(
