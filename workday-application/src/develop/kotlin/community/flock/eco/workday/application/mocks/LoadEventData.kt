@@ -58,7 +58,7 @@ class LoadEventData(
         )
 
     // Relative to today so the home page always shows one overdue and one upcoming review;
-    // persons not listed here have no review yet and show up as due straight away.
+    // persons not listed here have no review yet and are not listed.
     private fun periodicReviews(loadPersonData: LoadPersonData): List<EventForm> {
         val today = LocalDate.now()
         val persons = loadPersonData.data.filter { it.active }

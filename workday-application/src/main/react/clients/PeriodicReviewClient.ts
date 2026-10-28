@@ -4,15 +4,15 @@ import InternalizingClient from '../utils/InternalizingClient';
 export type PeriodicReviewDue = {
   personUuid: string;
   personName: string;
-  lastReview: Dayjs | null;
-  dueDate: Dayjs | null;
+  lastReview: Dayjs;
+  dueDate: Dayjs;
 };
 
 export type PeriodicReviewDueRaw = {
   personUuid: string;
   personName: string;
-  lastReview: string | null;
-  dueDate: string | null;
+  lastReview: string;
+  dueDate: string;
 };
 
 const path = '/api/persons/periodic-reviews';
@@ -20,8 +20,8 @@ const path = '/api/persons/periodic-reviews';
 const internalize = (json: PeriodicReviewDueRaw): PeriodicReviewDue => ({
   personUuid: json.personUuid,
   personName: json.personName,
-  lastReview: json.lastReview ? dayjs(json.lastReview) : null,
-  dueDate: json.dueDate ? dayjs(json.dueDate) : null,
+  lastReview: dayjs(json.lastReview),
+  dueDate: dayjs(json.dueDate),
 });
 
 const internalizingClient = InternalizingClient<

@@ -77,6 +77,16 @@ export function HomeFeature() {
   const showPersonEvents =
     status?.authorities?.includes('PersonAuthority.READ') ?? false;
 
+  const canPlanPeriodicReviews =
+    status?.authorities?.includes('EventAuthority.WRITE') ?? false;
+
+  const loadPeriodicReviews = useCallback(() => {
+    const nWeeksFromNow: Date = dayjs().add(withinNWeek, 'weeks').toDate();
+    PeriodicReviewClient.findAllDueBefore(nWeeksFromNow).then((due) =>
+      setPeriodicReviews(due),
+    );
+  }, [withinNWeek]);
+
   useEffect(() => {
     const today: Date = new Date();
     const nWeeksFromNow: Date = dayjs().add(withinNWeek, 'weeks').toDate();
@@ -88,10 +98,7 @@ export function HomeFeature() {
       PersonEventClient.findAllBetween(today, nWeeksFromNow).then(
         (personEvents) => setPersonEvents(personEvents),
       );
-    showPersonEvents &&
-      PeriodicReviewClient.findAllDueBefore(nWeeksFromNow).then((due) =>
-        setPeriodicReviews(due),
-      );
+    showPersonEvents && loadPeriodicReviews();
     if (hasAccess) {
       AggregationClient.totalPerPersonMe().then((totalPerPersonMe) =>
         setTotalPerPersonMe(totalPerPersonMe),
@@ -104,7 +111,14 @@ export function HomeFeature() {
       );
       LaptopClient.findAllMine().then((res) => setLaptops(res));
     }
-  }, [status, hasAccess, showContractsEnding, showPersonEvents, withinNWeek]);
+  }, [
+    status,
+    hasAccess,
+    showContractsEnding,
+    showPersonEvents,
+    withinNWeek,
+    loadPeriodicReviews,
+  ]);
 
   const openAddWorkDay = () => {
     if (person === null) {
@@ -195,6 +209,9 @@ export function HomeFeature() {
             <PeriodicReviews
               withinNWeeks={withinNWeek}
               periodicReviews={periodicReviews}
+              onPlanned={
+                canPlanPeriodicReviews ? loadPeriodicReviews : undefined
+              }
             />
           )}
         </section>
