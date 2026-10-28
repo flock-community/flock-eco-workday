@@ -26,7 +26,8 @@ class LoadEventData(
         loadData.load {
             (
                 publicHolidays(loadPersonData) + communityDays(loadPersonData) + conferences(loadPersonData) +
-                    hackDays(loadPersonData) + trainingEvents(loadPersonData)
+                    hackDays(loadPersonData) + trainingEvents(loadPersonData) +
+                    midYearTalks(loadPersonData)
             ).map { it.create() }
                 .let { data.addAll(it) }
         }
@@ -55,6 +56,31 @@ class LoadEventData(
                 type = EventType.CONFERENCE,
             ),
         )
+
+    // Relative to today so the home page always shows one overdue and one upcoming talk;
+    // persons not listed here have no talk yet and show up as due straight away.
+    private fun midYearTalks(loadPersonData: LoadPersonData): List<EventForm> {
+        val today = LocalDate.now()
+        val persons = loadPersonData.data.filter { it.active }
+        return listOf(
+            persons[0] to today.minusMonths(8),
+            persons[1] to today.minusMonths(5).minusWeeks(1),
+            persons[2] to today.minusMonths(7),
+            persons[2] to today.plusWeeks(2),
+            persons[3] to today.minusMonths(2),
+        ).map { (person, date) ->
+            EventForm(
+                description = "Mid-year talk ${person.firstname}",
+                from = date,
+                to = date,
+                days = mutableListOf(0.0),
+                hours = 0.0,
+                personIds = listOf(person.uuid),
+                costs = 0.0,
+                type = EventType.MID_YEAR_TALK,
+            )
+        }
+    }
 
     private fun publicHolidays(loadPersonData: LoadPersonData) =
         listOf(
