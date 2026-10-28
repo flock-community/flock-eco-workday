@@ -72,6 +72,7 @@ export enum EventType {
   FLOCK_COMMUNITY_DAY = 'FLOCK_COMMUNITY_DAY',
   FLOCK_HACK_DAY = 'FLOCK_HACK_DAY',
   GENERAL_EVENT = 'GENERAL_EVENT',
+  MID_YEAR_TALK = 'MID_YEAR_TALK',
 }
 
 const internalize = (it: FlockEventRaw): FlockEvent => ({

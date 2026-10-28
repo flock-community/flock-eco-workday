@@ -13,6 +13,10 @@ import { ContractClient } from '../../clients/ContractClient';
 import { ExpenseClient } from '../../clients/ExpenseClient';
 import { type Laptop, LaptopClient } from '../../clients/LaptopClient';
 import {
+  MidYearTalkClient,
+  type MidYearTalkDue,
+} from '../../clients/MidYearTalkClient';
+import {
   type PersonEvent,
   PersonEventClient,
 } from '../../clients/PersonEventClient';
@@ -24,6 +28,7 @@ import { HolidayCard } from '../../components/holiday-card/HolidayCard';
 import { HoursOverviewCard } from '../../components/hours-overview-card/HoursOverviewCard';
 import { LaptopsCard } from '../../components/laptops-card/LaptopsCard';
 import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
+import MidYearTalks from '../../components/person/MidYearTalks';
 import PersonEvents from '../../components/person/PersonEvents';
 import { addError } from '../../hooks/ErrorHook';
 import { usePerson } from '../../hooks/PersonHook';
@@ -47,6 +52,7 @@ export function HomeFeature() {
   const [withinNWeek] = useState<number>(6);
   const [contracts, setContracts] = useState<any[]>([]);
   const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
+  const [midYearTalks, setMidYearTalks] = useState<MidYearTalkDue[]>();
   const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
   const [personHolidayDetails, setPersonHolidayDetails] =
     useState<PersonHolidayDetails>();
@@ -81,6 +87,10 @@ export function HomeFeature() {
     showPersonEvents &&
       PersonEventClient.findAllBetween(today, nWeeksFromNow).then(
         (personEvents) => setPersonEvents(personEvents),
+      );
+    showPersonEvents &&
+      MidYearTalkClient.findAllDueBefore(nWeeksFromNow).then((due) =>
+        setMidYearTalks(due),
       );
     if (hasAccess) {
       AggregationClient.totalPerPersonMe().then((totalPerPersonMe) =>
@@ -179,6 +189,12 @@ export function HomeFeature() {
             <PersonEvents
               withinNWeeks={withinNWeek}
               personEvents={personEvents}
+            />
+          )}
+          {showPersonEvents && (
+            <MidYearTalks
+              withinNWeeks={withinNWeek}
+              midYearTalks={midYearTalks}
             />
           )}
         </section>

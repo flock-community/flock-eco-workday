@@ -28,6 +28,7 @@ export function EventTypeSelect({ onChange, value }) {
         EventType.FLOCK_HACK_DAY,
         EventType.FLOCK_COMMUNITY_DAY,
         EventType.CONFERENCE,
+        EventType.MID_YEAR_TALK,
       ].map((eventType) => renderSelectOption(eventType))}
     </Select>
   );
