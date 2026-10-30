@@ -16,18 +16,29 @@ class PeriodicReviewService(
      * Active persons with a periodic review whose next one is due on or before [before]: six months
      * after their last review (a planned one in the future counts). Persons without any review are left out.
      */
-    fun findAllDue(before: LocalDate): List<PeriodicReviewDue> {
+    fun findAllDue(before: LocalDate): List<PeriodicReviewDue> =
+        withLastReview(personRepository.findAllActiveNames())
+            .filter { it.dueDate != null && !it.dueDate.isAfter(before) }
+            .sortedBy { it.dueDate }
+
+    /**
+     * Every active person with an internal contract running on [on], with their last review and when
+     * the next one is due. Persons who never had a review come first, then the longest ago.
+     */
+    fun findAllInternal(on: LocalDate): List<PeriodicReviewDue> =
+        withLastReview(personRepository.findAllActiveInternalNames(on))
+            .sortedWith(compareBy({ it.lastReview }, { it.person.firstname }, { it.person.lastname }))
+
+    private fun withLastReview(persons: List<PersonName>): List<PeriodicReviewDue> {
         val lastReviews =
             eventDayRepository
                 .findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW)
                 .associate { it.personId to it.lastDate }
 
-        return personRepository
-            .findAllActiveNames()
-            .mapNotNull { person ->
-                lastReviews[person.id]?.let { PeriodicReviewDue(person, it, it.plusMonths(INTERVAL_MONTHS)) }
-            }.filter { !it.dueDate.isAfter(before) }
-            .sortedBy { it.dueDate }
+        return persons.map { person ->
+            val lastReview = lastReviews[person.id]
+            PeriodicReviewDue(person, lastReview, lastReview?.plusMonths(INTERVAL_MONTHS))
+        }
     }
 
     companion object {
@@ -37,6 +48,7 @@ class PeriodicReviewService(
 
 data class PeriodicReviewDue(
     val person: PersonName,
-    val lastReview: LocalDate,
-    val dueDate: LocalDate,
+    // Null when the person never had a review, and then nothing is due yet either.
+    val lastReview: LocalDate?,
+    val dueDate: LocalDate?,
 )

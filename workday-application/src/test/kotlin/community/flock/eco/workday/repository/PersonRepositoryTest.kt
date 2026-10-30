@@ -4,13 +4,16 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.model.Address
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.PersonRepository
+import community.flock.eco.workday.helpers.CreateHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import java.time.LocalDate
 
 class PersonRepositoryTest(
     @Autowired private val repository: PersonRepository,
+    @Autowired private val createHelper: CreateHelper,
 ) : WorkdayIntegrationTest() {
     @Test
     fun `should create person without email`() {
@@ -197,5 +200,40 @@ class PersonRepositoryTest(
 
         val res2 = repository.findAllByFullName(Pageable.unpaged(), "roy jansen")
         assertThat(res2.totalElements).isEqualTo(0)
+    }
+
+    @Test
+    fun `should find active persons with an internal contract running on the date`() {
+        val today = LocalDate.of(2026, 10, 30)
+        val running = createHelper.createPersonEntity("Running", "Internal")
+        val openEnded = createHelper.createPersonEntity("OpenEnded", "Internal")
+        val ended = createHelper.createPersonEntity("Ended", "Internal")
+        val future = createHelper.createPersonEntity("Future", "Internal")
+        val external = createHelper.createPersonEntity("Running", "External")
+        val inactive =
+            repository.save(
+                Person(
+                    firstname = "Inactive",
+                    lastname = "Internal",
+                    email = "inactive@internal",
+                    position = "",
+                    number = null,
+                    user = null,
+                    active = false,
+                ),
+            )
+
+        createHelper.createContractInternal(running, today.minusYears(1), today)
+        createHelper.createContractInternal(openEnded, today.minusYears(1), null)
+        // A second contract for the same person must not list them twice.
+        createHelper.createContractInternal(openEnded, today.minusYears(2), today.plusMonths(1))
+        createHelper.createContractInternal(ended, today.minusYears(1), today.minusDays(1))
+        createHelper.createContractInternal(future, today.plusDays(1), null)
+        createHelper.createContractExternal(external, today.minusYears(1), null)
+        createHelper.createContractInternal(inactive, today.minusYears(1), null)
+
+        val res = repository.findAllActiveInternalNames(today)
+
+        assertThat(res.map { it.uuid }).containsExactlyInAnyOrder(running.uuid, openEnded.uuid)
     }
 }

@@ -4,7 +4,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import { Box, Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AggregationClient,
   type PersonHolidayDetails,
@@ -53,6 +53,8 @@ export function HomeFeature() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
   const [periodicReviews, setPeriodicReviews] = useState<PeriodicReviewDue[]>();
+  const [showAllPeriodicReviews, setShowAllPeriodicReviews] = useState(false);
+  const periodicReviewsRequest = useRef(0);
   const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
   const [personHolidayDetails, setPersonHolidayDetails] =
     useState<PersonHolidayDetails>();
@@ -81,11 +83,27 @@ export function HomeFeature() {
     status?.authorities?.includes('EventAuthority.WRITE') ?? false;
 
   const loadPeriodicReviews = useCallback(() => {
+    // Only the latest request sets the list, so a slow answer for the other view cannot overwrite it.
+    const request = ++periodicReviewsRequest.current;
     const nWeeksFromNow: Date = dayjs().add(withinNWeek, 'weeks').toDate();
-    PeriodicReviewClient.findAllDueBefore(nWeeksFromNow).then((due) =>
-      setPeriodicReviews(due),
-    );
-  }, [withinNWeek]);
+    const load = showAllPeriodicReviews
+      ? PeriodicReviewClient.findAllInternal()
+      : PeriodicReviewClient.findAllDueBefore(nWeeksFromNow);
+    load.then((reviews) => {
+      if (request === periodicReviewsRequest.current) {
+        setPeriodicReviews(reviews);
+      }
+    });
+  }, [withinNWeek, showAllPeriodicReviews]);
+
+  const handleShowAllPeriodicReviews = (showAll: boolean) => {
+    setPeriodicReviews(undefined);
+    setShowAllPeriodicReviews(showAll);
+  };
+
+  useEffect(() => {
+    showPersonEvents && loadPeriodicReviews();
+  }, [showPersonEvents, loadPeriodicReviews]);
 
   useEffect(() => {
     const today: Date = new Date();
@@ -98,7 +116,6 @@ export function HomeFeature() {
       PersonEventClient.findAllBetween(today, nWeeksFromNow).then(
         (personEvents) => setPersonEvents(personEvents),
       );
-    showPersonEvents && loadPeriodicReviews();
     if (hasAccess) {
       AggregationClient.totalPerPersonMe().then((totalPerPersonMe) =>
         setTotalPerPersonMe(totalPerPersonMe),
@@ -111,14 +128,7 @@ export function HomeFeature() {
       );
       LaptopClient.findAllMine().then((res) => setLaptops(res));
     }
-  }, [
-    status,
-    hasAccess,
-    showContractsEnding,
-    showPersonEvents,
-    withinNWeek,
-    loadPeriodicReviews,
-  ]);
+  }, [status, hasAccess, showContractsEnding, showPersonEvents, withinNWeek]);
 
   const openAddWorkDay = () => {
     if (person === null) {
@@ -209,6 +219,8 @@ export function HomeFeature() {
             <PeriodicReviews
               withinNWeeks={withinNWeek}
               periodicReviews={periodicReviews}
+              showAll={showAllPeriodicReviews}
+              onShowAllChange={handleShowAllPeriodicReviews}
               onPlanned={
                 canPlanPeriodicReviews ? loadPeriodicReviews : undefined
               }
