@@ -5,6 +5,7 @@ import community.flock.eco.workday.api.endpoint.GetPersonAll
 import community.flock.eco.workday.api.endpoint.GetPersonByUuid
 import community.flock.eco.workday.api.endpoint.GetPersonMe
 import community.flock.eco.workday.api.endpoint.GetPersonPeriodicReviewsDue
+import community.flock.eco.workday.api.endpoint.GetPersonPeriodicReviewsInternal
 import community.flock.eco.workday.api.endpoint.GetPersonSpecialDates
 import community.flock.eco.workday.api.endpoint.PostPerson
 import community.flock.eco.workday.api.endpoint.PutPerson
@@ -54,6 +55,7 @@ class PersonController(
     GetPersonMe.Handler,
     GetPersonSpecialDates.Handler,
     GetPersonPeriodicReviewsDue.Handler,
+    GetPersonPeriodicReviewsInternal.Handler,
     PostPerson.Handler,
     PutPerson.Handler,
     DeletePerson.Handler {
@@ -115,6 +117,15 @@ class PersonController(
         val before = LocalDate.parse(request.queries.before)
         val due = periodicReviewService.findAllDue(before)
         return GetPersonPeriodicReviewsDue.Response200(due.map { it.externalize() })
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    override suspend fun getPersonPeriodicReviewsInternal(
+        request: GetPersonPeriodicReviewsInternal.Request,
+    ): GetPersonPeriodicReviewsInternal.Response<*> {
+        requireAuthority(PersonAuthority.READ)
+        val internal = periodicReviewService.findAllInternal(LocalDate.now())
+        return GetPersonPeriodicReviewsInternal.Response200(internal.map { it.externalize() })
     }
 
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
@@ -271,8 +282,8 @@ class PersonController(
         PeriodicReviewDueApi(
             personUuid = person.uuid.toString(),
             personName = "${person.firstname} ${person.lastname}",
-            lastReview = lastReview.toString(),
-            dueDate = dueDate.toString(),
+            lastReview = lastReview?.toString(),
+            dueDate = dueDate?.toString(),
         )
 
     private fun PersonFormApi.internalize(): PersonForm =

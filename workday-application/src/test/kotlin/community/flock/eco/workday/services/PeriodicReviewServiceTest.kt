@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @ExtendWith(MockKExtension::class)
 class PeriodicReviewServiceTest {
@@ -52,6 +53,31 @@ class PeriodicReviewServiceTest {
         assertEquals(LocalDate.of(2026, 3, 1), result[0].lastReview)
         assertEquals(LocalDate.of(2026, 9, 1), result[0].dueDate)
         assertEquals(LocalDate.of(2026, 12, 1), result[1].dueDate)
+    }
+
+    @Test
+    fun `lists every internal person with their last review, those without one first`() {
+        val never = person(1, "never")
+        val recent = person(2, "recent")
+        val longAgo = person(3, "longago")
+        val alsoNever = person(4, "alsonever")
+
+        every { personRepository.findAllActiveInternalNames(before) } returns listOf(recent, never, longAgo, alsoNever)
+        every { eventDayRepository.findLastDatePerPersonByEventType(EventType.PERIODIC_REVIEW) } returns
+            listOf(
+                lastDate(2, LocalDate.of(2026, 9, 1)),
+                lastDate(3, LocalDate.of(2026, 1, 1)),
+                // Not internal, so not listed.
+                lastDate(5, LocalDate.of(2026, 2, 1)),
+            )
+
+        val result = service.findAllInternal(before)
+
+        assertEquals(listOf("alsonever", "never", "longago", "recent"), result.map { it.person.firstname })
+        assertNull(result[0].lastReview)
+        assertNull(result[0].dueDate)
+        assertEquals(LocalDate.of(2026, 1, 1), result[2].lastReview)
+        assertEquals(LocalDate.of(2026, 7, 1), result[2].dueDate)
     }
 
     private fun person(

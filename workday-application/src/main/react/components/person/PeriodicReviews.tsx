@@ -2,6 +2,8 @@ import {
   Card,
   CardContent,
   CardHeader,
+  FormControlLabel,
+  Switch,
   TableBody,
   TableCell,
   TableContainer,
@@ -19,6 +21,9 @@ import { PlanPeriodicReviewDialog } from './PlanPeriodicReviewDialog';
 type PeriodicReviewsProps = {
   withinNWeeks: number;
   periodicReviews?: PeriodicReviewDue[];
+  // Lists every active internal engineer instead of only the reviews due within the window.
+  showAll: boolean;
+  onShowAllChange: (showAll: boolean) => void;
   // Makes the rows open a dialog to plan the next review; leave out when the user cannot create events.
   onPlanned?: () => void;
 };
@@ -26,6 +31,8 @@ type PeriodicReviewsProps = {
 export default function PeriodicReviews({
   withinNWeeks,
   periodicReviews,
+  showAll,
+  onShowAllChange,
   onPlanned,
 }: PeriodicReviewsProps) {
   const [planning, setPlanning] = useState<PeriodicReviewDue>();
@@ -37,11 +44,20 @@ export default function PeriodicReviews({
 
   const noContent = (
     <Typography color="text.secondary">
-      No periodic reviews to plan within {withinNWeeks} weeks
+      {showAll
+        ? 'No active internal engineers'
+        : `No periodic reviews to plan within ${withinNWeeks} weeks`}
     </Typography>
   );
 
+  const renderLastReview = (item: PeriodicReviewDue) => {
+    if (!item.lastReview) return 'Never';
+    const date = item.lastReview.format('DD-MM-YYYY');
+    return item.lastReview.isAfter(dayjs(), 'day') ? `${date} (planned)` : date;
+  };
+
   const renderDue = (item: PeriodicReviewDue) => {
+    if (!item.dueDate) return '-';
     const date = item.dueDate.format('DD-MM-YYYY');
     return item.dueDate.isBefore(dayjs(), 'day') ? `${date} (overdue)` : date;
   };
@@ -54,7 +70,7 @@ export default function PeriodicReviews({
       sx={onPlanned && { cursor: 'pointer' }}
     >
       <TableCell>{item.personName}</TableCell>
-      <TableCell>{item.lastReview.format('DD-MM-YYYY')}</TableCell>
+      <TableCell>{renderLastReview(item)}</TableCell>
       <TableCell>{renderDue(item)}</TableCell>
     </TableRow>
   );
@@ -76,7 +92,20 @@ export default function PeriodicReviews({
 
   return (
     <Card variant="outlined" sx={{ borderRadius: '14px' }}>
-      <CardHeader title="Periodic reviews to plan" />
+      <CardHeader
+        title={showAll ? 'Periodic reviews' : 'Periodic reviews to plan'}
+        action={
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showAll}
+                onChange={(event) => onShowAllChange(event.target.checked)}
+              />
+            }
+            label="All internal engineers"
+          />
+        }
+      />
       <CardContent>
         {periodicReviews === undefined ? (
           <AlignedLoader />

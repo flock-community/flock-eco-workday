@@ -52,8 +52,8 @@ export function PlanPeriodicReviewDialog({
       .finally(() => setProcessing(false));
   };
 
-  // Suggest the due date, or today when the review is overdue.
-  const suggested = item?.dueDate.isAfter(dayjs(), 'day')
+  // Suggest the due date, or today when the review is overdue or there never was one.
+  const suggested = item?.dueDate?.isAfter(dayjs(), 'day')
     ? item.dueDate
     : dayjs();
 
