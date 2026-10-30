@@ -737,7 +737,10 @@ class CvControllerTest(
         val tommy = createHelper.createPersonEntity("Tommy", "Dog")
         val ernie = createHelper.createPersonEntity("Ernie", "Bert")
         val pinoBase =
-            createHelper.createCv(pino, experiences = listOf(atClient("DHL Express", YearMonth.of(2025, 1)), atClient("ING", YearMonth.of(2020, 1))))
+            createHelper.createCv(
+                pino,
+                experiences = listOf(atClient("DHL Express", YearMonth.of(2025, 1)), atClient("ING", YearMonth.of(2020, 1))),
+            )
         // a copy repeats its base and is left out
         createHelper.createCv(pino, name = "Pino - DHL", experiences = listOf(atClient("DHL Express", YearMonth.of(2025, 1))))
         val tommyBase = createHelper.createCv(tommy, language = CvLanguage.EN, experiences = listOf(atClient("dhl", YearMonth.of(2022, 3))))

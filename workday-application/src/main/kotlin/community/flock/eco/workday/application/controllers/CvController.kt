@@ -117,7 +117,10 @@ class CvController(
     @PreAuthorize("hasAuthority('CvAuthority.ADMIN')")
     override suspend fun getCvClientExperiences(request: GetCvClientExperiences.Request): GetCvClientExperiences.Response<*> {
         // A blank query parameter reaches the handler as none at all
-        val client = request.queries.client?.trim().orEmpty()
+        val client =
+            request.queries.client
+                ?.trim()
+                .orEmpty()
         if (client.isEmpty()) return GetCvClientExperiences.Response400(Error("client is required"))
         val excluded = request.queries.excludePersonId?.toUuidOrBadRequest("excludePersonId")
         return GetCvClientExperiences.Response200(
