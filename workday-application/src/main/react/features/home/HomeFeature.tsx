@@ -22,6 +22,7 @@ import {
 } from '../../clients/PersonEventClient';
 import ContractsEnding from '../../components/contracts/ContractsEnding';
 import { ExpensesCard } from '../../components/expenses-card/ExpensesCard';
+import { FlockAppCard } from '../../components/flock-app-card/FlockAppCard';
 import { HackDayEventsCard } from '../../components/hackday-card/HackDayEventsCard';
 import { HackdayCard } from '../../components/hackday-card/HackdayCard';
 import { HolidayCard } from '../../components/holiday-card/HolidayCard';
@@ -250,6 +251,7 @@ export function HomeFeature() {
               <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
               <HackDayEventsCard onToggle={handleHackdayToggle} />
               <LaptopsCard items={laptops} />
+              <FlockAppCard />
             </div>
           </div>
         </section>
