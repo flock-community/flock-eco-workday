@@ -28,7 +28,8 @@ export function FlockAppCard() {
       <CardHeader title={'Flock app'} />
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Typography color={'text.secondary'}>
-          Get the Flock app on your phone.
+          Get the Flock app on your phone. Open the App Store link on your
+          iPhone to install it.
         </Typography>
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <StoreButton
