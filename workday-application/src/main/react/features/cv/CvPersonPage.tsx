@@ -54,17 +54,6 @@ import {
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
-/** Remembers whether a copy shows what it tailored, open or closed. */
-const SYNC_DETAILS_KEY = 'cv-sync-details';
-
-function readSyncDetails(): boolean {
-  try {
-    return localStorage.getItem(SYNC_DETAILS_KEY) === 'shown';
-  } catch {
-    return false;
-  }
-}
-
 /**
  * When printing, only the CV is left: the app bar, the sidebar, the person selector
  * and the buttons above the CV go, and the sheet loses its on-screen margins so the
@@ -148,7 +137,8 @@ function PersonCv({
   const [busy, setBusy] = useState(false);
   // Counts up to load the CVs again, after the base changed
   const [reload, setReload] = useState(0);
-  const [syncDetails, setSyncDetails] = useState(readSyncDetails);
+  // How a copy differs from its base starts collapsed; the chip opens it
+  const [syncDetails, setSyncDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // The CV codes looked up to find whose CV a link is to, so that happens once
   const lookedUp = useRef(new Set<string>());
@@ -339,15 +329,6 @@ function PersonCv({
     error: syncError,
     setError: setSyncError,
   } = useCvSync(current, base);
-  const toggleSyncDetails = (shown: boolean) => {
-    setSyncDetails(shown);
-    try {
-      localStorage.setItem(SYNC_DETAILS_KEY, shown ? 'shown' : 'hidden');
-    } catch {
-      // Then the choice is only remembered on this page
-    }
-  };
-
   const language = current ? cvLanguageLabel(current) : '';
   const baseLine = current && cvs != null && !version && !comparing && (
     <Box className="cv-actions" data-testid="cv-base" sx={{ mb: 2 }}>
@@ -397,7 +378,7 @@ function PersonCv({
             base={base}
             sync={sync}
             open={syncDetails}
-            onToggle={() => toggleSyncDetails(!syncDetails)}
+            onToggle={() => setSyncDetails((it) => !it)}
           />
           {canWrite && (
             <Button

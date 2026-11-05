@@ -166,14 +166,33 @@ export function CvSyncChip({
 }) {
   const drift = divergence(base, copy);
   const tailored = sync?.tailored.length;
+  const offers = sync?.offers.length ?? 0;
+  const changes =
+    offers === 0
+      ? ''
+      : ` · ${offers} ${offers === 1 ? 'change' : 'changes'} of the base`;
   return (
-    <Tooltip title={open ? 'Hide the details' : 'Show what this copy tailored'}>
+    <Tooltip
+      title={
+        open
+          ? 'Hide the details'
+          : offers > 0
+            ? 'Show the changes of the base and what this copy tailored'
+            : 'Show what this copy tailored'
+      }
+    >
       <Chip
         size="small"
         variant="outlined"
-        color={drift > DIVERGENCE_WARNING ? 'warning' : 'default'}
+        color={
+          offers > 0
+            ? 'info'
+            : drift > DIVERGENCE_WARNING
+              ? 'warning'
+              : 'default'
+        }
         data-testid="cv-divergence"
-        label={`${percent(drift)} different${tailored == null ? '' : ` · ${tailored} tailored`}`}
+        label={`${percent(drift)} different${tailored == null ? '' : ` · ${tailored} tailored`}${changes}`}
         onClick={onToggle}
         aria-expanded={open}
         icon={
@@ -191,9 +210,9 @@ export function CvSyncChip({
 }
 
 /**
- * The changes of the base for a copy to take or skip and, when [details] are open, how
- * far it drifted and the fields it tailored, each of which can go back to the base or
- * into the base. Every other field follows the base by itself.
+ * When [details] are open: the changes of the base for a copy to take or skip, how far
+ * it drifted and the fields it tailored, each of which can go back to the base or into
+ * the base. Every other field follows the base by itself.
  */
 export function CvSyncPanel({
   copy,
@@ -211,7 +230,7 @@ export function CvSyncPanel({
   error: string | null;
   setError: (error: string | null) => void;
   canWrite: boolean;
-  /** Whether to show how far the copy drifted and what it tailored; changes of the base always show. */
+  /** Whether to show the changes of the base, how far the copy drifted and what it tailored. */
   details: boolean;
   /** After an action: the CVs changed, so load them again. */
   onChanged: () => void;
@@ -231,8 +250,8 @@ export function CvSyncPanel({
   const drift = divergence(base, copy);
   const far = drift > DIVERGENCE_WARNING;
 
-  // Without the details, the panel is only there when the base changed
-  if (!details && !error && !sync?.offers.length) return null;
+  // Collapsed, the panel is only there to show an error
+  if (!details && !error) return null;
 
   return (
     <Card
@@ -252,7 +271,7 @@ export function CvSyncPanel({
             </Alert>
           )}
 
-          {sync && sync.offers.length > 0 && (
+          {details && sync && sync.offers.length > 0 && (
             <Alert severity="info" data-testid="cv-base-changed">
               <AlertTitle>The base changed</AlertTitle>
               {sync.offers.length === 1
@@ -261,45 +280,46 @@ export function CvSyncPanel({
               Facts you did not change here were taken over already.
             </Alert>
           )}
-          {sync?.offers.map((item) => {
-            const [take, keep] = OFFER_ACTIONS[item.kind] ?? OFFER_DEFAULT;
-            return (
-              <Box key={item.address} data-testid="cv-offer">
-                <Typography variant="subtitle2">{item.label}</Typography>
-                {item.outdated && (
-                  <Typography variant="body2" color="warning.main">
-                    You tailored this here; the base changed it since.
-                  </Typography>
-                )}
-                {item.kind !== 'ADDED' && item.kind !== 'REMOVED' && (
-                  <>
-                    <Value label="Base" value={item.base} />
-                    <Value label="This copy" value={item.copy} />
-                  </>
-                )}
-                {item.kind === 'REMOVED' && (
-                  <Typography variant="body2">
-                    The base no longer has it.
-                  </Typography>
-                )}
-                {canWrite && (
-                  <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                    <SyncButton
-                      action={take}
-                      primary
-                      disabled={busy}
-                      onClick={() => act(item, 'ACCEPT')}
-                    />
-                    <SyncButton
-                      action={keep}
-                      disabled={busy}
-                      onClick={() => act(item, 'SKIP')}
-                    />
-                  </Stack>
-                )}
-              </Box>
-            );
-          })}
+          {details &&
+            sync?.offers.map((item) => {
+              const [take, keep] = OFFER_ACTIONS[item.kind] ?? OFFER_DEFAULT;
+              return (
+                <Box key={item.address} data-testid="cv-offer">
+                  <Typography variant="subtitle2">{item.label}</Typography>
+                  {item.outdated && (
+                    <Typography variant="body2" color="warning.main">
+                      You tailored this here; the base changed it since.
+                    </Typography>
+                  )}
+                  {item.kind !== 'ADDED' && item.kind !== 'REMOVED' && (
+                    <>
+                      <Value label="Base" value={item.base} />
+                      <Value label="This copy" value={item.copy} />
+                    </>
+                  )}
+                  {item.kind === 'REMOVED' && (
+                    <Typography variant="body2">
+                      The base no longer has it.
+                    </Typography>
+                  )}
+                  {canWrite && (
+                    <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                      <SyncButton
+                        action={take}
+                        primary
+                        disabled={busy}
+                        onClick={() => act(item, 'ACCEPT')}
+                      />
+                      <SyncButton
+                        action={keep}
+                        disabled={busy}
+                        onClick={() => act(item, 'SKIP')}
+                      />
+                    </Stack>
+                  )}
+                </Box>
+              );
+            })}
 
           {sync && details && (
             <>
