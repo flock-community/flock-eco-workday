@@ -268,6 +268,12 @@ test.describe('CV', () => {
     // The place followed the base at once; the new profile is on offer
     await expect(cv.getByText('Utrecht')).toBeVisible();
     await expect(cv.getByText('Engineer at heart.')).toBeVisible();
+    // Collapsed by default: the chip tells the base changed, opening it shows how
+    await expect(page.getByTestId('cv-sync')).toHaveCount(0);
+    await expect(page.getByTestId('cv-divergence')).toContainText(
+      '1 change of the base',
+    );
+    await page.getByTestId('cv-divergence').click();
     await expect(page.getByTestId('cv-base-changed')).toContainText(
       '1 change of the base to look at',
     );
@@ -279,8 +285,6 @@ test.describe('CV', () => {
     await expect(page.getByTestId('cv-divergence')).toHaveText(
       '0% different · 0 tailored',
     );
-    await expect(page.getByTestId('cv-sync')).toHaveCount(0);
-    await page.getByTestId('cv-divergence').click();
     await expect(page.getByTestId('cv-sync')).toContainText(
       'Everything here follows the base.',
     );
