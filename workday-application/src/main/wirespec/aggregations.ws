@@ -34,6 +34,9 @@ endpoint HourClientOverviewEmployee GET /api/aggregations/client-hour-overview ?
 endpoint HourAssignmentClientOverviewEmployee GET /api/aggregations/client-assignment-hour-overview ? {from: String,to: String} -> {
   200 -> AggregationClientPersonAssignmentOverview[]
 }
+endpoint PersonReports GET /api/aggregations/person-report ? {from: String?,to: String?,personId: String?} -> {
+  200 -> PersonReport[]
+}
 
 type TotalsPerPersonMeByYearMonth200ResponseBody {
   id: String?,
@@ -169,4 +172,56 @@ type AggregationClientPersonAssignmentOverview {
   client: AggregationIdentifier?,
   aggregationPersonAssignment: AggregationClientPersonAssignmentItem[]?,
   totals: Number[]?
+}
+type PersonReport {
+  id: String,
+  name: String,
+  active: Boolean,
+  firstMonth: String?,
+  lastMonth: String?,
+  total: PersonReportTotal,
+  months: PersonReportMonth[]
+}
+type PersonReportTotal {
+  months: Integer32,
+  contractHours: Number,
+  workHours: Number,
+  revenue: Number,
+  cost: Number,
+  margin: Number,
+  averageHourlyRate: Number?,
+  utilization: Number?,
+  utilizationAvailable: Number?,
+  availableHours: Number,
+  sickHours: Number,
+  sickDays: Number,
+  leaveHours: Number,
+  leaveDays: Number,
+  holidayHours: Number,
+  paidLeaveHours: Number,
+  paidParentalLeaveHours: Number,
+  unpaidParentalLeaveHours: Number,
+  eventHours: Number
+}
+type PersonReportMonth {
+  yearMonth: String,
+  contractTypes: String[],
+  contractHours: Number,
+  workHours: Number,
+  revenue: Number,
+  cost: Number,
+  margin: Number,
+  averageHourlyRate: Number?,
+  utilization: Number?,
+  utilizationAvailable: Number?,
+  availableHours: Number,
+  sickHours: Number,
+  sickDays: Number,
+  leaveHours: Number,
+  leaveDays: Number,
+  holidayHours: Number,
+  paidLeaveHours: Number,
+  paidParentalLeaveHours: Number,
+  unpaidParentalLeaveHours: Number,
+  eventHours: Number
 }
