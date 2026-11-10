@@ -8,6 +8,7 @@ import community.flock.eco.workday.api.endpoint.HourClientOverviewEmployee
 import community.flock.eco.workday.api.endpoint.LeaveDayReportByYear
 import community.flock.eco.workday.api.endpoint.LeaveDayReportMeByYear
 import community.flock.eco.workday.api.endpoint.PersonNonProductiveHoursPerDay
+import community.flock.eco.workday.api.endpoint.PersonReports
 import community.flock.eco.workday.api.endpoint.RevenuePerClientByYear
 import community.flock.eco.workday.api.endpoint.TotalsPerMonthByYear
 import community.flock.eco.workday.api.endpoint.TotalsPerPersonByYear
@@ -23,7 +24,10 @@ import community.flock.eco.workday.application.model.AggregationPerson
 import community.flock.eco.workday.application.model.AggregationPersonClientRevenueItem
 import community.flock.eco.workday.application.model.PersonHackdayDetails
 import community.flock.eco.workday.application.model.PersonHolidayDetails
+import community.flock.eco.workday.application.model.PersonReport
+import community.flock.eco.workday.application.model.PersonReportMonth
 import community.flock.eco.workday.application.services.AggregationService
+import community.flock.eco.workday.application.services.PersonReportService
 import community.flock.eco.workday.application.services.PersonService
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -35,6 +39,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeParseException
 import java.util.UUID
 import community.flock.eco.workday.api.model.AggregationClient as AggregationClientApi
 import community.flock.eco.workday.api.model.AggregationClientPersonAssignmentItem as AggregationClientPersonAssignmentItemApi
@@ -51,6 +56,9 @@ import community.flock.eco.workday.api.model.AggregationPersonClientRevenueOverv
 import community.flock.eco.workday.api.model.NonProductiveHours as NonProductiveHoursApi
 import community.flock.eco.workday.api.model.PersonHackdayDetails as PersonHackdayDetailsApi
 import community.flock.eco.workday.api.model.PersonHolidayDetails as PersonHolidayDetailsApi
+import community.flock.eco.workday.api.model.PersonReport as PersonReportApi
+import community.flock.eco.workday.api.model.PersonReportMonth as PersonReportMonthApi
+import community.flock.eco.workday.api.model.PersonReportTotal as PersonReportTotalApi
 
 interface AggregationHandler :
     RevenuePerClientByYear.Handler,
@@ -62,6 +70,7 @@ interface AggregationHandler :
     HourClientOverviewEmployee.Handler,
     HourAssignmentClientOverviewEmployee.Handler,
     PersonNonProductiveHoursPerDay.Handler,
+    PersonReports.Handler,
     HolidayDetailsMeYear.Handler,
     HackdayDetailsMeYear.Handler
 
@@ -69,6 +78,7 @@ interface AggregationHandler :
 class AggregationController(
     private val personService: PersonService,
     private val aggregationService: AggregationService,
+    private val personReportService: PersonReportService,
 ) : AggregationHandler {
     private fun authentication(): Authentication = SecurityContextHolder.getContext().authentication
 
@@ -179,6 +189,27 @@ class AggregationController(
         return PersonNonProductiveHoursPerDay.Response200(body)
     }
 
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    override suspend fun personReports(request: PersonReports.Request): PersonReports.Response<*> {
+        val from = request.queries.from?.toYearMonth()
+        val to = request.queries.to?.toYearMonth()
+        val reports =
+            when (val personId = request.queries.personId) {
+                null -> personReportService.personReport(from, to)
+                else -> {
+                    val uuid =
+                        try {
+                            UUID.fromString(personId)
+                        } catch (e: IllegalArgumentException) {
+                            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid person id: $personId")
+                        }
+                    val person = personService.findByUuid(uuid) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+                    personReportService.personReport(from, to, person)
+                }
+            }
+        return PersonReports.Response200(reports.map(PersonReport::produce))
+    }
+
     @PreAuthorize("isAuthenticated()")
     override suspend fun holidayDetailsMeYear(request: HolidayDetailsMeYear.Request): HolidayDetailsMeYear.Response<*> {
         val person =
@@ -244,6 +275,65 @@ private fun PersonHackdayDetails.produce() =
         holidayOnHackDayHours = holidayOnHackDayHours.produce(),
         sickOnHackDayHours = sickOnHackDayHours.produce(),
         totalHoursRemaining = totalHoursRemaining.produce(),
+    )
+
+private fun String.toYearMonth(): YearMonth =
+    try {
+        YearMonth.parse(this)
+    } catch (e: DateTimeParseException) {
+        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Expected a month as yyyy-MM, got: $this")
+    }
+
+private fun PersonReport.produce() =
+    PersonReportApi(
+        id = person.uuid.toString(),
+        name = person.getFullName(),
+        active = person.active,
+        firstMonth = months.firstOrNull()?.yearMonth?.toString(),
+        lastMonth = months.lastOrNull()?.yearMonth?.toString(),
+        total =
+            PersonReportTotalApi(
+                months = months.size,
+                contractHours = total.contractHours.produce(),
+                workHours = total.workHours.produce(),
+                revenue = total.revenue.produce(),
+                cost = total.cost.produce(),
+                margin = total.margin.produce(),
+                averageHourlyRate = total.averageHourlyRate?.produce(),
+                utilization = total.utilization?.produce(),
+                utilizationAvailable = total.utilizationAvailable?.produce(),
+                availableHours = total.availableHours.produce(),
+                sickHours = total.sickHours.produce(),
+                leaveHours = total.leaveHours.produce(),
+                holidayHours = total.holidayHours.produce(),
+                paidLeaveHours = total.paidLeaveHours.produce(),
+                paidParentalLeaveHours = total.paidParentalLeaveHours.produce(),
+                unpaidParentalLeaveHours = total.unpaidParentalLeaveHours.produce(),
+                eventHours = total.eventHours.produce(),
+            ),
+        months = months.map(PersonReportMonth::produce),
+    )
+
+private fun PersonReportMonth.produce() =
+    PersonReportMonthApi(
+        yearMonth = yearMonth.toString(),
+        contractTypes = contractTypes.map { it.name }.sorted(),
+        contractHours = figures.contractHours.produce(),
+        workHours = figures.workHours.produce(),
+        revenue = figures.revenue.produce(),
+        cost = figures.cost.produce(),
+        margin = figures.margin.produce(),
+        averageHourlyRate = figures.averageHourlyRate?.produce(),
+        utilization = figures.utilization?.produce(),
+        utilizationAvailable = figures.utilizationAvailable?.produce(),
+        availableHours = figures.availableHours.produce(),
+        sickHours = figures.sickHours.produce(),
+        leaveHours = figures.leaveHours.produce(),
+        holidayHours = figures.holidayHours.produce(),
+        paidLeaveHours = figures.paidLeaveHours.produce(),
+        paidParentalLeaveHours = figures.paidParentalLeaveHours.produce(),
+        unpaidParentalLeaveHours = figures.unpaidParentalLeaveHours.produce(),
+        eventHours = figures.eventHours.produce(),
     )
 
 private fun AggregationService.NonProductiveHours.produce() =

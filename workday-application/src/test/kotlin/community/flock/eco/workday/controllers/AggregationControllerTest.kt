@@ -116,6 +116,66 @@ class AggregationControllerTest(
     }
 
     @Test
+    fun `should return person report for a person`() {
+        val adminUser = createHelper.createUserEntity(readAuthorities)
+        val client = createHelper.createClient("ReportClient")
+        val person = createHelper.createPersonEntity("Report", "Person")
+        val from = LocalDate.of(2024, 1, 1)
+        createHelper.createContractInternal(person = person, from = from, to = LocalDate.of(2024, 2, 29))
+        val assignment = createHelper.createAssignment(client, person, from, LocalDate.of(2024, 2, 29))
+        createHelper.createWorkDay(assignment, LocalDate.of(2024, 1, 8), LocalDate.of(2024, 1, 12))
+
+        mvc
+            .perform(
+                get("$baseUrl/person-report?personId=${person.uuid}")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].name").value("Report Person"))
+            .andExpect(jsonPath("$[0].firstMonth").value("2024-01"))
+            .andExpect(jsonPath("$[0].lastMonth").value("2024-02"))
+            .andExpect(jsonPath("$[0].total.months").value(2))
+            .andExpect(jsonPath("$[0].total.revenue").value(3200.0))
+            .andExpect(jsonPath("$[0].total.cost").value(8000.0))
+            .andExpect(jsonPath("$[0].months.length()").value(2))
+            .andExpect(jsonPath("$[0].months[0].yearMonth").value("2024-01"))
+            .andExpect(jsonPath("$[0].months[0].contractTypes[0]").value("INTERNAL"))
+            .andExpect(jsonPath("$[0].months[0].workHours").value(40.0))
+    }
+
+    @Test
+    fun `should return person report for all persons in a period`() {
+        val adminUser = createHelper.createUserEntity(readAuthorities)
+        val person = createHelper.createPersonEntity("Period", "Person")
+        createHelper.createContractInternal(person = person, from = LocalDate.of(2023, 1, 1), to = LocalDate.of(2023, 12, 31))
+
+        mvc
+            .perform(
+                get("$baseUrl/person-report?from=2023-03&to=2023-04")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[?(@.name == 'Period Person')].total.months").value(2))
+    }
+
+    @Test
+    fun `should not return person report without the read authority`() {
+        val user = createHelper.createUserEntity(emptySet())
+
+        mvc
+            .perform(
+                get("$baseUrl/person-report")
+                    .with(user(CreateHelper.UserSecurity(user.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
     fun `should return leave-day report by year`() {
         val adminUser = createHelper.createUserEntity(readAuthorities)
         val person = createHelper.createPersonEntity("Holiday", "Person")
