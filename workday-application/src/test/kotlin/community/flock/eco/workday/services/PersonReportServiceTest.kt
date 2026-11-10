@@ -58,13 +58,12 @@ class PersonReportServiceTest(
 
         assertNumber("168", february.contractHours)
         assertNumber("40", february.sickHours)
-        assertNumber("5", february.sickDays)
         assertNumber("128", february.availableHours)
         assertNumber("0", february.utilization)
         assertNull(february.averageHourlyRate)
 
         assertNumber("40", march.holidayHours)
-        assertNumber("5", march.leaveDays)
+        assertNumber("40", march.leaveHours)
     }
 
     @Test
@@ -78,8 +77,8 @@ class PersonReportServiceTest(
         assertNumber("3200", total.revenue)
         assertNumber("12000", total.cost)
         assertNumber("-8800", total.margin)
-        assertNumber("5", total.sickDays)
-        assertNumber("5", total.leaveDays)
+        assertNumber("40", total.sickHours)
+        assertNumber("40", total.leaveHours)
         assertNumber("440", total.availableHours)
         assertNumber("0.0769", total.utilization)
         assertNumber("0.0909", total.utilizationAvailable)

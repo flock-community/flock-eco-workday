@@ -46,10 +46,6 @@ data class PersonReportFigures(
 
     val leaveHours: BigDecimal get() = holidayHours + paidLeaveHours + paidParentalLeaveHours + unpaidParentalLeaveHours
 
-    val sickDays: BigDecimal get() = sickHours.toDays()
-
-    val leaveDays: BigDecimal get() = leaveHours.toDays()
-
     /** Contract hours that were not taken up by sickness, leave or events. */
     val availableHours: BigDecimal get() = (contractHours - sickHours - leaveHours - eventHours).max(BigDecimal.ZERO)
 
@@ -77,10 +73,6 @@ data class PersonReportFigures(
         )
 
     companion object {
-        val HOURS_PER_DAY: BigDecimal = BigDecimal.valueOf(8)
-
-        private fun BigDecimal.toDays() = divide(HOURS_PER_DAY, 4, RoundingMode.HALF_UP)
-
         private fun BigDecimal.ratioOf(other: BigDecimal) =
             other
                 .takeIf { it.signum() > 0 }
