@@ -28,7 +28,7 @@ flock-eco-workday/
 ## Prerequisites
 
 ### Required
-- **Java 17** or higher
+- **Java 25** or higher
 - **Maven 3.6+**
 - **Node.js** (version specified in `.nvmrc`)
 - **Google Cloud CLI** (gcloud) - Required for Google integrations
